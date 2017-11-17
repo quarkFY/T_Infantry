@@ -24,8 +24,8 @@
 #define MANIFOLD_UART huart3
 #define JUDGE_UART huart6
 
-#define CMGMMOTOR_CAN hcan1
-#define ZGYRO_CAN hcan2
+//#define CMGMMOTOR_CAN hcan1
+//#define ZGYRO_CAN hcan2
 
 #define FRICTION_TIM htim12
 #define PLATE_ENCODER_TIM htimx

@@ -147,12 +147,6 @@ void ControlYaw(void)
 			{
 				yawRealAngle = -ZGyroModuleAngle;//yawrealangle的值改为复位后陀螺仪的绝对值，进行yaw轴运动设定
 			}
-			/*else if(GetWorkState()==RUNE_STATE)
-			{
-				//fw_printfln("Rune State:%f",yawAngleTarget);
-				//yawAngleTarget=zyYawTartet;
-				//yawRealAngle = -ZGyroModuleAngle;
-			}*/
 							
 			yawIntensity = ProcessYawPID(yawAngleTarget, yawRealAngle, -gYroZs);
 			setMotor(GMYAW, yawIntensity);
