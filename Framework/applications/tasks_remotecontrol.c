@@ -233,14 +233,9 @@ void RemoteControlProcess(Remote *rc)
 
 extern uint8_t JUDGE_State;
 
-//为不同操作手调整鼠标灵敏度
-#ifndef INFANTRY_1
-  #define MOUSE_TO_PITCH_ANGLE_INC_FACT 		0.025f * 2
-  #define MOUSE_TO_YAW_ANGLE_INC_FACT 		0.025f * 2
-#else
-  #define MOUSE_TO_PITCH_ANGLE_INC_FACT 		0.025f * 3
-  #define MOUSE_TO_YAW_ANGLE_INC_FACT 		0.025f * 3
-#endif
+//调整鼠标灵敏度
+#define MOUSE_TO_PITCH_ANGLE_INC_FACT 		0.025f * 2
+#define MOUSE_TO_YAW_ANGLE_INC_FACT 		0.025f * 2
 
 
 //遥控器模式下机器人无级变速  键鼠模式下机器人速度为固定档位

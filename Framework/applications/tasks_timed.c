@@ -93,19 +93,7 @@ uint8_t zyRuneMode=0;
 uint16_t checkRecTime=300;
 Location_Number_s pRunePosition[3];
 uint16_t checkKeyTime=500;
-#ifdef INFANTRY_5
-//手动标定0点
-#define yaw_zero 2163//2200
-#define pitch_zero 3275
-#endif
-#ifdef INFANTRY_4
-#define yaw_zero 2806//2840
-#define pitch_zero 5009 
-#endif
-#ifdef INFANTRY_1
-#define yaw_zero 4708//100
-#define pitch_zero 6400
-#endif //p在前，y在后//张雁大符
+
 
 void Timer_2ms_lTask(void const * argument)
 {

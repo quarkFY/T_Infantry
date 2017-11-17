@@ -172,32 +172,5 @@ float dis_pitch = 15;//5.33;
 float location_center_yaw = 0;
 float location_center_pitch = 0;
 
-//Location_Number_s Location_Number[9] = {{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0}};
 
-
-
-#ifdef INFANTRY_4
-#define pAddZy 6.74f
-#define pMinusZy 5.77f
-#define yAddZy 9.7f
-#define yMinusZy 10.3f//4号车
-#define zyDetaP 0.2f
-#define zyDetaY 1.0f
-#endif
-#ifdef INFANTRY_5
-#define pAddZy 6.64f
-#define pMinusZy 5.9f
-#define yAddZy 9.2f
-#define yMinusZy 9.9f//5号车//float pAddZy=7.14,pMinusZy=5.97,yAddZy=8.5,yMinusZy=9.5;//5号车
-#define zyDetaP 1.4f
-#define zyDetaY 0.0f
-#endif
-#ifdef INFANTRY_1
-#define pAddZy 6.44f
-#define pMinusZy 5.87f
-#define yAddZy 9.0f
-#define yMinusZy 10.0f//1号车
-#define zyDetaP 0.4f
-#define zyDetaY 0.8f
-#endif
 
