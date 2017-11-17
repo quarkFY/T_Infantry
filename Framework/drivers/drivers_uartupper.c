@@ -31,15 +31,9 @@ NaiveIOPoolDefine(ctrlUartIOPool, {0});
 
 xdata_ctrlUart ctrlData; 
 
-float zyYawAdd,zyPitchAdd,zyYawTarget,zyPitchTarget;
-extern float yawAngleTarget, pitchAngleTarget;
-Location_Number_s Location_Number[9] = {{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0}};
-extern float yawRealAngle;
-extern float pitchRealAngle;
-uint8_t bShoot=0;
-extern uint8_t zyRuneMode;
-//uint16_t checkRecTime=0;//张雁大符相关
-uint8_t runeLocation = 4;
+
+
+
 
 extern uint16_t checkRecTime;
 
@@ -48,32 +42,7 @@ void manifoldUartRxCpltCallback()
 	static portBASE_TYPE xHigherPriorityTaskWoken;
   xHigherPriorityTaskWoken = pdFALSE;
 
-	zyYawAdd=0;
-	zyYawTarget=0;
-	uint8_t *pData = &runeLocation;
 	
-	if((GetWorkState()==RUNE_STATE&&zyRuneMode>1) && (checkRecTime > 200))
-	{
-		int temp=*pData;
-		yawAngleTarget = Location_Number[temp].yaw_position;
-		pitchAngleTarget = Location_Number[temp].pitch_position;
-		
-		bShoot=1;
-		//ShootOneBullet();//拨盘啵一个
-		
-		//checkRecTime=0;
-  }
-	else
-	{
-		fw_printfln("manifold callback:%x",*pData);
-	}
-
-	HAL_UART_AbortReceive((&MANIFOLD_UART));
-	if(HAL_UART_Receive_DMA(&MANIFOLD_UART, &runeLocation, 1) != HAL_OK)
-	{
-		Error_Handler();
-		printf( "ManifoldUart error" );
-	} 
 	if( xHigherPriorityTaskWoken == pdTRUE )
 	{
 	 portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
@@ -82,33 +51,9 @@ void manifoldUartRxCpltCallback()
 
 
 
-void ShootRune(uint8_t loc)//手打射击函数
-{
-	if((GetWorkState()==RUNE_STATE) && (checkRecTime > 100))
-	{
-		yawAngleTarget = Location_Number[loc].yaw_position;
-		pitchAngleTarget = Location_Number[loc].pitch_position;
-		
-		bShoot=1;
-		//ShootOneBullet();//拨盘啵一个
-  }
-}
 
-void InitManifoldUart()
-{
-	ctrlData.Success = 1;  
-	//vRefreshLocation(0, 0);
-	//zyLocationInit(1.0,8.0);//1号-2.0,6.1
-	for(int i=0;i<9;i++)
-	{
-		Location_Number[i].yaw_position=0;
-		Location_Number[i].pitch_position=0;
-	}
-	if(HAL_UART_Receive_DMA(&MANIFOLD_UART, &runeLocation, 1) != HAL_OK){
-		Error_Handler();
-		printf( "InitManifoldUart error" );
-	} 
-}
+
+
 
 
 void vInsert( uint8_t a[ ], uint8_t i, uint8_t n, uint8_t number){
@@ -229,26 +174,7 @@ float location_center_pitch = 0;
 
 //Location_Number_s Location_Number[9] = {{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0}};
 
-void vRefreshLocation(float yaw_center, float pitch_center){
-	Location_Number[0].yaw_position = yaw_center + dis_yaw;
-	Location_Number[0].pitch_position = pitch_center + dis_pitch;
-	Location_Number[1].yaw_position = yaw_center;
-	Location_Number[1].pitch_position = pitch_center + dis_pitch;
-	Location_Number[2].yaw_position = yaw_center - dis_yaw;
-	Location_Number[2].pitch_position = pitch_center + dis_pitch;
-	Location_Number[3].yaw_position = yaw_center + dis_yaw;
-	Location_Number[3].pitch_position = pitch_center;
-	Location_Number[4].yaw_position = yaw_center;
-	Location_Number[4].pitch_position = pitch_center;
-	Location_Number[5].yaw_position = yaw_center - dis_yaw;
-	Location_Number[5].pitch_position = pitch_center;
-	Location_Number[6].yaw_position = yaw_center + dis_yaw;
-	Location_Number[6].pitch_position = pitch_center - dis_pitch;
-	Location_Number[7].yaw_position = yaw_center;
-	Location_Number[7].pitch_position = pitch_center - dis_pitch;
-  Location_Number[8].yaw_position = yaw_center - dis_yaw;
-	Location_Number[8].pitch_position = pitch_center - dis_pitch;
-}
+
 
 #ifdef INFANTRY_4
 #define pAddZy 6.74f
@@ -274,48 +200,4 @@ void vRefreshLocation(float yaw_center, float pitch_center){
 #define zyDetaP 0.4f
 #define zyDetaY 0.8f
 #endif
-void zyLocationInit(Location_Number_s * Rune3Position)//(float yaw_center,float pitch_center)
-{
-	for(int i=0;i<3;i++)
-	{
-		Rune3Position[i].yaw_position=Rune3Position[i].yaw_position+zyDetaY;
-		Rune3Position[i].pitch_position=Rune3Position[i].pitch_position-zyDetaP;
-	}
-	Location_Number[0].yaw_position= Rune3Position[0].yaw_position;
-	Location_Number[0].pitch_position= Rune3Position[0].pitch_position - 0.2f;
-	Location_Number[1].yaw_position = Rune3Position[1].yaw_position;
-	Location_Number[1].pitch_position = Rune3Position[0].pitch_position - 0.2f;
-	Location_Number[2].yaw_position = Rune3Position[2].yaw_position;
-	Location_Number[2].pitch_position = Rune3Position[0].pitch_position - 0.2f;
-	Location_Number[3].yaw_position = Rune3Position[0].yaw_position;
-	Location_Number[3].pitch_position = Rune3Position[1].pitch_position;
-	Location_Number[4]=Rune3Position[1];
-	Location_Number[5].yaw_position = Rune3Position[2].yaw_position;
-	Location_Number[5].pitch_position = Rune3Position[1].pitch_position;
-	Location_Number[6].yaw_position = Rune3Position[0].yaw_position;
-	Location_Number[6].pitch_position = Rune3Position[2].pitch_position;
-	Location_Number[7].yaw_position = Rune3Position[1].yaw_position;
-	Location_Number[7].pitch_position = Rune3Position[2].pitch_position;
-  Location_Number[8]=Rune3Position[2];
-	/*pitch_center = pitch_center - zyDetaP;
-	yaw_center=yaw_center+zyDetaY;//4号车+1.0f
-	Location_Number[0].yaw_position = yaw_center + yAddZy;
-	Location_Number[0].pitch_position = pitch_center + pAddZy;
-	Location_Number[1].yaw_position = yaw_center;
-	Location_Number[1].pitch_position = pitch_center + pAddZy;
-	Location_Number[2].yaw_position = yaw_center - yMinusZy;
-	Location_Number[2].pitch_position = pitch_center + pAddZy;
-	Location_Number[3].yaw_position = yaw_center + yAddZy;
-	Location_Number[3].pitch_position = pitch_center;
-	Location_Number[4].yaw_position = yaw_center;
-	Location_Number[4].pitch_position = pitch_center;
-	Location_Number[5].yaw_position = yaw_center - yMinusZy;
-	Location_Number[5].pitch_position = pitch_center;
-	Location_Number[6].yaw_position = yaw_center + yAddZy;
-	Location_Number[6].pitch_position = pitch_center - pMinusZy;
-	Location_Number[7].yaw_position = yaw_center;
-	Location_Number[7].pitch_position = pitch_center - pMinusZy;
-  Location_Number[8].yaw_position = yaw_center - yMinusZy;
-	Location_Number[8].pitch_position = pitch_center - pMinusZy;
-	*/
-}
+

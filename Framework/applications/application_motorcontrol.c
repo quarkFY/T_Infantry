@@ -179,7 +179,7 @@ void setMotor(MotorId motorId, int16_t Intensity){
  	
 		IOPool_getNextWrite(CMTxIOPool);
 		
-		TransmitCMGMCan();
+		TransmitCAN1();
 		CMReady = 0;
     }
 	
@@ -198,7 +198,7 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		IOPool_getNextWrite(GMTxIOPool);
 		GMReady = 0;
 
-    TransmitCMGMCan();
+    TransmitCAN1();
 	}
 }
 	
@@ -217,5 +217,5 @@ void GYRO_RST(void)
 	pData->Data[7] = 0x07;
 	IOPool_getNextWrite(ZGYROTxIOPool);
 
-	TransmitGYROCAN();
+	TransmitCAN2();
 }

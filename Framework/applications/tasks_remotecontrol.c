@@ -242,9 +242,6 @@ extern uint8_t JUDGE_State;
   #define MOUSE_TO_YAW_ANGLE_INC_FACT 		0.025f * 3
 #endif
 
-extern uint8_t waitRuneMSG[4];
-extern uint8_t littleRuneMSG[4];
-extern uint8_t bigRuneMSG[4];
 
 //遥控器模式下机器人无级变速  键鼠模式下机器人速度为固定档位
 void MouseKeyControlProcess(Mouse *mouse, Key *key)
@@ -370,81 +367,11 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		{
 			twist_state = 0;
 		}
-
-
+		
 		MouseShootControl(mouse);
 	}
-	else if(GetWorkState() == RUNE_STATE)
-	{
-		VAL_LIMIT(mouse->x, -150, 150); 
-		VAL_LIMIT(mouse->y, -150, 150); 
 	
-		pitchAngleTarget -= mouse->y* MOUSE_TO_PITCH_ANGLE_INC_FACT;  
-		yawAngleTarget    -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
 
-		switch(RC_CtrlData.key.v)
-		{
-			case 64://q
-			{
-				uint8_t location = 0;
-				ShootRune(location);
-			}break;
-			case 1://w
-			{
-				uint8_t location = 1;
-				ShootRune(location);
-			}break;
-			case 128://e
-			{
-				uint8_t location = 2;
-				ShootRune(location);
-			}break;
-			case 4://a
-			{
-				uint8_t location = 3;
-				ShootRune(location);
-			}break;
-			case 2://s
-			{
-				uint8_t location = 4;
-				ShootRune(location);
-			}break;
-			case 8://d
-			{
-				uint8_t location = 5;
-				ShootRune(location);
-			}break;
-			case 2048://z
-			{
-				uint8_t location = 6;
-				ShootRune(location);
-			}break;
-			case 4096://x
-			{
-				uint8_t location = 7;
-				ShootRune(location);
-			}break;
-			case 8192://c
-			{
-				uint8_t location = 8;
-				ShootRune(location);
-			}break;
-			default:
-			{
-			}
-		}
-		if(RC_CtrlData.key.v == 1024)//小符 G
-		{
-			LASER_OFF();
-			zyRuneMode=2;
-			HAL_UART_Transmit(&MANIFOLD_UART , (uint8_t *)&littleRuneMSG, 4, 0xFFFF);
-		}else if(RC_CtrlData.key.v == 32768)//大符 B
-		{
-			LASER_OFF();
-			zyRuneMode=3;
-			HAL_UART_Transmit(&MANIFOLD_UART , (uint8_t *)&bigRuneMSG, 4, 0xFFFF);
-		}
-	}
 }
 
 

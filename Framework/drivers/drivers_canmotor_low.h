@@ -19,7 +19,7 @@
 
 void InitCanReception(void);
 
-void CMGMCanTransmitTask(void const * argument);
+//void CMGMCanTransmitTask(void const * argument);
 //void ZGYROCanTransmitTask(void const * argument);//没用的
 
 #define RATE_BUF_SIZE 6
