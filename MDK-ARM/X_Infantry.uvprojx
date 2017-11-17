@@ -901,21 +901,6 @@
               <FilePath>..\Framework\drivers\drivers_flash.h</FilePath>
             </File>
             <File>
-              <FileName>drivers_sonar.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Framework\drivers\drivers_sonar.c</FilePath>
-            </File>
-            <File>
-              <FileName>drivers_sonar_low.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Framework\drivers\drivers_sonar_low.h</FilePath>
-            </File>
-            <File>
-              <FileName>drivers_sonar_user.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Framework\drivers\drivers_sonar_user.h</FilePath>
-            </File>
-            <File>
               <FileName>drivers_ramp.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Framework\drivers\drivers_ramp.h</FilePath>
@@ -1059,6 +1044,11 @@
               <FileName>tasks_platemotor.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Framework\applications\tasks_platemotor.h</FilePath>
+            </File>
+            <File>
+              <FileName>ReadMe.txt</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\ReadMe.txt</FilePath>
             </File>
           </Files>
         </Group>
