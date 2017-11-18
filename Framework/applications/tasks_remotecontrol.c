@@ -33,7 +33,7 @@
 #include "drivers_uartupper_user.h"
 
 #include "peripheral_laser.h"
-extern uint8_t zyRuneMode;//ZY激光瞄准镜
+
 
 #define VAL_LIMIT(val, min, max)\
 if(val<=min)\
@@ -60,7 +60,6 @@ extern RC_Ctl_t RC_CtrlData;
 extern xSemaphoreHandle xSemaphore_rcuart;
 extern float yawAngleTarget, pitchAngleTarget;
 extern uint8_t g_isGYRO_Rested ;
-extern int twist_state ;
 
 extern WorkState_e g_workState;//张雁大符
 
@@ -193,21 +192,11 @@ void RemoteDataProcess(uint8_t *pData)
 		{
 			if(GetWorkState() != PREPARE_STATE)
 			{
-//				if(RC_CtrlData.rc.s1==3)
-//				{
-//					g_workState=RUNE_STATE;
-//				}
-//				else
-//				{
 					MouseKeyControlProcess(&RC_CtrlData.mouse,&RC_CtrlData.key);//键鼠模式
 					SetShootMode(AUTO);//调试自瞄用
 	//			RemoteShootControl(&g_switch1, RC_CtrlData.rc.s1);
 				//}
 			}
-//			else if(GetWorkState()==RUNE_STATE&&RC_CtrlData.rc.s1!=3)
-//			{
-//				g_workState=NORMAL_STATE;
-//			}
 		}break;
 		case STOP:
 		{
@@ -272,12 +261,12 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		if(key->v & 0x01)  // key: w
 		{
 			ChassisSpeedRef.forward_back_ref = forward_back_speed* FBSpeedRamp.Calc(&FBSpeedRamp);
-			twist_state = 0;
+			
 		}
 		else if(key->v & 0x02) //key: s
 		{
 			ChassisSpeedRef.forward_back_ref = -forward_back_speed* FBSpeedRamp.Calc(&FBSpeedRamp);
-			twist_state = 0;
+			
 		}
 		else
 		{
@@ -287,12 +276,12 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		if(key->v & 0x04)  // key: d
 		{
 			ChassisSpeedRef.left_right_ref = -left_right_speed* LRSpeedRamp.Calc(&LRSpeedRamp);
-			twist_state = 0;
+			
 		}
 		else if(key->v & 0x08) //key: a
 		{
 			ChassisSpeedRef.left_right_ref = left_right_speed* LRSpeedRamp.Calc(&LRSpeedRamp);
-			twist_state = 0;
+			
 		}
 		else
 		{
@@ -356,11 +345,9 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		
 		if(key->v == 256)  // key: r
 		{
-			twist_state = 1;
 		}
 		if(key->v == 272)  // key: r+Shift
 		{
-			twist_state = 0;
 		}
 		
 		MouseShootControl(mouse);
