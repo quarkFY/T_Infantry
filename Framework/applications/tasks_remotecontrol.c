@@ -50,7 +50,7 @@ extern ChassisSpeed_Ref_t ChassisSpeedRef;
 extern Gimbal_Ref_t GimbalRef;
 extern FrictionWheelState_e g_friction_wheel_state ;
 
-RemoteSwitch_t g_switch1;   //ң������ದ��
+RemoteSwitch_t g_switch1;   
 
 extern RampGen_t frictionRamp ;  //摩擦轮斜坡
 extern RampGen_t LRSpeedRamp ;   //键盘速度斜坡
@@ -63,11 +63,9 @@ extern uint8_t g_isGYRO_Rested ;
 
 extern WorkState_e g_workState;//张雁大符
 
-//static uint32_t delayCnt = 500;	//用于按键e去抖
 
 void RControlTask(void const * argument){
 	uint8_t data[18];
-//	static int countwhile = 0;
 	static TickType_t lastcount_rc;
 	static TickType_t thiscount_rc;
 	static uint8_t first_frame = 0;
@@ -103,7 +101,7 @@ void RControlTask(void const * argument){
 				vTaskDelay(2 / portTICK_RATE_MS);
 				HAL_UART_AbortReceive(&RC_UART);
 				HAL_UART_Receive_DMA(&RC_UART, IOPool_pGetWriteData(rcUartIOPool)->ch, 18);
-
+/*
 //				if(countwhile >= 300){
 //					countwhile = 0;
 //			    fw_printf("ch0 = %d | ", RC_CtrlData.rc.ch0);
@@ -124,7 +122,7 @@ void RControlTask(void const * argument){
 //				fw_printf("===========\r\n");
 //				}else{
 //					countwhile++;
-//				}
+//				}*/
 	    }
 		}
 		else{
@@ -176,26 +174,21 @@ void RemoteDataProcess(uint8_t *pData)
 	GetRemoteSwitchAction(&g_switch1, RC_CtrlData.rc.s1);
 	g_switchRead = 1;
 	
-	zySetLeftMode(&RC_CtrlData.rc);//张雁大符
 
 	switch(GetInputMode())
 	{
 		case REMOTE_INPUT:
 		{
 			if(GetWorkState() == NORMAL_STATE)
-			{ //if gyro has been reseted
-//				fw_printfln("RC is running");
+			{ 
 				RemoteControlProcess(&(RC_CtrlData.rc));//遥控器模式
 			}
 		}break;
 		case KEY_MOUSE_INPUT:
 		{
-			if(GetWorkState() != PREPARE_STATE)
+			if(GetWorkState() == NORMAL_STATE)
 			{
 					MouseKeyControlProcess(&RC_CtrlData.mouse,&RC_CtrlData.key);//键鼠模式
-					SetShootMode(AUTO);//调试自瞄用
-	//			RemoteShootControl(&g_switch1, RC_CtrlData.rc.s1);
-				//}
 			}
 		}break;
 		case STOP:
@@ -207,9 +200,8 @@ void RemoteDataProcess(uint8_t *pData)
 
 void RemoteControlProcess(Remote *rc)
 {
-	if(GetWorkState()!=PREPARE_STATE)
+	if(GetWorkState() == NORMAL_STATE)
 	{
-		SetShootMode(MANUL);
 		ChassisSpeedRef.forward_back_ref = (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_CHASSIS_SPEED_REF_FACT;
 		ChassisSpeedRef.left_right_ref   = (rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_CHASSIS_SPEED_REF_FACT; 
 		
@@ -230,7 +222,6 @@ extern uint8_t JUDGE_State;
 //遥控器模式下机器人无级变速  键鼠模式下机器人速度为固定档位
 void MouseKeyControlProcess(Mouse *mouse, Key *key)
 {
-	//++delayCnt;
 	static uint16_t forward_back_speed = 0;
 	static uint16_t left_right_speed = 0;
 	if(GetWorkState() == NORMAL_STATE)
@@ -290,9 +281,9 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		}
 		if(key->v & 0x80)	//key:e  检测第8位是不是1
 		{
-			setLaunchMode(SINGLE_MULTI);//按e单发(自动步枪、半自动步枪)
+			setLaunchMode(SINGLE_MULTI);
 		}
-		if(key->v & 0x40)	//key:q  按q四连发(霰弹枪)
+		if(key->v & 0x40)	//key:q  
 		{
 			setLaunchMode(CONSTENT_4);
 		}
@@ -345,9 +336,11 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		
 		if(key->v == 256)  // key: r
 		{
+			//
 		}
 		if(key->v == 272)  // key: r+Shift
 		{
+			//
 		}
 		
 		MouseShootControl(mouse);

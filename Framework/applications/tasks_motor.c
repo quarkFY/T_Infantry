@@ -54,8 +54,8 @@ PID_Regulator_t CM3SpeedPID = CHASSIS_MOTOR_SPEED_PID_DEFAULT;
 PID_Regulator_t CM4SpeedPID = CHASSIS_MOTOR_SPEED_PID_DEFAULT;
 
 //推弹电机PID
-PID_Regulator_t PM1SpeedPID = PUSH_MOTOR_SPEED_PID_DEFAULT;
-PID_Regulator_t PM2SpeedPID = PUSH_MOTOR_SPEED_PID_DEFAULT;
+PID_Regulator_t PM1PositionPID = PUSH_MOTOR_POSITION_PID_DEFAULT;
+PID_Regulator_t PM2PositionPID = PUSH_MOTOR_POSITION_PID_DEFAULT;
 
 extern uint8_t g_isGYRO_Rested;//没用到
 
@@ -80,10 +80,16 @@ static uint8_t s_CMBRCount = 0;
 static uint8_t s_PM1Count = 0;
 static uint8_t s_PM2Count = 0;
 
-
+#define PM1ZeroAngle 0
+#define PM2ZeroAngle 0
 
 void Can1ControlTask(void const * argument)
 {
+	PM1PositionPID.ref = 10000;
+	PM1PositionPID.fdb = 10000;
+	PM2PositionPID.ref = 10000;
+	PM2PositionPID.fdb = 10000;
+	
 	while(1)
 	{
 		//等待CAN接收回调函数信号量
@@ -298,6 +304,9 @@ void ControlCMBR()
 	}
 }
 
+uint16_t PM1ThisAngle = 0;
+uint16_t PM1LastAngle = 0;
+uint8_t isPM1FirstEnter = 1;
 void ControlPM1()
 {
 	if(IOPool_hasNextRead(PM1RxIOPool, 0))
@@ -307,12 +316,15 @@ void ControlPM1()
 			IOPool_getNextRead(PM1RxIOPool, 0);
 			Motor820RRxMsg_t *pData = IOPool_pGetReadData(PM1RxIOPool, 0);
 			
-			PM1SpeedPID.fdb = pData->RotateSpeed;
-			PM1SpeedPID.ref = 0;
+			PM1ThisAngle = pData->angle;
+			if(isPM1FirstEnter) {PM1LastAngle = PM1ThisAngle;isPM1FirstEnter = 0;}
 			
-			PM1SpeedPID.Calc(&PM1SpeedPID);
+			PM1PositionPID.fdb = PM1PositionPID.fdb + (PM1ThisAngle<(PM1LastAngle-3000)?(PM1ThisAngle+8192-PM1LastAngle):(PM1ThisAngle-PM1LastAngle));
+			PM1PositionPID.Calc(&PM1PositionPID);
 			
-			setMotor(PM1, PM1SpeedPID.output);
+			PM1LastAngle = PM1ThisAngle;
+			
+			setMotor(PM1, PM1PositionPID.output);
 			
 			s_PM1Count = 0;
 		}
@@ -323,6 +335,9 @@ void ControlPM1()
 	}
 }
 
+uint16_t PM2ThisAngle = 0;
+uint16_t PM2LastAngle = 0;
+uint8_t isPM2FirstEnter = 1;
 void ControlPM2()
 {
 	if(IOPool_hasNextRead(PM2RxIOPool, 0))
@@ -332,12 +347,15 @@ void ControlPM2()
 			IOPool_getNextRead(PM2RxIOPool, 0);
 			Motor820RRxMsg_t *pData = IOPool_pGetReadData(PM2RxIOPool, 0);
 			
-			PM2SpeedPID.fdb = pData->RotateSpeed;
-			PM2SpeedPID.ref = 0;
+			PM2ThisAngle = pData->angle;
+			if(isPM2FirstEnter) {PM2LastAngle = PM2ThisAngle;isPM2FirstEnter = 0;}
 			
-			PM2SpeedPID.Calc(&PM2SpeedPID);
+			PM2PositionPID.fdb = PM2PositionPID.fdb + (PM2ThisAngle<(PM2LastAngle-3000)?(PM2ThisAngle+8192-PM2LastAngle):(PM2ThisAngle-PM2LastAngle));
+			PM2PositionPID.Calc(&PM2PositionPID);
 			
-			setMotor(PM2, PM2SpeedPID.output);
+			PM2LastAngle = PM2ThisAngle;
+			
+			setMotor(PM2, PM2PositionPID.output);
 			
 			s_PM2Count = 0;
 		}

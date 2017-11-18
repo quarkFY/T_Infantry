@@ -160,26 +160,7 @@ void SetInputMode(Remote *rc)
 	}	
 }
 
-//张雁大符
-void zySetLeftMode(Remote *rc)
-{
-	if(rc->s1 == 1)
-	{
-		zyLeftPostion = 1;
-	}
-	else if(rc->s1 == 3)
-	{
-		zyLeftPostion = 3;
-	}
-	else if(rc->s1 == 2)
-	{
-		zyLeftPostion = 2;
-	}	
-}
-unsigned int zyGetLeftPostion()
-{
-	return zyLeftPostion;
-}
+
 
 InputMode_e GetInputMode()
 {
@@ -189,7 +170,9 @@ InputMode_e GetInputMode()
 /*
 input: RemoteSwitch_t *sw, include the switch info
 */
-
+extern PID_Regulator_t PM1PositionPID;
+extern PID_Regulator_t PM2PositionPID;
+uint16_t remoteShootDelay = 500;
 void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val) 
 {
 	switch(g_friction_wheel_state)
@@ -238,6 +221,13 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 			else if(sw->switch_value_raw == 2)
 			{
 				SetShootState(SHOOTING);
+				if(remoteShootDelay!=0) 
+					--remoteShootDelay;
+				else
+				{
+					shootOneGolf();
+					remoteShootDelay = 500;
+				}
 			}
 			else
 			{
@@ -320,7 +310,8 @@ void MouseShootControl(Mouse *mouse)
 					if(CNT_250ms>17)
 					{
 						CNT_250ms = 0;
-						ShootOneBullet();
+						shootOneGolf();
+						
 					}
 				}
 				else if(getLaunchMode() == CONSTENT_4 && GetFrictionState()==FRICTION_WHEEL_ON)	//四连发模式下，点一下打四发
@@ -329,10 +320,10 @@ void MouseShootControl(Mouse *mouse)
 					if(CNT_1s>75)
 					{
 						CNT_1s = 0;
-						ShootOneBullet();
-						ShootOneBullet();
-						ShootOneBullet();
-						ShootOneBullet();
+						shootOneGolf();
+						shootOneGolf();
+						shootOneGolf();
+						shootOneGolf();
 					}
 				}
 			}
@@ -346,7 +337,7 @@ void MouseShootControl(Mouse *mouse)
 				RotateCNT+=50;
 				if(RotateCNT>=OneShoot)
 				{
-					ShootOneBullet();
+					shootOneGolf();
 					RotateCNT = 0;
 				}
 					
@@ -418,6 +409,11 @@ void SetMoveSpeed(Move_Speed_e v)
 	movespeed = v;
 }
 
+void shootOneGolf()
+{
+	PM1PositionPID.ref = PM1PositionPID.ref + 8192*19;
+	PM2PositionPID.ref = PM2PositionPID.ref + 8192*19;
+}
 /*
 Slab_Mode_e slabmode = CLOSE;
 Slab_Mode_e GetSlabState()
