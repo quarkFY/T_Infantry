@@ -40,10 +40,10 @@
 
 //TxID
 #define CM_TXID 0x200u	//CAN1
-#define AM1_TXID 0x1FFu	//CAN1
+#define AM1_TXID 0x1FFu	//CAN2
 #define GM_TXID 0x2FFu	//CAN1
 #define AM23_TXID 0x200u//CAN2
-#define PM_TXID 0x1FFu	//CAN2
+#define PM_TXID 0x1FFu	//CAN1
 #define ZGYRO_TXID   0x404u	//CAN2
 
 //RxIOPool

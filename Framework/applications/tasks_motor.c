@@ -1,13 +1,13 @@
 /**
   ******************************************************************************
   * File Name          : tasks_motor.c
-  * Description        : 电机控制任务
+  * Description        : CAN1电机控制任务
   ******************************************************************************
   *
   * Copyright (c) 2017 Team TPP-Shanghai Jiao Tong University
   * All rights reserved.
   *
-  * 云台、底盘电机控制任务
+  * 云台、底盘、推弹电机控制任务
 	* 处于阻塞态等待CAN接收任务释放信号量
 	* 对CAN收到的数据进行PID计算，再将电流值发送到CAN
   ******************************************************************************
@@ -53,6 +53,10 @@ PID_Regulator_t CM2SpeedPID = CHASSIS_MOTOR_SPEED_PID_DEFAULT;
 PID_Regulator_t CM3SpeedPID = CHASSIS_MOTOR_SPEED_PID_DEFAULT;
 PID_Regulator_t CM4SpeedPID = CHASSIS_MOTOR_SPEED_PID_DEFAULT;
 
+//推弹电机PID
+PID_Regulator_t PM1SpeedPID = PUSH_MOTOR_SPEED_PID_DEFAULT;
+PID_Regulator_t PM2SpeedPID = PUSH_MOTOR_SPEED_PID_DEFAULT;
+
 extern uint8_t g_isGYRO_Rested;//没用到
 
 //陀螺仪角速度
@@ -66,19 +70,6 @@ float gap_angle = 0.0;
 float pitchRealAngle = 0.0;
 float pitchAngleTarget = 0.0;
 
-//大神符、自瞄
-extern Location_Number_s Location_Number[];
-extern uint8_t CReceive;
-extern uint8_t rune_flag;
-//扭腰
-int twist_state = 0;
-int twist_count = 0;
-int twist =0;
-float mm =0;
-float nn =0;
-int16_t twist_target = 0;
-
-
 
 static uint8_t s_yawCount = 0;
 static uint8_t s_pitchCount = 0;
@@ -86,23 +77,30 @@ static uint8_t s_CMFLCount = 0;
 static uint8_t s_CMFRCount = 0;
 static uint8_t s_CMBLCount = 0;
 static uint8_t s_CMBRCount = 0;
-	
-void CMGMControlTask(void const * argument)
+static uint8_t s_PM1Count = 0;
+static uint8_t s_PM2Count = 0;
+
+
+
+void Can1ControlTask(void const * argument)
 {
 	while(1)
 	{
 		//等待CAN接收回调函数信号量
-		osSemaphoreWait(CMGMCanRefreshSemaphoreHandle, osWaitForever);
+		osSemaphoreWait(Can1RefreshSemaphoreHandle, osWaitForever);
 		
 		ControlYaw();
 		ControlPitch();
 
-	 
 //		ChassisSpeedRef.rotate_ref = 0;//取消底盘跟随
 		ControlCMFL();
 		ControlCMFR();
 		ControlCMBL();
 		ControlCMBR();
+		
+		ControlPM1();
+		ControlPM2();
+		
 	}//end of while
 }
 
@@ -174,41 +172,18 @@ void ControlPitch(void)
 void ControlRotate(void)
 {
 	gap_angle  = (IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle - yaw_zero) * 360 / 8192.0f;
-    NORMALIZE_ANGLE180(gap_angle);	
+  NORMALIZE_ANGLE180(gap_angle);	
 	
 	if(GetWorkState() == NORMAL_STATE) 
-	{
-		/*扭腰*/
-		//试图用PID
-		if (twist_state == 1)
-		{
-			CMRotatePID.output = 0; //一定角度之间进行扭腰
-			twist = (twist_count / 600)%2 ;	
-			if (twist == nn){
-				CMRotatePID.output = -10;
-				twist_count = twist_count + 1;
-			}
-			if (twist == (1-nn)){
-				CMRotatePID.output = 10;
-				twist_count = twist_count + 1;
-			}
-			 ChassisSpeedRef.rotate_ref = CMRotatePID.output;
-		}				
-		else
-		{
-			/*产生扭腰随机数*/  
-			 srand(xTaskGetTickCount());
-			 mm = (1.0f*rand()/RAND_MAX);//产生随机方向
-			 nn = floor(2.0f*mm);
-					
+	{			
 			/*底盘跟随编码器旋转PID计算*/		
 			 CMRotatePID.ref = 0;
 			 CMRotatePID.fdb = gap_angle;
 			 CMRotatePID.Calc(&CMRotatePID);   
 			 ChassisSpeedRef.rotate_ref = CMRotatePID.output;
-		}
 	}
 }
+
 /*底盘电机控制FL(ForwardLeft)FR BL BR*/
 void ControlCMFL(void)
 {		
@@ -224,11 +199,7 @@ void ControlCMFL(void)
 											 + ChassisSpeedRef.rotate_ref;
 			CM2SpeedPID.ref = 160 * CM2SpeedPID.ref;
 			
-			if(GetWorkState() == RUNE_STATE) 
-			{
-				CM2SpeedPID.ref = 0;
-			}
-			
+	
 			CM2SpeedPID.fdb = pData->RotateSpeed;
 			CM2SpeedPID.Calc(&CM2SpeedPID);
 			
@@ -258,11 +229,6 @@ void ControlCMFR(void)
 			CM1SpeedPID.ref = 160 * CM1SpeedPID.ref;
 			CM1SpeedPID.fdb = pData->RotateSpeed;
 			
-			if(GetWorkState() == RUNE_STATE) 
-			{
-				CM1SpeedPID.ref = 0;
-			}
-			
 			CM1SpeedPID.Calc(&CM1SpeedPID);
 			
 			setMotor(CMFL, CHASSIS_SPEED_ATTENUATION * CM1SpeedPID.output);
@@ -291,11 +257,6 @@ void ControlCMBL(void)
 			CM3SpeedPID.ref = 160 * CM3SpeedPID.ref;
 			CM3SpeedPID.fdb = pData->RotateSpeed;
 			
-			if(GetWorkState() == RUNE_STATE) 
-			{
-				CM3SpeedPID.ref = 0;
-			}
-			
 			CM3SpeedPID.Calc(&CM3SpeedPID);
 			
 			setMotor(CMBL, CHASSIS_SPEED_ATTENUATION * CM3SpeedPID.output);
@@ -323,12 +284,7 @@ void ControlCMBR()
 											 + ChassisSpeedRef.rotate_ref;
 			CM4SpeedPID.ref = 160 * CM4SpeedPID.ref;
 			CM4SpeedPID.fdb = pData->RotateSpeed;
-			
-			if(GetWorkState() == RUNE_STATE) 
-			{
-				CM4SpeedPID.ref = 0;
-			}
-			
+					
 			CM4SpeedPID.Calc(&CM4SpeedPID);
 			
 			setMotor(CMBR, CHASSIS_SPEED_ATTENUATION * CM4SpeedPID.output);
@@ -342,3 +298,52 @@ void ControlCMBR()
 	}
 }
 
+void ControlPM1()
+{
+	if(IOPool_hasNextRead(PM1RxIOPool, 0))
+	{
+		if(s_PM1Count == 1)
+		{
+			IOPool_getNextRead(PM1RxIOPool, 0);
+			Motor820RRxMsg_t *pData = IOPool_pGetReadData(PM1RxIOPool, 0);
+			
+			PM1SpeedPID.fdb = pData->RotateSpeed;
+			PM1SpeedPID.ref = 0;
+			
+			PM1SpeedPID.Calc(&PM1SpeedPID);
+			
+			setMotor(PM1, PM1SpeedPID.output);
+			
+			s_PM1Count = 0;
+		}
+		else
+		{
+			s_PM1Count++;
+		}
+	}
+}
+
+void ControlPM2()
+{
+	if(IOPool_hasNextRead(PM2RxIOPool, 0))
+	{
+		if(s_PM2Count == 1)
+		{
+			IOPool_getNextRead(PM2RxIOPool, 0);
+			Motor820RRxMsg_t *pData = IOPool_pGetReadData(PM2RxIOPool, 0);
+			
+			PM2SpeedPID.fdb = pData->RotateSpeed;
+			PM2SpeedPID.ref = 0;
+			
+			PM2SpeedPID.Calc(&PM2SpeedPID);
+			
+			setMotor(PM2, PM2SpeedPID.output);
+			
+			s_PM2Count = 0;
+		}
+		else
+		{
+			s_PM2Count++;
+		}
+	}
+}

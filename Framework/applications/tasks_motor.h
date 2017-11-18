@@ -7,7 +7,6 @@
   * Copyright (c) 2017 Team TPP-Shanghai Jiao Tong University
   * All rights reserved.
   *
-  * 使用define对于不同车辆的参数进行区分
 	* 主要为云台初始位置时的编码器位置
 	* 以及其他可能存在的性能差异
   ******************************************************************************
@@ -16,7 +15,7 @@
 #define TASKS_MOTOR_H
 
                                                                          
-void CMGMControlTask(void const * argument);
+void Can1ControlTask(void const * argument);
 void ControlYaw(void);
 void ControlPitch(void);
 void ControlRotate(void);
@@ -24,5 +23,6 @@ void ControlCMFL(void);
 void ControlCMFR(void);
 void ControlCMBL(void);
 void ControlCMBR(void);
-
+void ControlPM1(void);
+void ControlPM2(void);
 #endif

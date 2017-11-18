@@ -1050,6 +1050,16 @@
               <FileType>5</FileType>
               <FilePath>.\ReadMe.txt</FilePath>
             </File>
+            <File>
+              <FileName>tasks_arm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Framework\applications\tasks_arm.c</FilePath>
+            </File>
+            <File>
+              <FileName>tasks_arm.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Framework\applications\tasks_arm.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

@@ -30,6 +30,7 @@
 #include "tasks_timed.h"
 #include "drivers_canmotor_low.h"
 #include "tasks_motor.h"
+#include "tasks_arm.h"
 #include "drivers_sonar_low.h"
 #include "tasks_platemotor.h"
 #include "utilities_debug.h"
@@ -47,7 +48,9 @@ osThreadId printIMUTaskHandle;
 osThreadId RControlTaskHandle;
 osThreadId getCtrlUartTaskHandle;
 //Motor
-osThreadId GMControlTaskHandle;
+osThreadId Can1ControlTaskHandle;
+osThreadId Can2ControlTaskHandle;
+
 osThreadId TimerTaskHandle;
 osThreadId PlateTaskHandle;
 
@@ -84,16 +87,20 @@ void rtos_AddThreads()
   RControlTaskHandle = osThreadCreate(osThread(RControlTask), NULL);
 
 //妙算通信任务：大神符，自动瞄准
-	osThreadDef(ManifoldUartTask, ManifoldUartTask, osPriorityAboveNormal, 0, 128);
-  getCtrlUartTaskHandle = osThreadCreate(osThread(ManifoldUartTask), NULL);
+//	osThreadDef(ManifoldUartTask, ManifoldUartTask, osPriorityAboveNormal, 0, 128);
+//  getCtrlUartTaskHandle = osThreadCreate(osThread(ManifoldUartTask), NULL);
 
-//CM(ChasisMotor)底盘电机GM(Gimbla)云台电机控制任务
-	osThreadDef(GMC_Task, CMGMControlTask, osPriorityAboveNormal, 0, 800);
-  GMControlTaskHandle = osThreadCreate(osThread(GMC_Task), NULL);
+//CAN1电机控制任务
+	osThreadDef(Can1_Task, Can1ControlTask, osPriorityAboveNormal, 0, 800);
+  Can1ControlTaskHandle = osThreadCreate(osThread(Can1_Task), NULL);
+
+//CAN2电机控制任务
+	osThreadDef(Can2_Task, Can2ControlTask, osPriorityAboveNormal, 0, 400);
+  Can2ControlTaskHandle = osThreadCreate(osThread(Can2_Task), NULL);
 	
 //拨盘电机任务 
-	osThreadDef(Plate_Task, PlateMotorTask, osPriorityAboveNormal, 0, 300);
-  PlateTaskHandle = osThreadCreate(osThread(Plate_Task), NULL);
+//	osThreadDef(Plate_Task, PlateMotorTask, osPriorityAboveNormal, 0, 300);
+//  PlateTaskHandle = osThreadCreate(osThread(Plate_Task), NULL);
 	
 //2ms定时任务，状态机切换，调试信息输出等
 	osThreadDef(Timer_Task, Timer_2ms_lTask, osPriorityAboveNormal, 0, 512);//zy512
