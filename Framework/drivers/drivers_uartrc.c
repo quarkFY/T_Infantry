@@ -34,6 +34,9 @@
 #include "drivers_uartupper_user.h"
 #include "stm32f4xx_hal_uart.h"
 #include "tasks_platemotor.h"
+#include "tasks_motor.h"
+#include "tasks_arm.h"
+
 NaiveIOPoolDefine(rcUartIOPool, {0});
 
 //遥控器串口初始化，操作系统初始化的时候调用
@@ -185,7 +188,11 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 				frictionRamp.ResetCounter(&frictionRamp);
 				g_friction_wheel_state = FRICTION_WHEEL_START_TURNNING;	 
 				LASER_ON(); 
-			}				 		
+			}
+			else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)		//收回取弹机械臂
+			{
+				armReset();
+			}
 		}break;
 		case FRICTION_WHEEL_START_TURNNING:
 		{
@@ -197,6 +204,19 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 				g_friction_wheel_state = FRICTION_WHEEL_OFF;
 				frictionRamp.ResetCounter(&frictionRamp);
 			}
+			
+			else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)	//左侧拨杆直接从上拨到下 取弹指令
+			{
+				LASER_OFF();
+				SetShootState(NOSHOOTING);
+				SetFrictionWheelSpeed(1000);
+				g_friction_wheel_state = FRICTION_WHEEL_OFF;
+				frictionRamp.ResetCounter(&frictionRamp);
+				
+				getGolf();
+				
+			}
+			
 			else
 			{
 				/*斜坡函数必须有，避免电流过大烧坏主控板*/
@@ -218,7 +238,7 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 				frictionRamp.ResetCounter(&frictionRamp);
 				SetShootState(NOSHOOTING);
 			}
-			else if(sw->switch_value_raw == 2)
+			else if(sw->switch_value_raw == 3)	//左侧拨杆拨到中间便会开枪
 			{
 				SetShootState(SHOOTING);
 				if(remoteShootDelay!=0) 
@@ -409,11 +429,7 @@ void SetMoveSpeed(Move_Speed_e v)
 	movespeed = v;
 }
 
-void shootOneGolf()
-{
-	PM1PositionPID.ref = PM1PositionPID.ref + 8192*19;
-	PM2PositionPID.ref = PM2PositionPID.ref + 8192*19;
-}
+
 /*
 Slab_Mode_e slabmode = CLOSE;
 Slab_Mode_e GetSlabState()

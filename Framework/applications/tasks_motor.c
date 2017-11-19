@@ -54,8 +54,8 @@ PID_Regulator_t CM3SpeedPID = CHASSIS_MOTOR_SPEED_PID_DEFAULT;
 PID_Regulator_t CM4SpeedPID = CHASSIS_MOTOR_SPEED_PID_DEFAULT;
 
 //推弹电机PID
-PID_Regulator_t PM1PositionPID = PUSH_MOTOR_POSITION_PID_DEFAULT;
-PID_Regulator_t PM2PositionPID = PUSH_MOTOR_POSITION_PID_DEFAULT;
+fw_PID_Regulator_t PM1PositionPID = fw_PID_INIT(1.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
+fw_PID_Regulator_t PM2PositionPID = fw_PID_INIT(1.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
 
 extern uint8_t g_isGYRO_Rested;//没用到
 
@@ -70,6 +70,10 @@ float gap_angle = 0.0;
 float pitchRealAngle = 0.0;
 float pitchAngleTarget = 0.0;
 
+float PM1RealAngle = 0.0;
+float PM2RealAngle = 0.0;
+float PM1AngleTarget = 0.0;
+float PM2AngleTarget = 0.0;
 
 static uint8_t s_yawCount = 0;
 static uint8_t s_pitchCount = 0;
@@ -85,11 +89,6 @@ static uint8_t s_PM2Count = 0;
 
 void Can1ControlTask(void const * argument)
 {
-	PM1PositionPID.ref = 10000;
-	PM1PositionPID.fdb = 10000;
-	PM2PositionPID.ref = 10000;
-	PM2PositionPID.fdb = 10000;
-	
 	while(1)
 	{
 		//等待CAN接收回调函数信号量
@@ -315,15 +314,25 @@ void ControlPM1()
 		{
 			IOPool_getNextRead(PM1RxIOPool, 0);
 			Motor820RRxMsg_t *pData = IOPool_pGetReadData(PM1RxIOPool, 0);
-			
 			PM1ThisAngle = pData->angle;
+			
 			if(isPM1FirstEnter) {PM1LastAngle = PM1ThisAngle;isPM1FirstEnter = 0;}
 			
-			PM1PositionPID.fdb = PM1PositionPID.fdb + (PM1ThisAngle<(PM1LastAngle-3000)?(PM1ThisAngle+8192-PM1LastAngle):(PM1ThisAngle-PM1LastAngle));
+			if((PM1ThisAngle+8192-PM1LastAngle)>0 && (PM1ThisAngle+8192-PM1LastAngle)<3000)	//编码器上溢
+				PM1RealAngle = PM1RealAngle + (PM1ThisAngle+8192-PM1LastAngle) * 360 / 8192.0 / PM1Reduction;
+			else if((PM1LastAngle+8192-PM1ThisAngle)>0 && (PM1LastAngle+8192-PM1ThisAngle)<3000) //编码器下溢
+				PM1RealAngle = PM1RealAngle - (PM1LastAngle+8192-PM1ThisAngle) *360 / 8192.0 / PM1Reduction;
+			else if(PM1ThisAngle >= PM1LastAngle)		//正转
+				PM1RealAngle = PM1RealAngle + (PM1ThisAngle - PM1LastAngle) * 360 / 8192.0 / PM1Reduction;
+			else	//反转
+				PM1RealAngle = PM1RealAngle - (PM1LastAngle - PM1ThisAngle) * 360 / 8192.0 / PM1Reduction;
+			
+			PM1PositionPID.feedback = PM1RealAngle;
+			PM1PositionPID.target = PM1AngleTarget;
 			PM1PositionPID.Calc(&PM1PositionPID);
 			
 			PM1LastAngle = PM1ThisAngle;
-			
+	
 			setMotor(PM1, PM1PositionPID.output);
 			
 			s_PM1Count = 0;
@@ -350,7 +359,17 @@ void ControlPM2()
 			PM2ThisAngle = pData->angle;
 			if(isPM2FirstEnter) {PM2LastAngle = PM2ThisAngle;isPM2FirstEnter = 0;}
 			
-			PM2PositionPID.fdb = PM2PositionPID.fdb + (PM2ThisAngle<(PM2LastAngle-3000)?(PM2ThisAngle+8192-PM2LastAngle):(PM2ThisAngle-PM2LastAngle));
+			if((PM2ThisAngle+8192-PM2LastAngle)>0 && (PM2ThisAngle+8192-PM2LastAngle)<3000)	//编码器上溢
+				PM2RealAngle = PM2RealAngle + (PM2ThisAngle+8192-PM2LastAngle) * 360 / 8192.0 / PM2Reduction;
+			else if((PM2LastAngle+8192-PM2ThisAngle)>0 && (PM2LastAngle+8192-PM2ThisAngle)<3000) //编码器下溢
+				PM2RealAngle = PM2RealAngle - (PM2LastAngle+8192-PM2ThisAngle) *360 / 8192.0 / PM2Reduction;
+			else if(PM2ThisAngle >= PM2LastAngle)		//正转
+				PM2RealAngle = PM2RealAngle + (PM2ThisAngle - PM2LastAngle) * 360 / 8192.0 / PM2Reduction;
+			else	//反转
+				PM2RealAngle = PM2RealAngle - (PM2LastAngle - PM2ThisAngle) * 360 / 8192.0 / PM2Reduction;
+			
+			PM2PositionPID.feedback = PM2RealAngle;
+			PM2PositionPID.target = PM2AngleTarget;
 			PM2PositionPID.Calc(&PM2PositionPID);
 			
 			PM2LastAngle = PM2ThisAngle;
@@ -365,3 +384,13 @@ void ControlPM2()
 		}
 	}
 }
+
+void shootOneGolf()
+{
+	PM1AngleTarget = PM1AngleTarget + 360;
+	PM2AngleTarget = PM2AngleTarget + 360;
+}
+
+
+
+
