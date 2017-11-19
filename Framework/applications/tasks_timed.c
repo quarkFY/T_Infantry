@@ -41,6 +41,7 @@
 #include "peripheral_laser.h"
 #include "drivers_uartrc_low.h"
 #include "tasks_motor.h"//zy
+#include "tasks_arm.h"
 #include <stdbool.h>
 extern PID_Regulator_t CMRotatePID ; 
 extern PID_Regulator_t CM1SpeedPID;
@@ -250,6 +251,7 @@ void WorkStateSwitchProcess(void)
 		pitchAngleTarget = 0;
 		CMControlInit();
 		RemoteTaskInit();
+		armReset();
 	}
 }
 

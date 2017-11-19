@@ -31,7 +31,7 @@
 #include <stdbool.h>
 #include "tasks_platemotor.h"
 #include "drivers_uartupper_user.h"
-
+#include "tasks_arm.h"
 #include "peripheral_laser.h"
 
 
@@ -336,11 +336,11 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		
 		if(key->v == 256)  // key: r
 		{
-			//
+			getGolf();//要去抖，不过不去抖好像也没啥关系
 		}
 		if(key->v == 272)  // key: r+Shift
 		{
-			//
+			armReset();
 		}
 		
 		MouseShootControl(mouse);
