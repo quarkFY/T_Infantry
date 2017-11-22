@@ -169,7 +169,6 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name>(105=-1,-1,-1,-1,0)</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -193,6 +192,11 @@
           <count>1</count>
           <WinNumber>1</WinNumber>
           <ItemText>TickType_t</ItemText>
+        </Ww>
+        <Ww>
+          <count>2</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>gap_angle</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>
