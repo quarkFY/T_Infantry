@@ -173,7 +173,7 @@ void ControlPitch(void)
 		}
 	}
 }
-/*底盘转动控制：跟随云台等*/
+/*底盘转动控制：跟随云台/扭腰等*/
 void ControlRotate(void)
 {
 	gap_angle  = (IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle - yaw_zero) * 360 / 8192.0f;
@@ -318,21 +318,14 @@ void ControlPM1()
 			
 			if(isPM1FirstEnter) {PM1LastAngle = PM1ThisAngle;isPM1FirstEnter = 0;}
 			
-			
-			if(PM1ThisAngle<=PM1LastAngle)
-			{
-				if((PM1LastAngle-PM1ThisAngle)>3000)//编码器上溢
-					PM1RealAngle = PM1RealAngle + (PM1ThisAngle+8192-PM1LastAngle) * 360 / 8192.0 / PM1Reduction;
-				else//反转
-					PM1RealAngle = PM1RealAngle - (PM1LastAngle - PM1ThisAngle) * 360 / 8192.0 / PM1Reduction;
-			}
-			else
-			{
-				if((PM1ThisAngle-PM1LastAngle)>3000)//编码器下溢
-					PM1RealAngle = PM1RealAngle - (PM1LastAngle+8192-PM1ThisAngle) *360 / 8192.0 / PM1Reduction;
-				else//正转
-					PM1RealAngle = PM1RealAngle + (PM1ThisAngle - PM1LastAngle) * 360 / 8192.0 / PM1Reduction;
-			}
+			if((PM1ThisAngle+8192-PM1LastAngle)>0 && (PM1ThisAngle+8192-PM1LastAngle)<3000)	//编码器上溢
+				PM1RealAngle = PM1RealAngle + (PM1ThisAngle+8192-PM1LastAngle) * 360 / 8192.0 / PM1Reduction;
+			else if((PM1LastAngle+8192-PM1ThisAngle)>0 && (PM1LastAngle+8192-PM1ThisAngle)<3000) //编码器下溢
+				PM1RealAngle = PM1RealAngle - (PM1LastAngle+8192-PM1ThisAngle) *360 / 8192.0 / PM1Reduction;
+			else if(PM1ThisAngle >= PM1LastAngle)		//正转
+				PM1RealAngle = PM1RealAngle + (PM1ThisAngle - PM1LastAngle) * 360 / 8192.0 / PM1Reduction;
+			else	//反转
+				PM1RealAngle = PM1RealAngle - (PM1LastAngle - PM1ThisAngle) * 360 / 8192.0 / PM1Reduction;
 			
 			PM1PositionPID.feedback = PM1RealAngle;
 			PM1PositionPID.target = PM1AngleTarget;
