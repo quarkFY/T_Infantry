@@ -318,7 +318,7 @@ void ControlPM1()
 			
 			if(isPM1FirstEnter) {PM1LastAngle = PM1ThisAngle;isPM1FirstEnter = 0;}
 			
-					if(PM1ThisAngle<=PM1LastAngle)
+			if(PM1ThisAngle<=PM1LastAngle)
 			{
 				if((PM1LastAngle-PM1ThisAngle)>3000)//编码器上溢
 					PM1RealAngle = PM1RealAngle + (PM1ThisAngle+8192-PM1LastAngle) * 360 / 8192.0 / PM1Reduction;
@@ -365,7 +365,7 @@ void ControlPM2()
 			PM2ThisAngle = pData->angle;
 			if(isPM2FirstEnter) {PM2LastAngle = PM2ThisAngle;isPM2FirstEnter = 0;}
 			
-					if(PM2ThisAngle<=PM2LastAngle)
+			if(PM2ThisAngle<=PM2LastAngle)
 			{
 				if((PM2LastAngle-PM2ThisAngle)>3000)//编码器上溢
 					PM2RealAngle = PM2RealAngle + (PM2ThisAngle+8192-PM2LastAngle) * 360 / 8192.0 / PM2Reduction;
