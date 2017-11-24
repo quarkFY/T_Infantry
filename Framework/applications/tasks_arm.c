@@ -98,14 +98,21 @@ void ControlAM1L()
 			
 			if(isAM1LFirstEnter==1) {AM1LLastAngle = AM1LThisAngle;isAM1LFirstEnter = 0;return;}	//初始化时，记录下当前编码器的值
 			
-			if((AM1LThisAngle+8192-AM1LLastAngle)>0 && (AM1LThisAngle+8192-AM1LLastAngle)<3000)	//编码器上溢
-				AM1LRealAngle = AM1LRealAngle + (AM1LThisAngle+8192-AM1LLastAngle) * 360 / 8192.0 / AM1Reduction;
-			else if((AM1LLastAngle+8192-AM1LThisAngle)>0 && (AM1LLastAngle+8192-AM1LThisAngle)<3000) //编码器下溢
-				AM1LRealAngle = AM1LRealAngle - (AM1LLastAngle+8192-AM1LThisAngle) *360 / 8192.0 / AM1Reduction;
-			else if(AM1LThisAngle >= AM1LLastAngle)		//正转
-				AM1LRealAngle = AM1LRealAngle + (AM1LThisAngle - AM1LLastAngle) * 360 / 8192.0 / AM1Reduction;
-			else	//反转
-				AM1LRealAngle = AM1LRealAngle - (AM1LLastAngle - AM1LThisAngle) * 360 / 8192.0 / AM1Reduction;
+			if(AM1LThisAngle<=AM1LLastAngle)
+			{
+				if((AM1LLastAngle-AM1LThisAngle)>3000)//编码器上溢
+					AM1LRealAngle = AM1LRealAngle + (AM1LThisAngle+8192-AM1LLastAngle) * 360 / 8192.0 / AM1Reduction;
+				else//反转
+					AM1LRealAngle = AM1LRealAngle - (AM1LLastAngle - AM1LThisAngle) * 360 / 8192.0 / AM1Reduction;
+			}
+			else
+			{
+				if((AM1LThisAngle-AM1LLastAngle)>3000)//编码器下溢
+					AM1LRealAngle = AM1LRealAngle - (AM1LLastAngle+8192-AM1LThisAngle) *360 / 8192.0 / AM1Reduction;
+				else//正转
+					AM1LRealAngle = AM1LRealAngle + (AM1LThisAngle - AM1LLastAngle) * 360 / 8192.0 / AM1Reduction;
+			}
+			
 				
 			AM1LPositionPID.target = AM1LAngleTarget;
 			AM1LPositionPID.feedback = AM1LRealAngle;
@@ -140,14 +147,21 @@ void ControlAM1R()
 			
 			if(isAM1RFirstEnter==1) {AM1RLastAngle = AM1RThisAngle;isAM1RFirstEnter = 0;return;}	//初始化时，记录下当前编码器的值
 			
-			if((AM1RThisAngle+8192-AM1RLastAngle)>0 && (AM1RThisAngle+8192-AM1RLastAngle)<3000)	//编码器上溢
-				AM1RRealAngle = AM1RRealAngle + (AM1RThisAngle+8192-AM1RLastAngle) * 360 / 8192.0 / AM1Reduction;
-			else if((AM1RLastAngle+8192-AM1RThisAngle)>0 && (AM1RLastAngle+8192-AM1RThisAngle)<3000) //编码器下溢
-				AM1RRealAngle = AM1RRealAngle - (AM1RLastAngle+8192-AM1RThisAngle) *360 / 8192.0 / AM1Reduction;
-			else if(AM1RThisAngle >= AM1RLastAngle)		//正转
-				AM1RRealAngle = AM1RRealAngle + (AM1RThisAngle - AM1RLastAngle) * 360 / 8192.0 / AM1Reduction;
-			else	//反转
-				AM1RRealAngle = AM1RRealAngle - (AM1RLastAngle - AM1RThisAngle) * 360 / 8192.0 / AM1Reduction;
+			if(AM1RThisAngle<=AM1RLastAngle)
+			{
+				if((AM1RLastAngle-AM1RThisAngle)>3000)//编码器上溢
+					AM1RRealAngle = AM1RRealAngle + (AM1RThisAngle+8192-AM1RLastAngle) * 360 / 8192.0 / AM1Reduction;
+				else//反转
+					AM1RRealAngle = AM1RRealAngle - (AM1RLastAngle - AM1RThisAngle) * 360 / 8192.0 / AM1Reduction;
+			}
+			else
+			{
+				if((AM1RThisAngle-AM1RLastAngle)>3000)//编码器下溢
+					AM1RRealAngle = AM1RRealAngle - (AM1RLastAngle+8192-AM1RThisAngle) *360 / 8192.0 / AM1Reduction;
+				else//正转
+					AM1RRealAngle = AM1RRealAngle + (AM1RThisAngle - AM1RLastAngle) * 360 / 8192.0 / AM1Reduction;
+			}
+			
 			
 			AM1RPositionPID.target = AM1RAngleTarget;
 			AM1RPositionPID.feedback = AM1RRealAngle;
@@ -182,14 +196,21 @@ void ControlAM2L()
 			
 			if(isAM2LFirstEnter==1) {AM2LLastAngle = AM2LThisAngle;isAM2LFirstEnter = 0;return;}	//初始化时，记录下当前编码器的值
 			
-			if((AM2LThisAngle+8192-AM2LLastAngle)>0 && (AM2LThisAngle+8192-AM2LLastAngle)<3000)	//编码器上溢
-				AM2LRealAngle = AM2LRealAngle + (AM2LThisAngle+8192-AM2LLastAngle) * 360 / 8192.0 / AM23Reduction;
-			else if((AM2LLastAngle+8192-AM2LThisAngle)>0 && (AM2LLastAngle+8192-AM2LThisAngle)<3000) //编码器下溢
-				AM2LRealAngle = AM2LRealAngle - (AM2LLastAngle+8192-AM2LThisAngle) *360 / 8192.0 / AM23Reduction;
-			else if(AM2LThisAngle >= AM2LLastAngle)		//正转
-				AM2LRealAngle = AM2LRealAngle + (AM2LThisAngle - AM2LLastAngle) * 360 / 8192.0 / AM23Reduction;
-			else	//反转
-				AM2LRealAngle = AM2LRealAngle - (AM2LLastAngle - AM2LThisAngle) * 360 / 8192.0 / AM23Reduction;
+			if(AM2LThisAngle<=AM2LLastAngle)
+			{
+				if((AM2LLastAngle-AM2LThisAngle)>3000)//编码器上溢
+					AM2LRealAngle = AM2LRealAngle + (AM2LThisAngle+8192-AM2LLastAngle) * 360 / 8192.0 / AM23Reduction;
+				else//反转
+					AM2LRealAngle = AM2LRealAngle - (AM2LLastAngle - AM2LThisAngle) * 360 / 8192.0 / AM23Reduction;
+			}
+			else
+			{
+				if((AM2LThisAngle-AM2LLastAngle)>3000)//编码器下溢
+					AM2LRealAngle = AM2LRealAngle - (AM2LLastAngle+8192-AM2LThisAngle) *360 / 8192.0 / AM23Reduction;
+				else//正转
+					AM2LRealAngle = AM2LRealAngle + (AM2LThisAngle - AM2LLastAngle) * 360 / 8192.0 / AM23Reduction;
+			}
+			
 			
 			AM2LPositionPID.target = AM2LAngleTarget;
 			AM2LPositionPID.feedback = AM2LRealAngle;
@@ -224,14 +245,21 @@ void ControlAM2R()
 			
 			if(isAM2RFirstEnter==1) {AM2RLastAngle = AM2RThisAngle;isAM2RFirstEnter = 0;return;}	//初始化时，记录下当前编码器的值
 			
-			if((AM2RThisAngle+8192-AM2RLastAngle)>0 && (AM2RThisAngle+8192-AM2RLastAngle)<3000)	//编码器上溢
-				AM2RRealAngle = AM2RRealAngle + (AM2RThisAngle+8192-AM2RLastAngle) * 360 / 8192.0 / AM23Reduction;
-			else if((AM2RLastAngle+8192-AM2RThisAngle)>0 && (AM2RLastAngle+8192-AM2RThisAngle)<3000) //编码器下溢
-				AM2RRealAngle = AM2RRealAngle - (AM2RLastAngle+8192-AM2RThisAngle) *360 / 8192.0 / AM23Reduction;
-			else if(AM2RThisAngle >= AM2RLastAngle)		//正转
-				AM2RRealAngle = AM2RRealAngle + (AM2RThisAngle - AM2RLastAngle) * 360 / 8192.0 / AM23Reduction;
-			else	//反转
-				AM2RRealAngle = AM2RRealAngle - (AM2RLastAngle - AM2RThisAngle) * 360 / 8192.0 / AM23Reduction;
+			if(AM2RThisAngle<=AM2RLastAngle)
+			{
+				if((AM2RLastAngle-AM2RThisAngle)>3000)//编码器上溢
+					AM2RRealAngle = AM2RRealAngle + (AM2RThisAngle+8192-AM2RLastAngle) * 360 / 8192.0 / AM23Reduction;
+				else//反转
+					AM2RRealAngle = AM2RRealAngle - (AM2RLastAngle - AM2RThisAngle) * 360 / 8192.0 / AM23Reduction;
+			}
+			else
+			{
+				if((AM2RThisAngle-AM2RLastAngle)>3000)//编码器下溢
+					AM2RRealAngle = AM2RRealAngle - (AM2RLastAngle+8192-AM2RThisAngle) *360 / 8192.0 / AM23Reduction;
+				else//正转
+					AM2RRealAngle = AM2RRealAngle + (AM2RThisAngle - AM2RLastAngle) * 360 / 8192.0 / AM23Reduction;
+			}
+			
 			
 			AM2RPositionPID.target = AM2RAngleTarget;
 			AM2RPositionPID.feedback = AM2RRealAngle;
@@ -266,14 +294,21 @@ void ControlAM3L()
 			
 			if(isAM3LFirstEnter==1) {AM3LLastAngle = AM3LThisAngle;isAM3LFirstEnter = 0;return;}	//初始化时，记录下当前编码器的值
 			
-			if((AM3LThisAngle+8192-AM3LLastAngle)>0 && (AM3LThisAngle+8192-AM3LLastAngle)<3000)	//编码器上溢
-				AM3LRealAngle = AM3LRealAngle + (AM3LThisAngle+8192-AM3LLastAngle) * 360 / 8192.0 / AM23Reduction;
-			else if((AM3LLastAngle+8192-AM3LThisAngle)>0 && (AM3LLastAngle+8192-AM3LThisAngle)<3000) //编码器下溢
-				AM3LRealAngle = AM3LRealAngle - (AM3LLastAngle+8192-AM3LThisAngle) *360 / 8192.0 / AM23Reduction;
-			else if(AM3LThisAngle >= AM3LLastAngle)		//正转
-				AM3LRealAngle = AM3LRealAngle + (AM3LThisAngle - AM3LLastAngle) * 360 / 8192.0 / AM23Reduction;
-			else	//反转
-				AM3LRealAngle = AM3LRealAngle - (AM3LLastAngle - AM3LThisAngle) * 360 / 8192.0 / AM23Reduction;
+			if(AM3LThisAngle<=AM3LLastAngle)
+			{
+				if((AM3LLastAngle-AM3LThisAngle)>3000)//编码器上溢
+					AM3LRealAngle = AM3LRealAngle + (AM3LThisAngle+8192-AM3LLastAngle) * 360 / 8192.0 / AM23Reduction;
+				else//反转
+					AM3LRealAngle = AM3LRealAngle - (AM3LLastAngle - AM3LThisAngle) * 360 / 8192.0 / AM23Reduction;
+			}
+			else
+			{
+				if((AM3LThisAngle-AM3LLastAngle)>3000)//编码器下溢
+					AM3LRealAngle = AM3LRealAngle - (AM3LLastAngle+8192-AM3LThisAngle) *360 / 8192.0 / AM23Reduction;
+				else//正转
+					AM3LRealAngle = AM3LRealAngle + (AM3LThisAngle - AM3LLastAngle) * 360 / 8192.0 / AM23Reduction;
+			}
+			
 			
 			AM3LPositionPID.target = AM3LAngleTarget;
 			AM3LPositionPID.feedback = AM3LRealAngle;
