@@ -84,6 +84,8 @@ int mouse_click_left = 0;
 extern uint8_t JUDGE_Received;
 extern uint8_t JUDGE_State;
 
+extern float PM1AngleTarget;
+
 static uint32_t s_time_tick_2ms = 0;
 
 
@@ -151,6 +153,10 @@ void Timer_2ms_lTask(void const * argument)
 			*****查看任务栈空间剩余示例*******
 			//		StackResidue = uxTaskGetStackHighWaterMark( GMControlTaskHandle );
 			//		fw_printfln("GM%ld",StackResidue);*/
+			
+			fw_printfln("PM1AngelTarget is %f", PM1AngleTarget);
+			PM1AngleTarget += 100.0;
+			
 			if(JUDGE_State == OFFLINE)
 			{
 				fw_printfln("Judge not received");
