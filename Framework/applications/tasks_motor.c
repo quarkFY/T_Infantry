@@ -92,6 +92,8 @@ void Can1ControlTask(void const * argument)
 	while(1)
 	{
 		//等待CAN接收回调函数信号量
+		//fw_printfln("Can1ControlTask is working");
+		
 		osSemaphoreWait(Can1RefreshSemaphoreHandle, osWaitForever);
 		
 		ControlYaw();
@@ -400,7 +402,7 @@ void ControlPM2()
 void shootOneGolf()
 {
 	PM1AngleTarget = PM1AngleTarget + 360;
-	PM2AngleTarget = PM2AngleTarget + 360;
+	//PM2AngleTarget = PM2AngleTarget + 360;
 }
 
 

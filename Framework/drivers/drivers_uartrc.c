@@ -246,7 +246,7 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 				else
 				{
 					shootOneGolf();
-					remoteShootDelay = 500;
+					remoteShootDelay = 50;
 				}
 			}
 			else
