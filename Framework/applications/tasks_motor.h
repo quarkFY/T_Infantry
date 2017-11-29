@@ -15,7 +15,7 @@
 #define TASKS_MOTOR_H
 
 #define PM1Reduction 19.0
-#define PM2Reduction 19.0
+#define PM2Reduction 36.0
 
 void Can1ControlTask(void const * argument);
 void ControlYaw(void);

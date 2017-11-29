@@ -770,6 +770,16 @@
               <FileType>5</FileType>
               <FilePath>..\Framework\utilities\utilities_tim.h</FilePath>
             </File>
+            <File>
+              <FileName>visualscope.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Framework\utilities\visualscope.c</FilePath>
+            </File>
+            <File>
+              <FileName>visualscope.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Framework\utilities\visualscope.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1059,6 +1069,16 @@
               <FileName>tasks_arm.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Framework\applications\tasks_arm.h</FilePath>
+            </File>
+            <File>
+              <FileName>tasks_visualScope.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Framework\applications\tasks_visualScope.c</FilePath>
+            </File>
+            <File>
+              <FileName>tasks_visualScope.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Framework\applications\tasks_visualScope.h</FilePath>
             </File>
           </Files>
         </Group>

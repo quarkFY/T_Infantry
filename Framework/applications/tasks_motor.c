@@ -54,8 +54,8 @@ PID_Regulator_t CM3SpeedPID = CHASSIS_MOTOR_SPEED_PID_DEFAULT;
 PID_Regulator_t CM4SpeedPID = CHASSIS_MOTOR_SPEED_PID_DEFAULT;
 
 //推弹电机PID
-fw_PID_Regulator_t PM1PositionPID = fw_PID_INIT(1.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
-fw_PID_Regulator_t PM2PositionPID = fw_PID_INIT(1.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
+fw_PID_Regulator_t PM1PositionPID = fw_PID_INIT(7.2, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 16384.0);
+fw_PID_Regulator_t PM2PositionPID = fw_PID_INIT(100.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
 
 extern uint8_t g_isGYRO_Rested;//没用到
 
@@ -402,7 +402,7 @@ void ControlPM2()
 void shootOneGolf()
 {
 	PM1AngleTarget = PM1AngleTarget + 360;
-	//PM2AngleTarget = PM2AngleTarget + 360;
+	PM2AngleTarget = PM2AngleTarget + 360;
 }
 
 
