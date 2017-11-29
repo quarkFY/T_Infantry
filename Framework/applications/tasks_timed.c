@@ -43,6 +43,8 @@
 #include "tasks_motor.h"//zy
 #include "tasks_arm.h"
 #include <stdbool.h>
+#include "visualscope.h"
+
 extern PID_Regulator_t CMRotatePID ; 
 extern PID_Regulator_t CM1SpeedPID;
 extern PID_Regulator_t CM2SpeedPID;
@@ -85,6 +87,10 @@ extern uint8_t JUDGE_Received;
 extern uint8_t JUDGE_State;
 
 extern float PM1AngleTarget;
+extern float PM2AngleTarget;
+extern float PM1RealAngle;
+extern float PM2RealAngle;
+
 
 static uint32_t s_time_tick_2ms = 0;
 
@@ -96,6 +102,9 @@ uint8_t zyRuneMode=0;
 uint16_t checkRecTime=300;
 Location_Number_s pRunePosition[3];
 uint16_t checkKeyTime=500;
+
+uint8_t visualscopeCount = 0;
+//uint8_t delay30ms_flag = 0;
 
 
 void Timer_2ms_lTask(void const * argument)
@@ -133,7 +142,23 @@ void Timer_2ms_lTask(void const * argument)
 			checkKeyTime++;
 		}
 
-		if(s_countWhile >= 1000)//150 1000
+		if(visualscopeCount>=15)
+		{
+			visualscopeCount = 0;
+		}
+		else
+		{
+			visualscopeCount++ ;
+		}
+		
+//		if(visualscopeCount==0)
+//			//printf("%f\r\n", PM1RealAngle);
+//		else if(visualscopeCount==14)
+			//VisualScope(&huart3, (int)PM1RealAngle, 0, 0, 0); 
+		
+		
+		
+		if(s_countWhile >= 2000)//150 1000
 		{//定时1s,发送调试信息
 			s_countWhile = 0;
 			/*
@@ -154,8 +179,11 @@ void Timer_2ms_lTask(void const * argument)
 			//		StackResidue = uxTaskGetStackHighWaterMark( GMControlTaskHandle );
 			//		fw_printfln("GM%ld",StackResidue);*/
 			
-			fw_printfln("PM1AngelTarget is %f", PM1AngleTarget);
-			PM1AngleTarget += 100.0;
+//			fw_printfln("PM1AngelTarget is %f", PM1AngleTarget);
+//			fw_printfln("PM2AngelTarget is %f", PM2AngleTarget);
+			PM1AngleTarget += 360.0;
+			//PM1AngleTarget += 360.0;
+//			PM2AngleTarget += 360.0;
 			
 			if(JUDGE_State == OFFLINE)
 			{

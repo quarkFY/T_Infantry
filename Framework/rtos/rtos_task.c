@@ -59,6 +59,8 @@ osThreadId AMCanTransmitTaskHandle;
 
 osThreadId sonarTaskHandle;
 
+osThreadId visualScopeTaskHandle;
+
 //extern osThreadId testFlashTaskHandle;
 //#include "drivers_flash.h"
 //osThreadId testFlashTaskHandle;
@@ -105,5 +107,9 @@ void rtos_AddThreads()
 //2ms定时任务，状态机切换，调试信息输出等
 	osThreadDef(Timer_Task, Timer_2ms_lTask, osPriorityAboveNormal, 0, 512);//zy512
   TimerTaskHandle = osThreadCreate(osThread(Timer_Task), NULL);
+
+//软件示波器任务
+//	osThreadDef(visualScope_Task, visualScopeTask, osPriorityAboveNormal, 0, 128);
+//  visualScopeTaskHandle = osThreadCreate(osThread(visualScope_Task), NULL);
 
 }
