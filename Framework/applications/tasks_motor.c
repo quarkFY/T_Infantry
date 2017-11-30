@@ -56,6 +56,7 @@ PID_Regulator_t CM4SpeedPID = CHASSIS_MOTOR_SPEED_PID_DEFAULT;
 //推弹电机PID
 fw_PID_Regulator_t PM1PositionPID = fw_PID_INIT(7.2, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 16384.0);
 fw_PID_Regulator_t PM2PositionPID = fw_PID_INIT(100.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
+fw_PID_Regulator_t PM1SpeedPID = fw_PID_INIT(1, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 16384.0);
 
 extern uint8_t g_isGYRO_Rested;//没用到
 
@@ -339,9 +340,13 @@ void ControlPM1()
 			PM1PositionPID.target = PM1AngleTarget;
 			PM1PositionPID.Calc(&PM1PositionPID);
 			
+			PM1SpeedPID.target = PM1PositionPID.output;
+			PM1SpeedPID.feedback = pData->RotateSpeed;
+			PM1SpeedPID.Calc(&PM1SpeedPID);
+
 			PM1LastAngle = PM1ThisAngle;
 	
-			setMotor(PM1, PM1PositionPID.output);
+			setMotor(PM1, PM1SpeedPID.output);
 			
 			s_PM1Count = 0;
 		}
