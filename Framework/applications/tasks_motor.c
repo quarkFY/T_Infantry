@@ -54,9 +54,9 @@ PID_Regulator_t CM3SpeedPID = CHASSIS_MOTOR_SPEED_PID_DEFAULT;
 PID_Regulator_t CM4SpeedPID = CHASSIS_MOTOR_SPEED_PID_DEFAULT;
 
 //推弹电机PID
-fw_PID_Regulator_t PM1PositionPID = fw_PID_INIT(7.2, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 16384.0);
+fw_PID_Regulator_t PM1PositionPID = fw_PID_INIT(80, 0.0, 200.0, 10000.0, 10000.0, 10000.0, 16384.0);
 fw_PID_Regulator_t PM2PositionPID = fw_PID_INIT(100.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
-fw_PID_Regulator_t PM1SpeedPID = fw_PID_INIT(1, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 16384.0);
+fw_PID_Regulator_t PM1SpeedPID = fw_PID_INIT(2, 0.0, 40.0, 10000.0, 10000.0, 10000.0, 4000.0);
 
 extern uint8_t g_isGYRO_Rested;//没用到
 
