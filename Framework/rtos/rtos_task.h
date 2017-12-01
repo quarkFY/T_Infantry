@@ -33,8 +33,5 @@ extern osThreadId AMCanTransmitTaskHandle;
 
 extern osThreadId sonarTaskHandle;
 
-extern osThreadId visualScopeTaskHandle;
-
-//extern osThreadId testFlashTaskHandle;
 
 #endif

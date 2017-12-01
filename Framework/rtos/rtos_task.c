@@ -108,8 +108,6 @@ void rtos_AddThreads()
 	osThreadDef(Timer_Task, Timer_2ms_lTask, osPriorityAboveNormal, 0, 512);//zy512
   TimerTaskHandle = osThreadCreate(osThread(Timer_Task), NULL);
 
-//软件示波器任务
-//	osThreadDef(visualScope_Task, visualScopeTask, osPriorityAboveNormal, 0, 128);
-//  visualScopeTaskHandle = osThreadCreate(osThread(visualScope_Task), NULL);
+
 
 }
