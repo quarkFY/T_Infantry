@@ -77,6 +77,7 @@ extern float pitchRealAngle;
 extern float gYroZs;
 extern float yawAngleTarget;
 extern float yawRealAngle;
+
 extern float PM1SpeedPID;
 
 extern uint8_t JUDGE_STATE;
@@ -155,7 +156,7 @@ void Timer_2ms_lTask(void const * argument)
 //		if(visualscopeCount==0)
 //			//printf("%f\r\n", PM1RealAngle);
 //		else if(visualscopeCount==14)
-			VisualScope(&huart3, (int)PM1SpeedPID, 0, 0, 0); 
+			VisualScope(&huart3, (int)PM1RealAngle, 0, 0, 0); 
 		
 		
 		
