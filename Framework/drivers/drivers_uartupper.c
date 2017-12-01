@@ -49,7 +49,10 @@ void manifoldUartRxCpltCallback()
 	}
 }
 
-
+void pidTuneRxCpltCallback()
+{
+	
+}
 
 
 
