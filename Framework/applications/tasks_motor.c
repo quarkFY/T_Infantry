@@ -57,6 +57,7 @@ PID_Regulator_t CM4SpeedPID = CHASSIS_MOTOR_SPEED_PID_DEFAULT;
 fw_PID_Regulator_t PM1PositionPID = fw_PID_INIT(80, 0.0, 200.0, 10000.0, 10000.0, 10000.0, 16384.0);
 fw_PID_Regulator_t PM2PositionPID = fw_PID_INIT(100.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
 fw_PID_Regulator_t PM1SpeedPID = fw_PID_INIT(2, 0.0, 40.0, 10000.0, 10000.0, 10000.0, 4000.0);
+fw_PID_Regulator_t PM2SpeedPID = fw_PID_INIT(2, 0.0, 40.0, 10000.0, 10000.0, 10000.0, 4000.0);
 
 extern uint8_t g_isGYRO_Rested;//没用到
 
@@ -391,6 +392,10 @@ void ControlPM2()
 			PM2PositionPID.target = PM2AngleTarget;
 			PM2PositionPID.Calc(&PM2PositionPID);
 			
+			PM2SpeedPID.target = PM2PositionPID.output;
+			PM2SpeedPID.feedback = pData->RotateSpeed;
+			PM2SpeedPID.Calc(&PM1SpeedPID);
+
 			PM2LastAngle = PM2ThisAngle;
 			
 			setMotor(PM2, PM2PositionPID.output);
