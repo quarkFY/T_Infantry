@@ -39,6 +39,7 @@
 #include "utilities_minmax.h"
 #include "drivers_ramp.h"
 #include "peripheral_laser.h"
+#include "peripheral_sov.h"
 #include "drivers_uartrc_low.h"
 #include "tasks_motor.h"//zy
 #include "tasks_arm.h"
@@ -183,7 +184,7 @@ void Timer_2ms_lTask(void const * argument)
 			
 //			fw_printfln("PM1AngelTarget is %f", PM1AngleTarget);
 //			fw_printfln("PM2AngelTarget is %f", PM2AngleTarget);
-			PM1AngleTarget += 360.0;
+			PM2AngleTarget -= 10000;
 			//PM1AngleTarget += 360.0;
 //			PM2AngleTarget += 360.0;
 			
