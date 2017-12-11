@@ -33,7 +33,6 @@
 #include "drivers_uartupper_user.h"
 #include "tasks_arm.h"
 #include "peripheral_laser.h"
-#include "peripheral_sov.h"
 
 
 #define VAL_LIMIT(val, min, max)\

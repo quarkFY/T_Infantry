@@ -16,7 +16,6 @@
 #include "drivers_uartrc_low.h"
 #include "drivers_led_user.h"
 #include "peripheral_laser.h"
-#include "peripheral_sov.h"
 #include "usart.h"
 #include "FreeRTOS.h"
 #include "semphr.h"
