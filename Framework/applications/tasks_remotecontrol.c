@@ -75,9 +75,9 @@ void RControlTask(void const * argument){
 	while(1){
 		if(first_frame == 0)
 		{
-			MX_IWDG_Init();
+			//MX_IWDG_Init();
 		}
-		HAL_IWDG_Refresh(&hiwdg);
+		//HAL_IWDG_Refresh(&hiwdg);
 		/*等待串口接收中断回调函数释放信号量*/
 		xSemaphoreTake(xSemaphore_rcuart, osWaitForever);
 		//fw_printfln("RC is running");
@@ -209,7 +209,7 @@ void RemoteDataProcess(uint8_t *pData)
 		}break;
 	}
 }
-
+int16_t rotate_forward = 0;
 void RemoteControlProcess(Remote *rc)
 {
 	if(GetWorkState()!=PREPARE_STATE)
@@ -219,7 +219,8 @@ void RemoteControlProcess(Remote *rc)
 		ChassisSpeedRef.left_right_ref   = (rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_CHASSIS_SPEED_REF_FACT; 
 		
  		pitchAngleTarget += (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_PITCH_ANGLE_INC_FACT;
-		yawAngleTarget   -= (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT; 
+		rotate_forward = (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT; 
+		yawAngleTarget   -= rotate_forward;
 	}
 	RemoteShootControl(&g_switch1, rc->s1);
 }

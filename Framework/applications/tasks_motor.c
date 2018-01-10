@@ -114,7 +114,7 @@ void CMGMControlTask(void const * argument)
 		ControlPitch();
 
 	 
-//		ChassisSpeedRef.rotate_ref = 0;//取消底盘跟随
+		//ChassisSpeedRef.rotate_ref = rotate_forward * 90;//取消底盘跟随
 		ControlCMFL();
 		ControlCMFR();
 		ControlCMBL();
@@ -240,7 +240,7 @@ void ControlRotate(void)
 			 CMRotatePID.ref = 0;
 			 CMRotatePID.fdb = gap_angle;
 			 CMRotatePID.Calc(&CMRotatePID);   
-			 ChassisSpeedRef.rotate_ref = CMRotatePID.output;
+			 ChassisSpeedRef.rotate_ref = CMRotatePID.output * 13 + rotate_forward * 90 + ChassisSpeedRef.forward_back_ref * 0.01 + ChassisSpeedRef.left_right_ref * 0.01;
 		}
 	}
 }
@@ -256,7 +256,7 @@ void ControlCMFL(void)
 			
 			CM2SpeedPID.ref = - ChassisSpeedRef.forward_back_ref*0.075 
 											 + ChassisSpeedRef.left_right_ref*0.075 
-											 + ChassisSpeedRef.rotate_ref;
+											 + ChassisSpeedRef.rotate_ref*0.075;
 			CM2SpeedPID.ref = 160 * CM2SpeedPID.ref;
 			
 			if(GetWorkState() == RUNE_STATE) 
@@ -292,7 +292,7 @@ void ControlCMFR(void)
 			
 			CM1SpeedPID.ref =  ChassisSpeedRef.forward_back_ref*0.075 
 											 + ChassisSpeedRef.left_right_ref*0.075 
-											 + ChassisSpeedRef.rotate_ref;	
+											 + ChassisSpeedRef.rotate_ref*0.075;	
 			CM1SpeedPID.ref = 160 * CM1SpeedPID.ref;
 			CM1SpeedPID.fdb = pData->RotateSpeed;
 			#ifdef INFANTRY_1
@@ -328,7 +328,7 @@ void ControlCMBL(void)
 			
 			CM3SpeedPID.ref =  ChassisSpeedRef.forward_back_ref*0.075 
 											 - ChassisSpeedRef.left_right_ref*0.075 
-											 + ChassisSpeedRef.rotate_ref;
+											 + ChassisSpeedRef.rotate_ref*0.075;
 			CM3SpeedPID.ref = 160 * CM3SpeedPID.ref;
 			CM3SpeedPID.fdb = pData->RotateSpeed;
 			#ifdef INFANTRY_1
@@ -364,7 +364,7 @@ void ControlCMBR()
 			
 			CM4SpeedPID.ref = - ChassisSpeedRef.forward_back_ref*0.075 
 											 - ChassisSpeedRef.left_right_ref*0.075 
-											 + ChassisSpeedRef.rotate_ref;
+											 + ChassisSpeedRef.rotate_ref*0.075;
 			CM4SpeedPID.ref = 160 * CM4SpeedPID.ref;
 			CM4SpeedPID.fdb = pData->RotateSpeed;
 			#ifdef INFANTRY_1
