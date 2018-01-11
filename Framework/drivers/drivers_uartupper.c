@@ -1,9 +1,17 @@
 #include "drivers_uartupper_low.h"
 #include "drivers_uartupper_user.h"
-#include "utilities_debug.h"
+#include "FreeRTOS.h"
+#include "semphr.h"
+#include "cmsis_os.h"
+#include "stdint.h"
 #include "peripheral_define.h"
-#include "tasks_upper.h"
+#include "utilities_debug.h"
 #include "usart.h"
+#include "rtos_semaphore.h"
+#include "tasks_platemotor.h"
+
+#include "tasks_timed.h"
+#include "tasks_motor.h"//zy
 
 NaiveIOPoolDefine(ctrlUartIOPool, {0});
 uint8_t data;
@@ -13,6 +21,9 @@ void zykReceiveData(uint8_t data);
 void ctrlUartRxCpltCallback(){
 	//zyk
 
+	static portBASE_TYPE xHigherPriorityTaskWoken;
+  xHigherPriorityTaskWoken = pdFALSE;
+	
 	zykReceiveData(data);
 	HAL_UART_Receive_IT(&CTRL_UART, &data, 1);
 	
@@ -27,13 +38,27 @@ void ctrlUartRxCpltCallback(){
 //		zykProcessData();
 //	}
 //	HAL_UART_Receive_DMA(&CTRL_UART, buf, REC_LEN);
+	HAL_UART_AbortReceive((&MANIFOLD_UART));
+	if(HAL_UART_Receive_DMA(&MANIFOLD_UART, &data, 1) != HAL_OK)
+	{
+		Error_Handler();
+		printf( "ManifoldUart error" );
+	} 
+	if( xHigherPriorityTaskWoken == pdTRUE )
+	{
+	 portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
+	}
 }
 
 void ctrlUartInit(){
 	//zyk 一次接收1字节
-	if(HAL_UART_Receive_IT(&CTRL_UART, &data, 1) != HAL_OK){
-			Error_Handler();
-	}
+	//if(HAL_UART_Receive_IT(&CTRL_UART, &data, 1) != HAL_OK){
+	//		Error_Handler();
+	//}
+	if(HAL_UART_Receive_DMA(&MANIFOLD_UART, &data, 1) != HAL_OK){
+		Error_Handler();
+		printf( "InitManifoldUart error" );
+	} 
 //	
 //		if(HAL_UART_Receive_DMA(&CTRL_UART, buf, REC_LEN) != HAL_OK){
 //			Error_Handler();

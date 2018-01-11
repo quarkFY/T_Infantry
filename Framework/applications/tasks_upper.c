@@ -60,7 +60,7 @@ void zykProcessData()
 		if(RX_DONE)
 		{
 		char data[10][15];
-		fw_printf(buf);
+		//fw_printf(buf);
 		/////////// GM CONTROL ////////////////
 		if(strcmp(buf,"U")==0)
 		{
