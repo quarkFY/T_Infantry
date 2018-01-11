@@ -82,7 +82,7 @@ float pitchRealAngle = 0.0;
 float pitchAngleTarget = 0.0;
 
 //大神符、自瞄
-extern Location_Number_s Location_Number[];
+//extern Location_Number_s Location_Number[];
 extern uint8_t CReceive;
 extern uint8_t rune_flag;
 //扭腰

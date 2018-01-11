@@ -47,6 +47,7 @@ osThreadId printIMUTaskHandle;
 //UART
 osThreadId RControlTaskHandle;
 osThreadId getCtrlUartTaskHandle;
+//osThreadId WaveTaskHandle;
 //Motor
 osThreadId GMControlTaskHandle;
 osThreadId TimerTaskHandle;
@@ -88,10 +89,16 @@ void rtos_AddThreads()
 //遥控器控制任务	
 	osThreadDef(RControlTask, RControlTask, osPriorityHigh , 0, 256);//zy0512
   RControlTaskHandle = osThreadCreate(osThread(RControlTask), NULL);
+	
+	osThreadDef(getCtrlUartTask, getCtrlUartTask, osPriorityAboveNormal, 0, 256);
+  getCtrlUartTaskHandle = osThreadCreate(osThread(getCtrlUartTask), NULL);
+	
+	//osThreadDef(Wave_Task, wave_task, osPriorityNormal, 0, 128);
+  //WaveTaskHandle = osThreadCreate(osThread(Wave_Task), NULL);
 
 //妙算通信任务：大神符，自动瞄准
-	osThreadDef(ManifoldUartTask, ManifoldUartTask, osPriorityAboveNormal, 0, 128);
-  getCtrlUartTaskHandle = osThreadCreate(osThread(ManifoldUartTask), NULL);
+	//osThreadDef(ManifoldUartTask, ManifoldUartTask, osPriorityAboveNormal, 0, 128);
+  //getCtrlUartTaskHandle = osThreadCreate(osThread(ManifoldUartTask), NULL);
 
 //CM(ChasisMotor)底盘电机GM(Gimbla)云台电机控制任务
 	osThreadDef(GMC_Task, CMGMControlTask, osPriorityAboveNormal, 0, 800);

@@ -89,11 +89,11 @@ static uint32_t s_time_tick_2ms = 0;
 
 
 extern RampGen_t frictionRamp ;
-extern uint8_t bShoot;
+//extern uint8_t bShoot;
 uint16_t zyShootTimeCount=0;
 uint8_t zyRuneMode=0;
 uint16_t checkRecTime=300;
-Location_Number_s pRunePosition[3];
+//Location_Number_s pRunePosition[3];
 uint16_t checkKeyTime=500;
 #ifdef INFANTRY_5
 //手动标定0点
@@ -137,22 +137,22 @@ void Timer_2ms_lTask(void const * argument)
 		
 		if(g_workState==RUNE_STATE)
 		{
-			if(bShoot==1)
-			{
-				if(zyShootTimeCount<1)
-				{
-					zyShootTimeCount++;
-				}
-				else if(zyShootTimeCount==1)
-				{
-					bShoot=0;
-					ShootOneBullet();//拨盘啵一个
-					zyShootTimeCount=0;
-					
-					
-					checkRecTime=0;
-				}
-			}
+//			if(bShoot==1)
+//			{
+//				if(zyShootTimeCount<1)
+//				{
+//					zyShootTimeCount++;
+//				}
+//				else if(zyShootTimeCount==1)
+//				{
+//					bShoot=0;
+//					ShootOneBullet();//拨盘啵一个
+//					zyShootTimeCount=0;
+//					
+//					
+//					checkRecTime=0;
+//				}
+//			}
 		}
 		if(checkRecTime<65534)
 		{
@@ -326,8 +326,8 @@ void WorkStateFSM(void)
 				if(checkKeyTime>450)
 				{
 					checkKeyTime=0;
-					pRunePosition[0].pitch_position=pitchAngleTarget;
-					pRunePosition[0].yaw_position=yawAngleTarget;
+//					pRunePosition[0].pitch_position=pitchAngleTarget;
+//					pRunePosition[0].yaw_position=yawAngleTarget;
 					zyRuneMode++;
 				}
 			}
@@ -338,8 +338,8 @@ void WorkStateFSM(void)
 				if(checkKeyTime>450)
 				{
 					checkKeyTime=0;
-					pRunePosition[1].pitch_position=pitchAngleTarget;
-					pRunePosition[1].yaw_position=yawAngleTarget;
+//					pRunePosition[1].pitch_position=pitchAngleTarget;
+//					pRunePosition[1].yaw_position=yawAngleTarget;
 					zyRuneMode++;
 				}
 			}else if(GetInputMode() == KEY_MOUSE_INPUT
@@ -349,9 +349,9 @@ void WorkStateFSM(void)
 				if(checkKeyTime>450)
 				{
 					checkKeyTime=0;
-					pRunePosition[2].pitch_position=pitchAngleTarget;
-					pRunePosition[2].yaw_position=yawAngleTarget;
-					zyLocationInit(pRunePosition);
+//					pRunePosition[2].pitch_position=pitchAngleTarget;
+//					pRunePosition[2].yaw_position=yawAngleTarget;
+//					zyLocationInit(pRunePosition);
 					zyRuneMode=4;
 				}
 			}

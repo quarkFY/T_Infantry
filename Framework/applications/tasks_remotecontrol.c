@@ -386,47 +386,47 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 			case 64://q
 			{
 				uint8_t location = 0;
-				ShootRune(location);
+//				ShootRune(location);
 			}break;
 			case 1://w
 			{
 				uint8_t location = 1;
-				ShootRune(location);
+//				ShootRune(location);
 			}break;
 			case 128://e
 			{
 				uint8_t location = 2;
-				ShootRune(location);
+//				ShootRune(location);
 			}break;
 			case 4://a
 			{
 				uint8_t location = 3;
-				ShootRune(location);
+//				ShootRune(location);
 			}break;
 			case 2://s
 			{
 				uint8_t location = 4;
-				ShootRune(location);
+//				ShootRune(location);
 			}break;
 			case 8://d
 			{
 				uint8_t location = 5;
-				ShootRune(location);
+//				ShootRune(location);
 			}break;
 			case 2048://z
 			{
 				uint8_t location = 6;
-				ShootRune(location);
+//				ShootRune(location);
 			}break;
 			case 4096://x
 			{
 				uint8_t location = 7;
-				ShootRune(location);
+//				ShootRune(location);
 			}break;
 			case 8192://c
 			{
 				uint8_t location = 8;
-				ShootRune(location);
+	//			ShootRune(location);
 			}break;
 			default:
 			{
