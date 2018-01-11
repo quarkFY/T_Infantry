@@ -17,8 +17,8 @@
 
 #include "application_motorcontrol.h"
 
-#define AM1Reduction 19.0
-#define AM23Reduction 19.0
+#define AM1Reduction 98.0
+#define AM23Reduction 36.0
 
 void Can2ControlTask(void const * argument);
 void ControlAM1L(void);
@@ -30,4 +30,5 @@ void ControlAM3L(void);
 void setAMAngle(MotorId id, float angle);
 void getGolf(void);
 void armReset(void);
+void armStretch(void);
 #endif

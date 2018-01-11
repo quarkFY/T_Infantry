@@ -20,6 +20,14 @@
 #include "drivers_canmotor_user.h"
 #include "application_motorcontrol.h"
 #include "utilities_debug.h"
+#include "tasks_remotecontrol.h"
+#include <math.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <usart.h>
 
 //PID_INIT(Kp, Ki, Kd, KpMax, KiMax, KdMax, OutputMax)
 //机械臂电机PID
@@ -29,11 +37,11 @@ fw_PID_Regulator_t AM1RPositionPID = fw_PID_INIT(1.0, 0.0, 0.0, 10000.0, 10000.0
 fw_PID_Regulator_t AM2LPositionPID = fw_PID_INIT(1.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
 fw_PID_Regulator_t AM2RPositionPID = fw_PID_INIT(1.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
 fw_PID_Regulator_t AM3LPositionPID = fw_PID_INIT(1.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
-fw_PID_Regulator_t AM1LSpeedPID = fw_PID_INIT(10.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 4000.0);
-fw_PID_Regulator_t AM1RSpeedPID = fw_PID_INIT(10.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 4000.0);
-fw_PID_Regulator_t AM2LSpeedPID = fw_PID_INIT(10.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 4000.0);
-fw_PID_Regulator_t AM2RSpeedPID = fw_PID_INIT(10.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 4000.0);
-fw_PID_Regulator_t AM3LSpeedPID = fw_PID_INIT(10.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 4000.0);
+fw_PID_Regulator_t AM1LSpeedPID = fw_PID_INIT(1.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 16384.0);
+fw_PID_Regulator_t AM1RSpeedPID = fw_PID_INIT(1.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 16384.0);
+fw_PID_Regulator_t AM2LSpeedPID = fw_PID_INIT(1.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 4000.0);
+fw_PID_Regulator_t AM2RSpeedPID = fw_PID_INIT(1.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 4000.0);
+fw_PID_Regulator_t AM3LSpeedPID = fw_PID_INIT(1.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 4000.0);
 
 ////待标定
 //#define AM1L_zero 0
@@ -41,6 +49,9 @@ fw_PID_Regulator_t AM3LSpeedPID = fw_PID_INIT(10.0, 0.0, 0.0, 10000.0, 10000.0, 
 //#define AM2L_zero 0
 //#define AM2R_zero 0
 //#define AM3L_zero 0
+
+#define LengthOfArm1 500
+#define LengthOfArm2 250
 
 //机械臂电机目标物理角度值
 float AM1LAngleTarget = 0.0;
@@ -56,11 +67,27 @@ float AM2LRealAngle = 0.0;
 float AM2RRealAngle = 0.0;
 float AM3LRealAngle = 0.0;
 
+//水平垂直位置
+double Arm_Horizontal_Position = LengthOfArm1 - LengthOfArm2;
+double Arm_Vertical_Position = 0.0;
+double SquareOfRadius = 250.0*250.0;
+
+//水平垂直运动目标解算值
+//double AM1R_AddUpAngle = 0;
+//double AM1L_AddUpAngle = 0;
+//double AM2R_AddUpAngle = 0;
+//double AM2L_AddUpAngle = 0;
+//double AM3L_AddUpAngle = 0;
+	
+extern ArmSpeed_Ref_t ArmSpeedRef;
+
 //uint16_t AM1LRawAngle = 0;
 //uint16_t AM1RRawAngle = 0;
 //uint16_t AM2LRawAngle = 0;
 //uint16_t AM2RRawAngle = 0;
 //uint16_t AM3LRawAngle = 0;
+
+uint8_t flagOfGetGolf = 0;
 
 //用于减小系统开销
 static uint8_t s_AM1LCount = 0;
@@ -363,4 +390,30 @@ void armReset()
 	//待完善
 	//思路：
 	//取弹flag清零，回收flag置位，具体动作由2ms定时器任务完成，完成后flag清零
+	flagOfGetGolf = 0;
+	AM1RAngleTarget = 0;
+	AM2RAngleTarget = 0;
+}
+
+void armStretch()
+{
+	flagOfGetGolf = 1;
+	Arm_Horizontal_Position -= ArmSpeedRef.forward_back_ref;
+	Arm_Vertical_Position += ArmSpeedRef.up_down_ref;
+	SquareOfRadius = Arm_Horizontal_Position*Arm_Horizontal_Position + Arm_Vertical_Position*Arm_Vertical_Position;
+	if(SquareOfRadius <= 250*250 || Arm_Horizontal_Position <= 0 || Arm_Horizontal_Position >= 750)
+	{}
+		else
+		{
+			//AM1R_AddUpAngle = asin((SquareOfRadius+LengthOfArm1*LengthOfArm1-LengthOfArm2*LengthOfArm2)/(2*LengthOfArm1*sqrt(SquareOfRadius)))-acos(Arm_Vertical_Position/sqrt(SquareOfRadius))
+			//AM2R_AddUpAngle = asin((SquareOfRadius+LengthOfArm1*LengthOfArm1-LengthOfArm2*LengthOfArm2)/(2*LengthOfArm2*sqrt(SquareOfRadius)))+acos(Arm_Vertical_Position/sqrt(SquareOfRadius))+AM1R_AddUpAngle
+			AM1RAngleTarget = asin((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius))) - acos(Arm_Vertical_Position/sqrt(SquareOfRadius));
+	    AM2RAngleTarget = asin((SquareOfRadius+187500)/(500*sqrt(SquareOfRadius))) + acos(Arm_Vertical_Position/sqrt(SquareOfRadius)) + AM1RAngleTarget;
+			
+//	    setAMAngle(AM1R,AM1LAngleTarget);
+//	    setAMAngle(AM1L,AM1L_AddUpAngle);
+//	    setAMAngle(AM2R,AM2R_AddUpAngle);
+//	    setAMAngle(AM2L,AM2L_AddUpAngle);
+//	    setAMAngle(AM3L,AM3L_AddUpAngle);
+		}
 }

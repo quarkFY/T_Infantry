@@ -60,6 +60,10 @@ typedef struct{
 	uint16_t angle;
 	int16_t RotateSpeed;//RPM
 }Motor820RRxMsg_t;
+typedef struct{
+	uint16_t angle;
+	int16_t RotateSpeed;//RPM
+}MotorC620RxMsg_t;
 
 //820R--[0,1]Angle;[2,3]RotateSpeed;
 IOPoolDeclare(CMFLRxIOPool, Motor820RRxMsg_t);
@@ -67,8 +71,8 @@ IOPoolDeclare(CMFRRxIOPool, Motor820RRxMsg_t);
 IOPoolDeclare(CMBLRxIOPool, Motor820RRxMsg_t);
 IOPoolDeclare(CMBRRxIOPool, Motor820RRxMsg_t);
 
-IOPoolDeclare(AM1LRxIOPool, Motor820RRxMsg_t);
-IOPoolDeclare(AM1RRxIOPool, Motor820RRxMsg_t);
+IOPoolDeclare(AM1LRxIOPool, MotorC620RxMsg_t);
+IOPoolDeclare(AM1RRxIOPool, MotorC620RxMsg_t);
 IOPoolDeclare(AM2LRxIOPool, Motor820RRxMsg_t);
 IOPoolDeclare(AM2RRxIOPool, Motor820RRxMsg_t);
 IOPoolDeclare(AM3LRxIOPool, Motor820RRxMsg_t);

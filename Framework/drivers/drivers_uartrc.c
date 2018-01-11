@@ -69,6 +69,7 @@ void rcUartRxCpltCallback(){
 
 RC_Ctl_t RC_CtrlData;   //remote control data
 ChassisSpeed_Ref_t ChassisSpeedRef; 
+ArmSpeed_Ref_t ArmSpeedRef;
 Gimbal_Ref_t GimbalRef; 
 FrictionWheelState_e g_friction_wheel_state = FRICTION_WHEEL_OFF; 
 
@@ -100,6 +101,8 @@ void RemoteTaskInit()
 	ChassisSpeedRef.rotate_ref = 0.0f;
   /*摩擦轮*/
 	SetFrictionState(FRICTION_WHEEL_OFF);
+	ArmSpeedRef.forward_back_ref = 0.0f;
+	ArmSpeedRef.up_down_ref = 0.0f;
 }
 
 /*拨杆数据处理*/   
