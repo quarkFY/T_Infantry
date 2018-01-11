@@ -187,7 +187,7 @@ void Timer_2ms_lTask(void const * argument)
 			//		fw_printfln("GM%ld",StackResidue);
 			if(JUDGE_State == OFFLINE)
 			{
-				fw_printfln("Judge not received");
+				//fw_printfln("Judge not received");
 			}
 			else
 			{

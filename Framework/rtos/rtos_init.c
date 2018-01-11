@@ -35,7 +35,7 @@ void rtos_InitInfantry()
 	InitMPU6500();
 	InitIST8310();//初始化IMU
 	InitJudgeUart();//初始化裁判系统读取串口
-//	InitManifoldUart();//初始化妙算Manifold通信串口，用来做大神符、自动瞄准
+	//InitManifoldUart();//初始化妙算Manifold通信串口，用来做大神符、自动瞄准
 	ctrlUartInit();
 	InitRemoteControl();//初始化遥控器控制，接收机串口
 	

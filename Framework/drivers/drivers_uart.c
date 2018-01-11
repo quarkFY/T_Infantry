@@ -27,7 +27,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 		//遥控器
 		rcUartRxCpltCallback();
 		
-	}else if(UartHandle == &CTRL_UART){
+	}else if(UartHandle == &huart3){
 		//妙算通信串口
 		//自定义协议
 //		fw_printfln("manifold get!!!");

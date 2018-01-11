@@ -114,7 +114,7 @@ void CMGMControlTask(void const * argument)
 		ControlPitch();
 
 	 
-		//ChassisSpeedRef.rotate_ref = rotate_forward * 90;//取消底盘跟随
+		ChassisSpeedRef.rotate_ref = 0;//取消底盘跟随
 		ControlCMFL();
 		ControlCMFR();
 		ControlCMBL();
