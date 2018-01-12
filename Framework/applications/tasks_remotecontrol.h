@@ -16,7 +16,7 @@
 #include "cmsis_os.h"
 #include "drivers_uartrc_low.h"
 
-extern int16_t rotate_forward;
+extern float rotate_forward;
 void RControlTask(void const * argument);
 void RemoteTaskInit(void);
 void RemoteDataProcess(uint8_t *pData);

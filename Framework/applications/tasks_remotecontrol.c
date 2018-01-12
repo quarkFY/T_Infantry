@@ -209,7 +209,7 @@ void RemoteDataProcess(uint8_t *pData)
 		}break;
 	}
 }
-int16_t rotate_forward = 0;
+float rotate_forward = 0.0;
 void RemoteControlProcess(Remote *rc)
 {
 	if(GetWorkState()!=PREPARE_STATE)
