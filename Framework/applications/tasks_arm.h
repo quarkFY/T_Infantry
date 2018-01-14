@@ -25,10 +25,11 @@ void ControlAM1L(void);
 void ControlAM1R(void);
 void ControlAM2L(void);
 void ControlAM2R(void);
-void ControlAM3L(void);
+void ControlAM3R(void);
 
 void setAMAngle(MotorId id, float angle);
 void getGolf(void);
 void armReset(void);
 void armStretch(void);
+void ARM_INIT(void);
 #endif

@@ -34,7 +34,7 @@ NaiveIOPoolDefine(AM1LRxIOPool, {0});
 NaiveIOPoolDefine(AM1RRxIOPool, {0});
 NaiveIOPoolDefine(AM2LRxIOPool, {0});
 NaiveIOPoolDefine(AM2RRxIOPool, {0});
-NaiveIOPoolDefine(AM3LRxIOPool, {0});
+NaiveIOPoolDefine(AM3RRxIOPool, {0});
 
 NaiveIOPoolDefine(PM1RxIOPool, {0});
 NaiveIOPoolDefine(PM2RxIOPool, {0});
@@ -231,10 +231,10 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan){
 				IOPool_pGetWriteData(AM2RRxIOPool)->RotateSpeed = CanRxGetU16(Can2RxMsg, 1);
 				IOPool_getNextWrite(AM2RRxIOPool);
 				break;
-			case AM3L_RXID:
-				IOPool_pGetWriteData(AM3LRxIOPool)->angle = CanRxGetU16(Can2RxMsg, 0);
-				IOPool_pGetWriteData(AM3LRxIOPool)->RotateSpeed = CanRxGetU16(Can2RxMsg, 1);
-				IOPool_getNextWrite(AM3LRxIOPool);
+			case AM3R_RXID:
+				IOPool_pGetWriteData(AM3RRxIOPool)->angle = CanRxGetU16(Can2RxMsg, 0);
+				IOPool_pGetWriteData(AM3RRxIOPool)->RotateSpeed = CanRxGetU16(Can2RxMsg, 1);
+				IOPool_getNextWrite(AM3RRxIOPool);
 				break;
 			case ZGYRO_RXID:
 			 {

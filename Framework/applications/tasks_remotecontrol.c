@@ -60,6 +60,7 @@ extern RampGen_t FBSpeedRamp  ;
 extern RC_Ctl_t RC_CtrlData; 
 extern xSemaphoreHandle xSemaphore_rcuart;
 extern float yawAngleTarget, pitchAngleTarget;
+extern float rotateSpeed;
 extern uint8_t g_isGYRO_Rested ;
 
 extern WorkState_e g_workState;//张雁大符
@@ -208,6 +209,8 @@ void RemoteControlProcess(Remote *rc)
 		
  		pitchAngleTarget += (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_PITCH_ANGLE_INC_FACT;
 		yawAngleTarget   -= (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT; 
+		
+		ChassisSpeedRef.rotate_ref   = (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT;
 		
 		ArmSpeedRef.forward_back_ref = (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
 		ArmSpeedRef.up_down_ref = (rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;

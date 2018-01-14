@@ -28,7 +28,7 @@
 #define AM1R_RXID 0x206u
 #define AM2L_RXID 0x201u
 #define AM2R_RXID 0x202u
-#define AM3L_RXID 0x203u
+#define AM3R_RXID 0x203u
 //GM为云台电机
 #define GMYAW_RXID 0x209u
 #define GMPITCH_RXID 0x20Au
@@ -75,7 +75,7 @@ IOPoolDeclare(AM1LRxIOPool, MotorC620RxMsg_t);
 IOPoolDeclare(AM1RRxIOPool, MotorC620RxMsg_t);
 IOPoolDeclare(AM2LRxIOPool, Motor820RRxMsg_t);
 IOPoolDeclare(AM2RRxIOPool, Motor820RRxMsg_t);
-IOPoolDeclare(AM3LRxIOPool, Motor820RRxMsg_t);
+IOPoolDeclare(AM3RRxIOPool, Motor820RRxMsg_t);
 
 IOPoolDeclare(PM1RxIOPool, Motor820RRxMsg_t);
 IOPoolDeclare(PM2RxIOPool, Motor820RRxMsg_t);

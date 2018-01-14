@@ -77,6 +77,7 @@ extern float pitchRealAngle;
 extern float gYroZs;
 extern float yawAngleTarget;
 extern float yawRealAngle;
+extern float rotateSpeed;
 
 extern float PM1SpeedPID;
 
@@ -92,6 +93,8 @@ extern float PM1AngleTarget;
 extern float PM2AngleTarget;
 extern float PM1RealAngle;
 extern float PM2RealAngle;
+extern float AM2RAngleTarget;
+extern double Arm_Vertical_Position;
 
 
 static uint32_t s_time_tick_2ms = 0;
@@ -132,6 +135,8 @@ void Timer_2ms_lTask(void const * argument)
 		{
 			GYRO_RST();//给单轴陀螺仪将当前位置写零，注意需要一定的稳定时间
 		}            //在从STOP切换到其他状态时，s_time_tick_2ms清零重加，会重新复位陀螺仪
+		
+		armStretch();
 
 		getJudgeState();
 		
@@ -162,7 +167,11 @@ void Timer_2ms_lTask(void const * argument)
 		
 		if(s_countWhile >= 2000)//150 1000
 		{//定时1s,发送调试信息
+			
 			s_countWhile = 0;
+//			if(Arm_Vertical_Position<0||Arm_Vertical_Position>700)
+//			{Arm_Vertical_Position=0;}
+//			Arm_Vertical_Position++;
 			/*
 //			IOPool_getNextRead(GMYAWRxIOPool, 0); 
 //			float tempYaw = (IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle-100) * 360 / 8192.0f;
@@ -183,8 +192,8 @@ void Timer_2ms_lTask(void const * argument)
 			
 //			fw_printfln("PM1AngelTarget is %f", PM1AngleTarget);
 //			fw_printfln("PM2AngelTarget is %f", PM2AngleTarget);
-			PM1AngleTarget += 360.0;
-			//PM1AngleTarget += 360.0;
+			PM2AngleTarget += 10.0;
+			//AM2RAngleTarget += 10.0;
 //			PM2AngleTarget += 360.0;
 			
 			if(JUDGE_State == OFFLINE)

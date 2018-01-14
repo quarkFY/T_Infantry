@@ -30,7 +30,7 @@ void InitRemoteControl(void);
 #define REMOTE_CONTROLLER_STICK_OFFSET      1024u   
 #define RC_FRAME_LENGTH                     18u
 #define STICK_TO_CHASSIS_SPEED_REF_FACT     2.f
-#define STICK_TO_ARM_SPEED_REF_FACT     1.f
+#define STICK_TO_ARM_SPEED_REF_FACT     0.01f
 #define STICK_TO_PITCH_ANGLE_INC_FACT       0.008f
 #define STICK_TO_YAW_ANGLE_INC_FACT         0.005f
 
@@ -152,8 +152,8 @@ typedef __packed struct
 //remote data process
 typedef __packed struct
 {
-    int16_t forward_back_ref;
-    int16_t up_down_ref;
+    double	forward_back_ref;
+    double  up_down_ref;
     
 }ArmSpeed_Ref_t;
 
