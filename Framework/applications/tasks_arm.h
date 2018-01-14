@@ -17,7 +17,7 @@
 
 #include "application_motorcontrol.h"
 
-#define AM1Reduction 98.0
+#define AM1Reduction 189.0
 #define AM23Reduction 36.0
 
 void Can2ControlTask(void const * argument);

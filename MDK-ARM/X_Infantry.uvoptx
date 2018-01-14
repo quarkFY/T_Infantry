@@ -197,92 +197,97 @@
         <Ww>
           <count>2</count>
           <WinNumber>1</WinNumber>
-          <ItemText>AM2RAngleTarget</ItemText>
+          <ItemText>sw-&gt;switch_value1</ItemText>
         </Ww>
         <Ww>
           <count>3</count>
           <WinNumber>1</WinNumber>
-          <ItemText>sw-&gt;switch_value1</ItemText>
+          <ItemText>ArmSpeedRef</ItemText>
         </Ww>
         <Ww>
           <count>4</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Arm_Horizontal_Position</ItemText>
+          <ItemText>ArmSpeedRef.forward_back_ref</ItemText>
         </Ww>
         <Ww>
           <count>5</count>
           <WinNumber>1</WinNumber>
-          <ItemText>ArmSpeedRef</ItemText>
+          <ItemText>sw-&gt;switch_value_raw</ItemText>
         </Ww>
         <Ww>
           <count>6</count>
           <WinNumber>1</WinNumber>
-          <ItemText>ArmSpeedRef.forward_back_ref</ItemText>
+          <ItemText>flagOfGetGolf</ItemText>
         </Ww>
         <Ww>
           <count>7</count>
           <WinNumber>1</WinNumber>
-          <ItemText>ChassisSpeedRef.forward_back_ref</ItemText>
+          <ItemText>SquareOfRadius</ItemText>
         </Ww>
         <Ww>
           <count>8</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Arm_Vertical_Position</ItemText>
+          <ItemText>AM1RAngleTarget</ItemText>
         </Ww>
         <Ww>
           <count>9</count>
           <WinNumber>1</WinNumber>
-          <ItemText>AM1RAngleTarget</ItemText>
+          <ItemText>AM1RPositionPID.target</ItemText>
         </Ww>
         <Ww>
           <count>10</count>
           <WinNumber>1</WinNumber>
-          <ItemText>sw-&gt;switch_value_raw</ItemText>
+          <ItemText>AM1RPositionPID.feedback</ItemText>
         </Ww>
         <Ww>
           <count>11</count>
           <WinNumber>1</WinNumber>
-          <ItemText>flagOfGetGolf</ItemText>
+          <ItemText>AM1RSpeedPID.target</ItemText>
         </Ww>
         <Ww>
           <count>12</count>
           <WinNumber>1</WinNumber>
-          <ItemText>SquareOfRadius</ItemText>
+          <ItemText>AM1RSpeedPID.feedback</ItemText>
         </Ww>
         <Ww>
           <count>13</count>
           <WinNumber>1</WinNumber>
-          <ItemText>AM2RAngleTarget</ItemText>
+          <ItemText>AM1RSpeedPID.output</ItemText>
         </Ww>
         <Ww>
           <count>14</count>
           <WinNumber>1</WinNumber>
-          <ItemText>AM1RAngleTarget</ItemText>
+          <ItemText>Arm_Vertical_Position</ItemText>
         </Ww>
         <Ww>
           <count>15</count>
           <WinNumber>1</WinNumber>
-          <ItemText>AM1RPositionPID.target</ItemText>
+          <ItemText>Arm_Horizontal_Position</ItemText>
         </Ww>
         <Ww>
           <count>16</count>
           <WinNumber>1</WinNumber>
-          <ItemText>AM1RPositionPID.feedback</ItemText>
+          <ItemText>PM1AngleTarget</ItemText>
         </Ww>
         <Ww>
           <count>17</count>
           <WinNumber>1</WinNumber>
-          <ItemText>AM1RSpeedPID.target</ItemText>
+          <ItemText>PM1PositionPID.feedback</ItemText>
         </Ww>
         <Ww>
           <count>18</count>
           <WinNumber>1</WinNumber>
-          <ItemText>AM1RSpeedPID.feedback</ItemText>
+          <ItemText>PM1PositionPID.target</ItemText>
         </Ww>
         <Ww>
           <count>19</count>
           <WinNumber>1</WinNumber>
-          <ItemText>AM1RSpeedPID.output</ItemText>
+          <ItemText>PM1SpeedPID.target</ItemText>
+        </Ww>
+        <Ww>
+          <count>20</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>PM1SpeedPID.output</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>

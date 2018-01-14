@@ -62,6 +62,9 @@ float AM2LAngleTarget = 0.0;
 float AM2RAngleTarget = 0.0;
 float AM3RAngleTarget = 0.0;
 
+double Last_Arm_Horizontal_Position;
+double Last_Arm_Vertical_Position;
+
 float LastAM1LAngleTarget;
 float LastAM1RAngleTarget;
 float LastAM2LAngleTarget;
@@ -79,6 +82,7 @@ float AM3RRealAngle = 0.0;
 double Arm_Horizontal_Position = LengthOfArm1 - LengthOfArm2;
 double Arm_Vertical_Position = 0.0;
 double SquareOfRadius = 250.0*250.0;
+double AngleOfTarget = 0.0;
 
 //水平垂直运动目标解算值
 //double AM1R_AddUpAngle = 0;
@@ -412,8 +416,8 @@ void armReset()
 void ARM_INIT()
 {
 	flagOfGetGolf = 1;
-	Arm_Horizontal_Position = 0;
-	Arm_Vertical_Position = 500;
+	Arm_Horizontal_Position = 250;
+	Arm_Vertical_Position = 30;
 //	AM2RAngleTarget = 10;
 }
 
@@ -424,27 +428,48 @@ void armStretch()
 	Arm_Horizontal_Position -= ArmSpeedRef.forward_back_ref;
 	Arm_Vertical_Position += ArmSpeedRef.up_down_ref;
 	SquareOfRadius = Arm_Horizontal_Position*Arm_Horizontal_Position + Arm_Vertical_Position*Arm_Vertical_Position;
-	if(SquareOfRadius < 250*250 ||  Arm_Vertical_Position< 0)
+	if(SquareOfRadius <= 250*250 ||  Arm_Vertical_Position< 0 || SquareOfRadius >= 750*750)
 	{
-		Arm_Vertical_Position = Arm_Vertical_Position+10;
-		AM1RAngleTarget = asin((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius))) - acos(Arm_Vertical_Position/sqrt(SquareOfRadius));
-	  AM2RAngleTarget = asin((SquareOfRadius+187500)/(500*sqrt(SquareOfRadius))) + acos(Arm_Vertical_Position/sqrt(SquareOfRadius)) + AM1RAngleTarget;
+		Arm_Horizontal_Position = Last_Arm_Horizontal_Position;
+	  Arm_Vertical_Position = Last_Arm_Vertical_Position;
 	}
-	else if(SquareOfRadius > 750*750)
-	{
-		Arm_Vertical_Position = Arm_Vertical_Position-10;
-	}
+	
 		else
 		{
 			//AM1R_AddUpAngle = asin((SquareOfRadius+LengthOfArm1*LengthOfArm1-LengthOfArm2*LengthOfArm2)/(2*LengthOfArm1*sqrt(SquareOfRadius)))-acos(Arm_Vertical_Position/sqrt(SquareOfRadius))
 			//AM2R_AddUpAngle = asin((SquareOfRadius+LengthOfArm2*LengthOfArm2-LengthOfArm1*LengthOfArm1)/(2*LengthOfArm2*sqrt(SquareOfRadius)))+acos(Arm_Vertical_Position/sqrt(SquareOfRadius))+AM1R_AddUpAngle
 			//AM1RAngleTarget 0-180 ; AM2RAngleTarget 0-180 ;
-			AM1RAngleTarget = 180*(asin((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius))) - acos(Arm_Vertical_Position/sqrt(SquareOfRadius)))/PI;
-			
-	    AM2RAngleTarget = 180*(asin((SquareOfRadius-187500)/(500*sqrt(SquareOfRadius))) + acos(Arm_Vertical_Position/sqrt(SquareOfRadius)))/PI + AM1RAngleTarget;
+//			AM1RAngleTarget = 180*(asin((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius))) - acos(Arm_Vertical_Position/sqrt(SquareOfRadius)))/PI;
+//			
+//	    AM2RAngleTarget = 180*(asin((SquareOfRadius-187500)/(500*sqrt(SquareOfRadius))) + acos(Arm_Vertical_Position/sqrt(SquareOfRadius)))/PI + AM1RAngleTarget;
 			//AM1RAngleTarget = ArmSpeedRef.forward_back_ref*10;
-			LastAM1RAngleTarget = AM1RAngleTarget;
-			LastAM2RAngleTarget = AM2RAngleTarget;
+			
+			if(Arm_Horizontal_Position > 0 )
+			{
+				AngleOfTarget = 180*atan(Arm_Vertical_Position/Arm_Horizontal_Position)/PI;
+				AM1RAngleTarget = AngleOfTarget - 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
+				AM2RAngleTarget = -180*acos((312500-SquareOfRadius)/250000)/PI;
+				//PM1AngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI;
+			}
+			else if(Arm_Horizontal_Position == 0)
+			{
+				AngleOfTarget = 90.0;
+				AM1RAngleTarget = AngleOfTarget - 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
+				AM2RAngleTarget = -180*acos((312500-SquareOfRadius)/250000)/PI;
+				//PM1AngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI;
+			}
+			else
+			{
+				AngleOfTarget = 180*atan(Arm_Vertical_Position/Arm_Horizontal_Position)/PI + 180.0;
+				AM1RAngleTarget = AngleOfTarget - 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
+				AM2RAngleTarget = -180*acos((312500-SquareOfRadius)/250000)/PI;
+				//PM1AngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI;
+			}
+			
+			
+			
+			Last_Arm_Horizontal_Position = Arm_Horizontal_Position;
+			Last_Arm_Vertical_Position = Arm_Vertical_Position;
 			
 
 		}
