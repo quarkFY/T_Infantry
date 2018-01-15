@@ -17,6 +17,7 @@
 //#include "application_auxmotorcontrol.h"
 
 #include "drivers_imu_low.h"
+#include "pid_regulator.h"
 //#include "tasks_Hero.h"
 NaiveIOPoolDefine(upperIOPool, {0});
 
@@ -47,7 +48,7 @@ extern float yawAngleTarget, pitchAngleTarget;
 //extern uint8_t GM_RUN;
 extern float angles[3];
 extern PID_Regulator_t CMFLSpeedPID,CMFRSpeedPID,CMBLSpeedPID,CMBRSpeedPID;
-extern PID_Regulator_t yawPositionPID,yawSpeedPID,pitchPositionPID,pitchSpeedPID;
+extern fw_PID_Regulator_t yawPositionPID,yawSpeedPID,pitchPositionPID,pitchSpeedPID;
 extern IMUDataTypedef imu_data;
 extern float pitchRealAngle,yawRealAngle;
 //extern float yawRealSpeed;

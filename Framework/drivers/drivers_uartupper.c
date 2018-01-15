@@ -25,7 +25,7 @@ void ctrlUartRxCpltCallback(){
   xHigherPriorityTaskWoken = pdFALSE;
 	
 	zykReceiveData(data);
-	HAL_UART_Receive_IT(&CTRL_UART, &data, 1);
+	//HAL_UART_Receive_IT(&CTRL_UART, &data, 1);
 	
 //	if((__HAL_UART_GET_FLAG(&huart3,UART_FLAG_IDLE) != RESET))  
 //	{
