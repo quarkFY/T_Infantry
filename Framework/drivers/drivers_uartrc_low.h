@@ -42,16 +42,21 @@ void InitRemoteControl(void);
 
 #define NORMAL_FORWARD_BACK_SPEED 			500
 #define NORMAL_LEFT_RIGHT_SPEED   			650
+#define NORMAL_ROTATE_SPEED   			650
 #define HIGH_FORWARD_BACK_SPEED 			660
 #define HIGH_LEFT_RIGHT_SPEED   			800
+#define HIGH_ROTATE_SPEED   			800
 #define LOW_FORWARD_BACK_SPEED 			100
 #define LOW_LEFT_RIGHT_SPEED   			130
+#define LOW_ROTATE_SPEED   			130
 #define MIDDLE_FORWARD_BACK_SPEED 			200
 #define MIDDLE_LEFT_RIGHT_SPEED   			220
+#define MIDDLE_ROTATE_SPEED   			220
 
 #define FRICTION_RAMP_TICK_COUNT			100
 #define MOUSE_LR_RAMP_TICK_COUNT			50
 #define MOUSR_FB_RAMP_TICK_COUNT			60
+#define MOUSR_ROT_RAMP_TICK_COUNT     50
 
 #define REMOTE_SWITCH_VALUE_UP         		0x01u  
 #define REMOTE_SWITCH_VALUE_DOWN			0x02u
@@ -116,6 +121,11 @@ typedef enum
 	SHOOTING = 1,
 }Shoot_State_e;
 
+typedef enum
+{
+	LOCK,
+	UNLOCK,
+}GMMode_e;
 
 typedef enum
 {
@@ -130,6 +140,13 @@ typedef enum
 	FRICTION_WHEEL_START_TURNNING = 1,
 	FRICTION_WHEEL_ON = 2,
 }FrictionWheelState_e;
+
+typedef enum
+{
+	NO_GETGOLF = 0,
+	MANUL_GETGOLF = 1,
+  AUTO_GETGOLF = 2,
+}GetGolf_State_e;
 
 typedef enum
 {
