@@ -50,14 +50,12 @@ extern ChassisSpeed_Ref_t ChassisSpeedRef;
 extern ArmSpeed_Ref_t ArmSpeedRef;
 extern Gimbal_Ref_t GimbalRef;
 extern FrictionWheelState_e g_friction_wheel_state ;
-extern GMMode_e GMMode;
 
 RemoteSwitch_t g_switch1;   
 
 extern RampGen_t frictionRamp ;  //摩擦轮斜坡
 extern RampGen_t LRSpeedRamp ;   //键盘速度斜坡
-extern RampGen_t FBSpeedRamp  ; 
-extern RampGen_t RotSpeedRamp ;
+extern RampGen_t FBSpeedRamp  ;   
 
 extern RC_Ctl_t RC_CtrlData; 
 extern xSemaphoreHandle xSemaphore_rcuart;
@@ -202,7 +200,6 @@ void RemoteDataProcess(uint8_t *pData)
 	}
 }
 
-float forward_kp = 1.0 ;
 void RemoteControlProcess(Remote *rc)
 {
 	if(GetWorkState() == NORMAL_STATE)
@@ -214,9 +211,7 @@ void RemoteControlProcess(Remote *rc)
 		yawAngleTarget   -= (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT; 
 		
 		ChassisSpeedRef.rotate_ref   = (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT;
-		yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
 		
-		//机械臂控制，暂时放在这
 		ArmSpeedRef.forward_back_ref = (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
 		ArmSpeedRef.up_down_ref = (rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
 	}
@@ -236,34 +231,29 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 {
 	static uint16_t forward_back_speed = 0;
 	static uint16_t left_right_speed = 0;
-	static uint16_t rotate_speed=0;
 	if(GetWorkState() == NORMAL_STATE)
 	{
 		VAL_LIMIT(mouse->x, -150, 150); 
 		VAL_LIMIT(mouse->y, -150, 150); 
 	
 		pitchAngleTarget -= mouse->y* MOUSE_TO_PITCH_ANGLE_INC_FACT;  
-		if(GMMode == UNLOCK) yawAngleTarget    -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
-		//yawAngleTarget    -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
+		yawAngleTarget    -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
 
 		//speed mode: normal speed/high speed 
 		if(key->v & 0x10)//Shift
 		{
 			forward_back_speed =  LOW_FORWARD_BACK_SPEED;
 			left_right_speed = LOW_LEFT_RIGHT_SPEED;
-			rotate_speed = LOW_ROTATE_SPEED;
 		}
 		else if(key->v == 32)//Ctrl
 		{
 			forward_back_speed =  MIDDLE_FORWARD_BACK_SPEED;
 			left_right_speed = MIDDLE_LEFT_RIGHT_SPEED;
-			rotate_speed = MIDDLE_ROTATE_SPEED;
 		}
 		else
 		{
 			forward_back_speed =  NORMAL_FORWARD_BACK_SPEED;
 			left_right_speed = NORMAL_LEFT_RIGHT_SPEED;
-			rotate_speed = NORMAL_ROTATE_SPEED;
 		}
 		//movement process
 		if(key->v & 0x01)  // key: w
@@ -298,27 +288,13 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		}
 		if(key->v & 0x80)	//key:e  检测第8位是不是1
 		{
-			ChassisSpeedRef.rotate_ref=rotate_speed*RotSpeedRamp.Calc(&RotSpeedRamp);
-			//setLaunchMode(SINGLE_MULTI);
+			setLaunchMode(SINGLE_MULTI);
 		}
 		if(key->v & 0x40)	//key:q  
 		{
-			ChassisSpeedRef.rotate_ref=-rotate_speed*RotSpeedRamp.Calc(&RotSpeedRamp);
-			//setLaunchMode(CONSTENT_4);
+			setLaunchMode(CONSTENT_4);
 		}
-		else 
-		{
-			ChassisSpeedRef.rotate_ref = 0;
-			RotSpeedRamp.ResetCounter(&RotSpeedRamp);
-		}
-		//mouse x y control
-		if(GMMode == LOCK)
-		{
-			ChassisSpeedRef.rotate_ref += mouse->x/15.0*3000;
-			yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
-		}
-		if(key->v & 0x0400) GMMode = UNLOCK;  //解锁云台  G
-		if(key->v & 0x0200) GMMode = LOCK;    //锁定云台  F
+		
 		/*裁判系统离线时的功率限制方式*/
 		if(JUDGE_State == OFFLINE)
 		{

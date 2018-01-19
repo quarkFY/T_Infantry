@@ -192,7 +192,8 @@ void Timer_2ms_lTask(void const * argument)
 			
 //			fw_printfln("PM1AngelTarget is %f", PM1AngleTarget);
 //			fw_printfln("PM2AngelTarget is %f", PM2AngleTarget);
-
+			PM2AngleTarget += 10.0;
+			//AM2RAngleTarget += 10.0;
 //			PM2AngleTarget += 360.0;
 			
 			if(JUDGE_State == OFFLINE)
