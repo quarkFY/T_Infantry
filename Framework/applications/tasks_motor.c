@@ -97,21 +97,16 @@ void Can1ControlTask(void const * argument)
 		//fw_printfln("Can1ControlTask is working");
 		
 		osSemaphoreWait(Can1RefreshSemaphoreHandle, osWaitForever);
-//		if(CMGM == 0)
-//		{
-//			ControlYaw();
-//		}
-//		else
-//		{
-//		  ControlYawWithChassis();
-//    }			
-		ControlPitch();
 
 		//ChassisSpeedRef.rotate_ref = 0;//取消底盘跟随
 		ControlCMFL();
 		ControlCMFR();
 		ControlCMBL();
 		ControlCMBR();
+		
+		ControlPitch();		
+		ControlYaw();
+		
 		
 		ControlPM1();
 		ControlPM2();
@@ -128,12 +123,28 @@ void Can1ControlTask(void const * argument)
       uint16_t yawZeroAngle = yaw_zero;
 			float yawRealAngle = 0.0;
 			int16_t yawIntensity = 0;
-void ControlYawWithChassis(void)
-{
-		yawAngleTarget = 0;
-	  yawIntensity = ProcessYawPID(yawAngleTarget, yawRealAngle, -gYroZs);
-	  setMotor(GMYAW, yawIntensity);
-}
+//void ControlYawWithChassis(void)
+//{
+//		if(s_yawCount == 1)
+//		{
+//	/*从IOPool读编码器*/
+//			IOPool_getNextRead(GMYAWRxIOPool, 0); 
+//	//		fw_printfln("yaw%d",IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle);
+//			yawRealAngle = (IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle - yawZeroAngle) * 360 / 8192.0f;
+//			NORMALIZE_ANGLE180(yawRealAngle);//正规化到±180°
+//	  
+////		  yawAngleTarget = yawZeroAngle;
+//	    yawIntensity = ProcessYawPID(yawAngleTarget, yawRealAngle, -gYroZs);
+//	    setMotor(GMYAW, yawIntensity);
+//		  s_yawCount = 0;
+//		}
+//		else
+//		{
+//			s_yawCount++;
+//		}
+//			
+//}
+//		
 	
 void ControlYaw(void)
 {
@@ -142,26 +153,23 @@ void ControlYaw(void)
 	{
 		if(s_yawCount == 1)
 		{
-//			uint16_t yawZeroAngle = yaw_zero;
-//			float yawRealAngle = 0.0;
-//			int16_t yawIntensity = 0;		
-			
 			/*从IOPool读编码器*/
 			IOPool_getNextRead(GMYAWRxIOPool, 0); 
 	//		fw_printfln("yaw%d",IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle);
 			yawRealAngle = (IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle - yawZeroAngle) * 360 / 8192.0f;
 			NORMALIZE_ANGLE180(yawRealAngle);//正规化到±180°
 			
-			if(GetWorkState() == NORMAL_STATE) 
-			{
-				yawRealAngle = -ZGyroModuleAngle;//yawrealangle的值改为复位后陀螺仪的绝对值，进行yaw轴运动设定
-			}
+//			if(GetWorkState() == NORMAL_STATE) 
+//			{
+//				yawRealAngle = -ZGyroModuleAngle;//yawrealangle的值改为复位后陀螺仪的绝对值，进行yaw轴运动设定
+//			}
+			
 							
 			yawIntensity = ProcessYawPID(yawAngleTarget, yawRealAngle, -gYroZs);
 			setMotor(GMYAW, yawIntensity);
 			s_yawCount = 0;
 			
-			ControlRotate();
+//			ControlRotate();
 		}
 		else
 		{
@@ -196,12 +204,12 @@ void ControlPitch(void)
 		}
 	}
 }
-/*底盘转动控制：跟随云台等*/
-void ControlRotate(void)
-{
-	gap_angle  = (IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle - yaw_zero) * 360 / 8192.0f;
-  NORMALIZE_ANGLE180(gap_angle);	
-	
+/*底盘转动控制：跟随云台等,英雄没有*/
+//void ControlRotate(void)
+//{
+//	gap_angle  = (IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle - yaw_zero) * 360 / 8192.0f;
+//  NORMALIZE_ANGLE180(gap_angle);	
+//	
 //	if(GetWorkState() == NORMAL_STATE) 
 //	{			
 //			/*底盘跟随编码器旋转PID计算*/		
@@ -210,7 +218,7 @@ void ControlRotate(void)
 //			 CMRotatePID.Calc(&CMRotatePID);   
 //			 ChassisSpeedRef.rotate_ref = CMRotatePID.output;
 //	}
-}
+//}
 
 /*底盘电机控制FL(ForwardLeft)FR BL BR*/
 void ControlCMFL(void)
