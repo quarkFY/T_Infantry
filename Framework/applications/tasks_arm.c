@@ -33,12 +33,12 @@
 //机械臂电机PID
 
 fw_PID_Regulator_t AM1LPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
-fw_PID_Regulator_t AM1RPositionPID = fw_PID_INIT(400.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 16384.0);
+fw_PID_Regulator_t AM1RPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
 fw_PID_Regulator_t AM2LPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
 fw_PID_Regulator_t AM2RPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
 fw_PID_Regulator_t AM3RPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
 fw_PID_Regulator_t AM1LSpeedPID = fw_PID_INIT(2.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 16384.0);
-fw_PID_Regulator_t AM1RSpeedPID = fw_PID_INIT(15.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 16384.0);
+fw_PID_Regulator_t AM1RSpeedPID = fw_PID_INIT(2.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 16384.0);
 fw_PID_Regulator_t AM2LSpeedPID = fw_PID_INIT(2.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 6000.0);
 fw_PID_Regulator_t AM2RSpeedPID = fw_PID_INIT(2.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 6000.0);
 fw_PID_Regulator_t AM3RSpeedPID = fw_PID_INIT(2.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 6000.0);
@@ -100,7 +100,7 @@ extern ArmSpeed_Ref_t ArmSpeedRef;
 //uint16_t AM3RRawAngle = 0;
 
 //取弹状态flag
-extern GetGolf_State_e GetGolfState;
+uint8_t flagOfGetGolf = 0;
 
 //用于减小系统开销
 static uint8_t s_AM1LCount = 0;
@@ -403,7 +403,7 @@ void armReset()
 	//待完善
 	//思路：
 	//取弹flag清零，回收flag置位，具体动作由2ms定时器任务完成，完成后flag清零
-	GetGolfState = NO_GETGOLF;
+	flagOfGetGolf = 0;
 	AM1RAngleTarget = 0;
 	AM2RAngleTarget = 0;
 	LastAM1RAngleTarget = 0;
@@ -415,7 +415,7 @@ void armReset()
 
 void ARM_INIT()
 {
-	GetGolfState = MANUL_GETGOLF;
+	flagOfGetGolf = 1;
 	Arm_Horizontal_Position = 250;
 	Arm_Vertical_Position = 30;
 //	AM2RAngleTarget = 10;
@@ -423,7 +423,7 @@ void ARM_INIT()
 
 void armStretch()
 {
-	if(GetGolfState == MANUL_GETGOLF)
+	if(flagOfGetGolf == 1)
 	{
 	Arm_Horizontal_Position -= ArmSpeedRef.forward_back_ref;
 	Arm_Vertical_Position += ArmSpeedRef.up_down_ref;
@@ -450,8 +450,6 @@ void armStretch()
 				AM1RAngleTarget = AngleOfTarget - 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
 				AM2RAngleTarget = -180*acos((312500-SquareOfRadius)/250000)/PI;
 				//PM1AngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI;
-				AM1LAngleTarget = -AngleOfTarget + 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
-				AM2LAngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI;
 			}
 			else if(Arm_Horizontal_Position == 0)
 			{
@@ -459,8 +457,6 @@ void armStretch()
 				AM1RAngleTarget = AngleOfTarget - 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
 				AM2RAngleTarget = -180*acos((312500-SquareOfRadius)/250000)/PI;
 				//PM1AngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI;
-				AM1LAngleTarget = -AngleOfTarget + 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
-				AM2LAngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI;
 			}
 			else
 			{
@@ -468,8 +464,6 @@ void armStretch()
 				AM1RAngleTarget = AngleOfTarget - 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
 				AM2RAngleTarget = -180*acos((312500-SquareOfRadius)/250000)/PI;
 				//PM1AngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI;
-				AM1LAngleTarget = -AngleOfTarget + 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
-				AM2LAngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI;
 			}
 			
 			

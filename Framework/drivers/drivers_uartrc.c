@@ -71,18 +71,10 @@ RC_Ctl_t RC_CtrlData;   //remote control data
 ChassisSpeed_Ref_t ChassisSpeedRef; 
 ArmSpeed_Ref_t ArmSpeedRef;
 Gimbal_Ref_t GimbalRef; 
- 
- ////////////////控制用的状态////////////////////
- //摩擦轮状态
 FrictionWheelState_e g_friction_wheel_state = FRICTION_WHEEL_OFF; 
-//发射状态
+
 volatile Shoot_State_e shootState = NOSHOOTING; 
-//控制状态
 InputMode_e inputmode = REMOTE_INPUT;  
-//取弹状态
-GetGolf_State_e GetGolfState = NO_GETGOLF;
-//云台底盘锁定状态
-GMMode_e GMMode = LOCK;
 
 unsigned int zyLeftPostion; //大符用左拨杆位置
  
@@ -90,11 +82,11 @@ static uint32_t RotateCNT = 0;	//长按连发计数
 static uint16_t CNT_1s = 75;	//用于避免四连发模式下两秒内连射8发过于密集的情况
 static uint16_t CNT_250ms = 18;	//用于点射模式下射频限制
  
+extern uint8_t flagOfGetGolf;
 
 RampGen_t frictionRamp = RAMP_GEN_DAFAULT;  
 RampGen_t LRSpeedRamp = RAMP_GEN_DAFAULT;   
-RampGen_t FBSpeedRamp = RAMP_GEN_DAFAULT; 
-RampGen_t RotSpeedRamp = RAMP_GEN_DAFAULT;
+RampGen_t FBSpeedRamp = RAMP_GEN_DAFAULT;   
 
 void RemoteTaskInit()
 {
@@ -102,11 +94,9 @@ void RemoteTaskInit()
 	frictionRamp.SetScale(&frictionRamp, FRICTION_RAMP_TICK_COUNT);
 	LRSpeedRamp.SetScale(&LRSpeedRamp, MOUSE_LR_RAMP_TICK_COUNT);
 	FBSpeedRamp.SetScale(&FBSpeedRamp, MOUSR_FB_RAMP_TICK_COUNT);
-	RotSpeedRamp.SetScale(&RotSpeedRamp, MOUSR_ROT_RAMP_TICK_COUNT);
 	frictionRamp.ResetCounter(&frictionRamp);
 	LRSpeedRamp.ResetCounter(&LRSpeedRamp);
 	FBSpeedRamp.ResetCounter(&FBSpeedRamp);
-	RotSpeedRamp.ResetCounter(&RotSpeedRamp);
   /*底盘速度初始化*/
 	ChassisSpeedRef.forward_back_ref = 0.0f;
 	ChassisSpeedRef.left_right_ref = 0.0f;
