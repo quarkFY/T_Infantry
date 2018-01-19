@@ -101,11 +101,11 @@ static uint32_t s_time_tick_2ms = 0;
 
 
 extern RampGen_t frictionRamp ;
-extern uint8_t bShoot;
+//extern uint8_t bShoot;
 uint16_t zyShootTimeCount=0;
 uint8_t zyRuneMode=0;
 uint16_t checkRecTime=300;
-Location_Number_s pRunePosition[3];
+//Location_Number_s pRunePosition[3];
 uint16_t checkKeyTime=500;
 
 uint8_t visualscopeCount = 0;
@@ -197,7 +197,7 @@ void Timer_2ms_lTask(void const * argument)
 			
 			if(JUDGE_State == OFFLINE)
 			{
-				fw_printfln("Judge not received");
+				//fw_printfln("Judge not received");
 			}
 		}
 		else

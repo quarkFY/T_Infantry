@@ -13,10 +13,13 @@
 #define TASKS_UPPER_H
 
 #include "utilities_iopool.h"
+#include "utilities_minmax.h"
+//#include "application_gimbalcontrol.h"
+IOPoolDeclare(upperIOPool, struct{float yawAdd; float pitchAdd;});
 
+void getCtrlUartTask(void const * argument);
 
-IOPoolDeclare(upperIOPool, struct{float yawAdd; float pitchAdd; uint8_t rune;});
-
-void ManifoldUartTask(void const * argument);
+void zykProcessData();
+void wave_task(void const * argument);
 
 #endif
