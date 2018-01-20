@@ -101,6 +101,10 @@ void zykProcessData()
 			fw_printf("DOWN\r\n");
 			pitchAngleTarget-=5;
 		}
+		else if(strcmp(buf,"OK")==0)
+		{
+			fw_printf("OK\r\n");
+		}
 		if(strcmp(buf,"L")==0)
 		{
 			fw_printf("LEFT\r\n");
