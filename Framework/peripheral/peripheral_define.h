@@ -25,7 +25,7 @@
 #define JUDGE_UART huart6
 #define CTRL_UART huart3
 
-//#define CMGMMOTOR_CAN hcan1
+#define CMGMMOTOR_CAN hcan1
 //#define ZGYRO_CAN hcan2
 
 #define FRICTION_TIM htim12

@@ -22,7 +22,7 @@
 #include "rtos_semaphore.h"
 
 
-float ZGyroModuleAngle = 0.0f;
+//float ZGyroModuleAngle = 0.0f;
 
 //RxIOPool
 NaiveIOPoolDefine(CMFLRxIOPool, {0});
@@ -88,14 +88,14 @@ NaiveIOPoolDefine(AM23TxIOPool, DataPoolInit);
 NaiveIOPoolDefine(PMTxIOPool, DataPoolInit);
 #undef DataPoolInit 
 
-#define DataPoolInit \
-	{ \
-		{ZGYRO_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}}, \
-		{ZGYRO_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}}, \
-		{ZGYRO_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}} \
-	}
-NaiveIOPoolDefine(ZGYROTxIOPool, DataPoolInit);
-#undef DataPoolInit 
+//#define DataPoolInit \
+//	{ \
+//		{ZGYRO_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}}, \
+//		{ZGYRO_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}}, \
+//		{ZGYRO_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}} \
+//	}
+//NaiveIOPoolDefine(ZGYROTxIOPool, DataPoolInit);
+//#undef DataPoolInit 
 
 #define CanRxGetU16(canRxMsg, num) (((uint16_t)canRxMsg.Data[num * 2] << 8) | (uint16_t)canRxMsg.Data[num * 2 + 1])
 
@@ -236,14 +236,14 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan){
 				IOPool_pGetWriteData(AM3RRxIOPool)->RotateSpeed = CanRxGetU16(Can2RxMsg, 1);
 				IOPool_getNextWrite(AM3RRxIOPool);
 				break;
-			case ZGYRO_RXID:
-			 {
-				//单轴陀螺仪没有datasheet，完全参照官方程序
-				 //解算成角度值
-				CanRxMsgTypeDef *msg = &Can2RxMsg;
-				ZGyroModuleAngle = -0.01f*((int32_t)(msg->Data[0]<<24)|(int32_t)(msg->Data[1]<<16) | (int32_t)(msg->Data[2]<<8) | (int32_t)(msg->Data[3])); 
-			 }
-			 break;
+//			case ZGYRO_RXID:
+//			 {
+//				//单轴陀螺仪没有datasheet，完全参照官方程序
+//				 //解算成角度值
+//				CanRxMsgTypeDef *msg = &Can2RxMsg;
+//				ZGyroModuleAngle = -0.01f*((int32_t)(msg->Data[0]<<24)|(int32_t)(msg->Data[1]<<16) | (int32_t)(msg->Data[2]<<8) | (int32_t)(msg->Data[3])); 
+//			 }
+//			 break;
 			default:
 			fw_Error_Handler();
 		}
@@ -347,20 +347,20 @@ void TransmitCAN2(void){
 			taskEXIT_CRITICAL();
 	}
 	
-	if(IOPool_hasNextRead(ZGYROTxIOPool, 0))
-	{
-			osSemaphoreWait(Can2TransmitSemaphoreHandle, osWaitForever);
-		
-			IOPool_getNextRead(ZGYROTxIOPool, 0);
-			hcan2.pTxMsg = IOPool_pGetReadData(ZGYROTxIOPool, 0);
-		
-			taskENTER_CRITICAL();
-			if(HAL_CAN_Transmit_IT(&hcan2) != HAL_OK)
-			{
-				fw_Warning();
-			}
-			taskEXIT_CRITICAL();
-	}
+//	if(IOPool_hasNextRead(ZGYROTxIOPool, 0))
+//	{
+//			osSemaphoreWait(Can2TransmitSemaphoreHandle, osWaitForever);
+//		
+//			IOPool_getNextRead(ZGYROTxIOPool, 0);
+//			hcan2.pTxMsg = IOPool_pGetReadData(ZGYROTxIOPool, 0);
+//		
+//			taskENTER_CRITICAL();
+//			if(HAL_CAN_Transmit_IT(&hcan2) != HAL_OK)
+//			{
+//				fw_Warning();
+//			}
+//			taskEXIT_CRITICAL();
+//	}
 }
 
 

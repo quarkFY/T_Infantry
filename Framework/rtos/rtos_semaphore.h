@@ -18,7 +18,7 @@
 
 
 extern osSemaphoreId CMGMCanHaveTransmitSemaphoreHandle;
-extern osSemaphoreId ZGYROCanHaveTransmitSemaphoreHandle;
+//extern osSemaphoreId ZGYROCanHaveTransmitSemaphoreHandle;
 
 extern osSemaphoreId Can1TransmitSemaphoreHandle;
 extern osSemaphoreId Can2TransmitSemaphoreHandle;

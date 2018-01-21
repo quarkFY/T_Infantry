@@ -76,10 +76,10 @@ void RControlTask(void const * argument){
 	while(1){
 		if(first_frame == 0)
 		{
-			MX_IWDG_Init();
+//			MX_IWDG_Init();
 		}
 		//一旦遥控信号中断，此进程就会被一直阻塞，就会引起看门狗复位
-		HAL_IWDG_Refresh(&hiwdg);
+//		HAL_IWDG_Refresh(&hiwdg);
 		/*等待串口接收中断回调函数释放信号量*/
 		xSemaphoreTake(xSemaphore_rcuart, osWaitForever);
 		//fw_printfln("RC is running");

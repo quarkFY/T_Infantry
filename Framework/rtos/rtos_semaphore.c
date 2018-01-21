@@ -14,8 +14,8 @@
 #include <rtos_semaphore.h>
 #include <rtos_init.h>
 
-osSemaphoreId CMGMCanHaveTransmitSemaphoreHandle;
-osSemaphoreId ZGYROCanHaveTransmitSemaphoreHandle;
+//osSemaphoreId CMGMCanHaveTransmitSemaphoreHandle;
+//osSemaphoreId ZGYROCanHaveTransmitSemaphoreHandle;
 
 osSemaphoreId Can1TransmitSemaphoreHandle;
 osSemaphoreId Can2TransmitSemaphoreHandle;

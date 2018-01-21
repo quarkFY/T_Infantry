@@ -67,11 +67,11 @@ WorkState_e GetWorkState()
 }
 /*2ms定时任务*/
 
-extern float ZGyroModuleAngle;
-float ZGyroModuleAngleMAX;
-float ZGyroModuleAngleMIN;
+//extern float ZGyroModuleAngle;
+//float ZGyroModuleAngleMAX;
+//float ZGyroModuleAngleMIN;
 extern float yawRealAngle;
-extern uint8_t g_isGYRO_Rested;
+//extern uint8_t g_isGYRO_Rested;
 extern float pitchAngleTarget;
 extern float pitchRealAngle;
 extern float gYroZs;
@@ -108,7 +108,7 @@ uint16_t checkRecTime=300;
 //Location_Number_s pRunePosition[3];
 uint16_t checkKeyTime=500;
 
-uint8_t visualscopeCount = 0;
+//	uint8_t visualscopeCount = 0;
 //uint8_t delay30ms_flag = 0;
 
 
@@ -133,7 +133,7 @@ void Timer_2ms_lTask(void const * argument)
 		//陀螺仪复位计时
     if(s_time_tick_2ms == 2000)
 		{
-			GYRO_RST();//给单轴陀螺仪将当前位置写零，注意需要一定的稳定时间
+			//GYRO_RST();//给单轴陀螺仪将当前位置写零，注意需要一定的稳定时间,单纯注释掉
 		}            //在从STOP切换到其他状态时，s_time_tick_2ms清零重加，会重新复位陀螺仪
 		
 		armStretch();
@@ -149,19 +149,19 @@ void Timer_2ms_lTask(void const * argument)
 			checkKeyTime++;
 		}
 
-		if(visualscopeCount>=15)
-		{
-			visualscopeCount = 0;
-		}
-		else
-		{
-			visualscopeCount++ ;
-		}
-		
+//		if(visualscopeCount>=15)
+//		{
+//			visualscopeCount = 0;
+//		}
+//		else
+//		{
+//			visualscopeCount++ ;
+//		}
+//		
 //		if(visualscopeCount==0)
 //			//printf("%f\r\n", PM1RealAngle);
 //		else if(visualscopeCount==14)
-			VisualScope(&huart3, (int)PM1RealAngle, 0, 0, 0); 
+//			VisualScope(&huart3, (int)PM1RealAngle, 0, 0, 0); 
 		
 		
 		

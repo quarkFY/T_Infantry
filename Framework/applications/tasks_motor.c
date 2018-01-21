@@ -58,13 +58,13 @@ fw_PID_Regulator_t PM1PositionPID = fw_PID_INIT(80, 0.0, 200.0, 10000.0, 10000.0
 fw_PID_Regulator_t PM2PositionPID = fw_PID_INIT(100.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
 fw_PID_Regulator_t PM1SpeedPID = fw_PID_INIT(2, 0.0, 40.0, 10000.0, 10000.0, 10000.0, 4000.0);
 
-extern uint8_t g_isGYRO_Rested;//没用到
+//extern uint8_t g_isGYRO_Rested;//没用到
 
 //陀螺仪角速度
 extern float gYroXs, gYroYs, gYroZs;
 
 //外接单轴陀螺仪角度
-extern float ZGyroModuleAngle;	//这就是yawRealAngle
+//extern float ZGyroModuleAngle;	//这就是yawRealAngle
 float yawAngleTarget = 0.0;
 float gap_angle = 0.0;
 float rotateSpeed = 0.0;

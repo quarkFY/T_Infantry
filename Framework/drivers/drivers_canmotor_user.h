@@ -36,7 +36,7 @@
 #define PM1_RXID 0x205u
 #define PM2_RXID 0x206u
 //GYRO为单轴陀螺仪
-#define ZGYRO_RXID   0x401u
+//#define ZGYRO_RXID   0x401u
 
 //TxID
 #define CM_TXID 0x200u	//CAN1
@@ -44,7 +44,7 @@
 #define GM_TXID 0x2FFu	//CAN1
 #define AM23_TXID 0x200u//CAN2
 #define PM_TXID 0x1FFu	//CAN1
-#define ZGYRO_TXID   0x404u	//CAN2
+//#define ZGYRO_TXID   0x404u	//CAN2
 
 //RxIOPool
 typedef struct{
@@ -86,7 +86,7 @@ IOPoolDeclare(GMTxIOPool, CanTxMsgTypeDef);
 IOPoolDeclare(AM1TxIOPool, CanTxMsgTypeDef);
 IOPoolDeclare(AM23TxIOPool, CanTxMsgTypeDef);
 IOPoolDeclare(PMTxIOPool, CanTxMsgTypeDef);
-IOPoolDeclare(ZGYROTxIOPool, CanTxMsgTypeDef);
+//IOPoolDeclare(ZGYROTxIOPool, CanTxMsgTypeDef);
 
 
 void InitCanReception(void);

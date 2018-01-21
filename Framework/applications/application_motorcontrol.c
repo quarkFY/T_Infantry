@@ -289,19 +289,19 @@ void setMotor(MotorId motorId, int16_t Intensity){
 }
 	
 
-void GYRO_RST(void)
-{
-	CanTxMsgTypeDef *pData = IOPool_pGetWriteData(ZGYROTxIOPool);
-	pData->StdId = ZGYRO_TXID;
-	pData->Data[0] = 0x00;
-	pData->Data[1] = 0x01;
-	pData->Data[2] = 0x02;
-	pData->Data[3] = 0x03;
-	pData->Data[4] = 0x04;
-	pData->Data[5] = 0x05;
-	pData->Data[6] = 0x06;
-	pData->Data[7] = 0x07;
-	IOPool_getNextWrite(ZGYROTxIOPool);
+//void GYRO_RST(void)
+//{
+//	CanTxMsgTypeDef *pData = IOPool_pGetWriteData(ZGYROTxIOPool);
+//	pData->StdId = ZGYRO_TXID;
+//	pData->Data[0] = 0x00;
+//	pData->Data[1] = 0x01;
+//	pData->Data[2] = 0x02;
+//	pData->Data[3] = 0x03;
+//	pData->Data[4] = 0x04;
+//	pData->Data[5] = 0x05;
+//	pData->Data[6] = 0x06;
+//	pData->Data[7] = 0x07;
+//	IOPool_getNextWrite(ZGYROTxIOPool);
 
-	TransmitCAN2();
-}
+//	TransmitCAN2();
+//}

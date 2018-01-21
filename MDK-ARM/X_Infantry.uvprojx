@@ -150,7 +150,7 @@
             <RestoreSysVw>1</RestoreSysVw>
           </Target>
           <RunDebugAfterBuild>0</RunDebugAfterBuild>
-          <TargetSelection>11</TargetSelection>
+          <TargetSelection>6</TargetSelection>
           <SimDlls>
             <CpuDll></CpuDll>
             <CpuDllArguments></CpuDllArguments>
@@ -164,7 +164,7 @@
             <PeripheralDll></PeripheralDll>
             <PeripheralDllArguments></PeripheralDllArguments>
             <InitializationFile></InitializationFile>
-            <Driver>STLink\ST-LINKIII-KEIL_SWO.dll</Driver>
+            <Driver>Segger\JL2CM3.dll</Driver>
           </TargetDlls>
         </DebugOption>
         <Utilities>
@@ -767,6 +767,11 @@
               <FilePath>..\Framework\drivers\drivers_imu.c</FilePath>
             </File>
             <File>
+              <FileName>drivers_canmotor_user.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Framework\drivers\drivers_canmotor_user.h</FilePath>
+            </File>
+            <File>
               <FileName>drivers_imu_mpu6500_reg.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Framework\drivers\drivers_imu_mpu6500_reg.h</FilePath>
@@ -815,11 +820,6 @@
               <FileName>drivers_canmotor_low.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Framework\drivers\drivers_canmotor_low.h</FilePath>
-            </File>
-            <File>
-              <FileName>drivers_canmotor_user.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Framework\drivers\drivers_canmotor_user.h</FilePath>
             </File>
             <File>
               <FileName>drivers_uart.h</FileName>
