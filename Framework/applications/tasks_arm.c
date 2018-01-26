@@ -99,8 +99,6 @@ extern ArmSpeed_Ref_t ArmSpeedRef;
 //uint16_t AM2RRawAngle = 0;
 //uint16_t AM3RRawAngle = 0;
 
-//取弹状态flag
-extern GetGolf_State_e GetGolfState;
 
 //用于减小系统开销
 static uint8_t s_AM1LCount = 0;
@@ -403,7 +401,7 @@ void armReset()
 	//待完善
 	//思路：
 	//取弹flag清零，回收flag置位，具体动作由2ms定时器任务完成，完成后flag清零
-	GetGolfState = NO_GETGOLF;
+	
 	AM1RAngleTarget = 0;
 	AM2RAngleTarget = 0;
 	LastAM1RAngleTarget = 0;
@@ -415,7 +413,7 @@ void armReset()
 
 void ARM_INIT()
 {
-	GetGolfState = MANUL_GETGOLF;
+	
 	Arm_Horizontal_Position = 250;
 	Arm_Vertical_Position = 30;
 //	AM2RAngleTarget = 10;
@@ -423,8 +421,7 @@ void ARM_INIT()
 
 void armStretch()
 {
-	if(GetGolfState == MANUL_GETGOLF)
-	{
+	
 	Arm_Horizontal_Position -= ArmSpeedRef.forward_back_ref;
 	Arm_Vertical_Position += ArmSpeedRef.up_down_ref;
 	SquareOfRadius = Arm_Horizontal_Position*Arm_Horizontal_Position + Arm_Vertical_Position*Arm_Vertical_Position;
@@ -439,17 +436,13 @@ void armStretch()
 			//AM1R_AddUpAngle = asin((SquareOfRadius+LengthOfArm1*LengthOfArm1-LengthOfArm2*LengthOfArm2)/(2*LengthOfArm1*sqrt(SquareOfRadius)))-acos(Arm_Vertical_Position/sqrt(SquareOfRadius))
 			//AM2R_AddUpAngle = asin((SquareOfRadius+LengthOfArm2*LengthOfArm2-LengthOfArm1*LengthOfArm1)/(2*LengthOfArm2*sqrt(SquareOfRadius)))+acos(Arm_Vertical_Position/sqrt(SquareOfRadius))+AM1R_AddUpAngle
 			//AM1RAngleTarget 0-180 ; AM2RAngleTarget 0-180 ;
-//			AM1RAngleTarget = 180*(asin((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius))) - acos(Arm_Vertical_Position/sqrt(SquareOfRadius)))/PI;
-//			
-//	    AM2RAngleTarget = 180*(asin((SquareOfRadius-187500)/(500*sqrt(SquareOfRadius))) + acos(Arm_Vertical_Position/sqrt(SquareOfRadius)))/PI + AM1RAngleTarget;
-			//AM1RAngleTarget = ArmSpeedRef.forward_back_ref*10;
+
 			
 			if(Arm_Horizontal_Position > 0 )
 			{
 				AngleOfTarget = 180*atan(Arm_Vertical_Position/Arm_Horizontal_Position)/PI;
 				AM1RAngleTarget = AngleOfTarget - 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
 				AM2RAngleTarget = -180*acos((312500-SquareOfRadius)/250000)/PI;
-				//PM1AngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI;
 				AM1LAngleTarget = -AngleOfTarget + 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
 				AM2LAngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI;
 			}
@@ -458,7 +451,6 @@ void armStretch()
 				AngleOfTarget = 90.0;
 				AM1RAngleTarget = AngleOfTarget - 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
 				AM2RAngleTarget = -180*acos((312500-SquareOfRadius)/250000)/PI;
-				//PM1AngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI;
 				AM1LAngleTarget = -AngleOfTarget + 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
 				AM2LAngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI;
 			}
@@ -467,7 +459,6 @@ void armStretch()
 				AngleOfTarget = 180*atan(Arm_Vertical_Position/Arm_Horizontal_Position)/PI + 180.0;
 				AM1RAngleTarget = AngleOfTarget - 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
 				AM2RAngleTarget = -180*acos((312500-SquareOfRadius)/250000)/PI;
-				//PM1AngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI;
 				AM1LAngleTarget = -AngleOfTarget + 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
 				AM2LAngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI;
 			}
@@ -479,5 +470,5 @@ void armStretch()
 			
 
 		}
-	}
+	
 }

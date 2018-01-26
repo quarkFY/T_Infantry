@@ -76,13 +76,14 @@ Gimbal_Ref_t GimbalRef;
  //摩擦轮状态
 FrictionWheelState_e g_friction_wheel_state = FRICTION_WHEEL_OFF; 
 //发射状态
-volatile Shoot_State_e shootState = NOSHOOTING; 
+volatile Shoot_State_e shootState = NO_SHOOT; 
 //控制状态
 InputMode_e inputmode = REMOTE_INPUT;  
 //取弹状态
-GetGolf_State_e GetGolfState = NO_GETGOLF;
+Get_Bullet_e GetBulletState = NO_GETBULLET;
 //云台底盘锁定状态
 GMMode_e GMMode = LOCK;
+
 
 unsigned int zyLeftPostion; //大符用左拨杆位置
  
@@ -174,7 +175,7 @@ void SetInputMode(Remote *rc)
 	}
 	else if(rc->s2 == 2)
 	{
-		inputmode = STOP;
+		inputmode = GETBULLET_INPUT;
 	}	
 }
 
@@ -199,23 +200,23 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 		{
 			if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_1TO3)   
 			{
-				SetShootState(NOSHOOTING);
+				SetShootState(NO_SHOOT);
 				frictionRamp.ResetCounter(&frictionRamp);
 				g_friction_wheel_state = FRICTION_WHEEL_START_TURNNING;	 
 				LASER_ON(); 
 			}
-			else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)		//收回取弹机械臂
-			{
-				armReset();
-				
-			}
+//			else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)		//收回取弹机械臂
+//			{
+//				armReset();
+//				
+//			}
 		}break;
 		case FRICTION_WHEEL_START_TURNNING:
 		{
 			if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)   
 			{
 				LASER_OFF();//zy0802
-				SetShootState(NOSHOOTING);
+				SetShootState(NO_SHOOT);
 				SetFrictionWheelSpeed(1000);
 				g_friction_wheel_state = FRICTION_WHEEL_OFF;
 				frictionRamp.ResetCounter(&frictionRamp);
@@ -224,7 +225,7 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 			else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)	//左侧拨杆直接从上拨到下 取弹指令
 			{
 				LASER_OFF();
-				SetShootState(NOSHOOTING);
+				SetShootState(NO_SHOOT);
 				SetFrictionWheelSpeed(1000);
 				g_friction_wheel_state = FRICTION_WHEEL_OFF;
 				frictionRamp.ResetCounter(&frictionRamp);
@@ -252,11 +253,11 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 				g_friction_wheel_state = FRICTION_WHEEL_OFF;				  
 				SetFrictionWheelSpeed(1000); 
 				frictionRamp.ResetCounter(&frictionRamp);
-				SetShootState(NOSHOOTING);
+				SetShootState(NO_SHOOT);
 			}
 			else if(sw->switch_value_raw == 3)	//左侧拨杆拨到中间便会开枪
 			{
-				SetShootState(SHOOTING);
+				SetShootState(MANUL_SHOOT_ONE);
 				if(remoteShootDelay!=0) 
 					--remoteShootDelay;
 				else
@@ -267,7 +268,7 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 			}
 			else
 			{
-				SetShootState(NOSHOOTING);
+				SetShootState(NO_SHOOT);
 			}					 
 		} break;				
 	}
@@ -284,7 +285,7 @@ void MouseShootControl(Mouse *mouse)
 		{
 			if(mouse->last_press_r == 0 && mouse->press_r == 1)   
 			{
-				SetShootState(NOSHOOTING);
+				SetShootState(NO_SHOOT);
 				frictionRamp.ResetCounter(&frictionRamp);
 				g_friction_wheel_state = FRICTION_WHEEL_START_TURNNING;	 
 				LASER_ON(); 
@@ -307,7 +308,7 @@ void MouseShootControl(Mouse *mouse)
 				g_friction_wheel_state = FRICTION_WHEEL_OFF;				  
 				SetFrictionWheelSpeed(1000); 
 				frictionRamp.ResetCounter(&frictionRamp);
-				SetShootState(NOSHOOTING);
+				SetShootState(NO_SHOOT);
 			}
 			else
 			{
@@ -336,11 +337,11 @@ void MouseShootControl(Mouse *mouse)
 				g_friction_wheel_state = FRICTION_WHEEL_OFF;				  
 				SetFrictionWheelSpeed(1000); 
 				frictionRamp.ResetCounter(&frictionRamp);
-				SetShootState(NOSHOOTING);
+				SetShootState(NO_SHOOT);
 			}			
 			else if(mouse->last_press_l == 0 && mouse->press_l== 1)  //检测鼠标左键单击动作
 			{
-				SetShootState(SHOOTING);
+				SetShootState(MANUL_SHOOT_ONE);
 				if(getLaunchMode() == SINGLE_MULTI && GetFrictionState()==FRICTION_WHEEL_ON)		//单发模式下，点一下打一发
 				{
 					if(CNT_250ms>17)
@@ -365,7 +366,7 @@ void MouseShootControl(Mouse *mouse)
 			}
 			else if(mouse->last_press_l == 0 && mouse->press_l== 0)	//松开鼠标左键的状态
 			{
-				SetShootState(NOSHOOTING);	
+				SetShootState(NO_SHOOT);	
 				RotateCNT = 0;			
 			}			
 			else if(mouse->last_press_l == 1 && mouse->press_l== 1 && getLaunchMode() == SINGLE_MULTI)//单发模式下长按，便持续连发
@@ -384,6 +385,8 @@ void MouseShootControl(Mouse *mouse)
 	mouse->last_press_r = mouse->press_r;
 	mouse->last_press_l = mouse->press_l;
 }
+
+
 
 
 Shoot_State_e GetShootState()
@@ -410,16 +413,7 @@ void SetFrictionWheelSpeed(uint16_t x)
 	__HAL_TIM_SET_COMPARE(&FRICTION_TIM, TIM_CHANNEL_1, x);
 	__HAL_TIM_SET_COMPARE(&FRICTION_TIM, TIM_CHANNEL_2, x);
 }
-Shoot_Mode_e shootMode = MANUL;
 
-Shoot_Mode_e GetShootMode()
-{
-	return shootMode;
-}
-void SetShootMode(Shoot_Mode_e v)
-{
-	shootMode = v;
-}
 
 Emergency_Flag emergency_Flag = NORMAL;
 
@@ -457,3 +451,38 @@ void SetSlabState(Slab_Mode_e v)
 {
 	slabmode = v;
 }*/
+
+void RemoteGetBulletControl(RemoteSwitch_t *sw, uint8_t val)
+{
+	if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_1TO3)   
+	{
+		ARM_INIT();
+		SetGetBulletState(MANUL_GETBULLET);
+	}
+	else if(sw->switch_value_raw == 1)
+	{
+		SetGetBulletState(NO_GETBULLET);
+	}
+	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)
+	{
+		SetGetBulletState(AUTO_GETBULLET);
+	}
+	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_2TO3)
+	{
+		SetGetBulletState(MANUL_GETBULLET);
+	}
+	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)
+	{
+		SetGetBulletState(NO_GETBULLET);
+	}
+}
+
+Get_Bullet_e GetGetBulletState()
+{
+	return GetBulletState;
+}
+
+void SetGetBulletState(Get_Bullet_e v)
+{
+	GetBulletState = v;
+}

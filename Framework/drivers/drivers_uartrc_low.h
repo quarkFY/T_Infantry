@@ -82,7 +82,6 @@ typedef struct{
 	uint8_t rc_bytes[RC_FRAME_LENGTH];
 }RC_Raw_t;
 
-
 typedef __packed struct
 {
 	int16_t ch0;
@@ -92,6 +91,7 @@ typedef __packed struct
 	int8_t s1;
 	int8_t s2;
 }Remote;
+
 typedef __packed struct
 {
 	int16_t x;
@@ -102,11 +102,11 @@ typedef __packed struct
 	uint8_t press_l;
 	uint8_t press_r;
 }Mouse;	
+
 typedef	__packed struct
 {
 	uint16_t v;
 }Key;
-
 
 typedef __packed struct
 {
@@ -117,73 +117,12 @@ typedef __packed struct
 
 typedef enum
 {
-	NOSHOOTING = 0,
-	SHOOTING = 1,
-}Shoot_State_e;
-
-typedef enum
-{
-	LOCK,
-	UNLOCK,
-}GMMode_e;
-
-typedef enum
-{
-	REMOTE_INPUT = 1,
-	KEY_MOUSE_INPUT = 3,
-	STOP = 2,
-}InputMode_e;
-
-typedef enum
-{
-	FRICTION_WHEEL_OFF = 0,
-	FRICTION_WHEEL_START_TURNNING = 1,
-	FRICTION_WHEEL_ON = 2,
-}FrictionWheelState_e;
-
-typedef enum
-{
-	NO_GETGOLF = 0,
-	MANUL_GETGOLF = 1,
-  AUTO_GETGOLF = 2,
-}GetGolf_State_e;
-
-typedef enum
-{
 	FROM1TO2,
 	FROM1TO3,
 	FROM2TO1, 
 	FROM3TO1,
 	FROM3TO2,
 }RC_SWITCH_ACTION_e;
-
-//remote data process
-typedef __packed struct
-{
-    int16_t forward_back_ref;
-    int16_t left_right_ref;
-    int16_t rotate_ref;
-}ChassisSpeed_Ref_t;
-
-
-//remote data process
-typedef __packed struct
-{
-    double	forward_back_ref;
-    double  up_down_ref;
-    
-}ArmSpeed_Ref_t;
-
-//remote data process
-typedef struct
-{
-    float pitch_angle_dynamic_ref;
-    float yaw_angle_dynamic_ref;
-    float pitch_angle_static_ref;
-    float yaw_angle_static_ref;
-    float pitch_speed_ref;
-    float yaw_speed_ref;
-}Gimbal_Ref_t;
 
 //to detect the action of the switch
 typedef struct RemoteSwitch_t
@@ -198,15 +137,40 @@ typedef struct RemoteSwitch_t
 	 uint8_t buf_end_index;
 }RemoteSwitch_t;
 
+//remote data process底盘
+typedef __packed struct
+{
+    int16_t forward_back_ref;
+    int16_t left_right_ref;
+    int16_t rotate_ref;
+}ChassisSpeed_Ref_t;
+
+
+//remote data process机械臂
+typedef __packed struct
+{
+    double	forward_back_ref;
+    double  up_down_ref;
+    
+}ArmSpeed_Ref_t;
+
+//remote data process云台
+typedef struct
+{
+    float pitch_angle_dynamic_ref;
+    float yaw_angle_dynamic_ref;
+    float pitch_angle_static_ref;
+    float yaw_angle_static_ref;
+    float pitch_speed_ref;
+    float yaw_speed_ref;
+}Gimbal_Ref_t;
+
+
+
 extern ChassisSpeed_Ref_t ChassisSpeedRef;
 extern ArmSpeed_Ref_t ArmSpeedRef;
 extern Gimbal_Ref_t GimbalRef;
-InputMode_e GetInputMode(void);
 void RemoteTaskInit(void);
-void SetShootState(Shoot_State_e v);
-Shoot_State_e GetShootState(void);
-void SetFrictionState(FrictionWheelState_e v);
-FrictionWheelState_e GetFrictionState(void);
 uint8_t IsRemoteBeingAction(void);
 void GetRemoteSwitchAction(RemoteSwitch_t *sw, uint8_t val);
 void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val);
@@ -216,4 +180,7 @@ void SetFrictionWheelSpeed(uint16_t x);
 
 void zySetLeftMode(Remote *rc);
 unsigned int zyGetLeftPostion(void);
+
+void RemoteGetBulletControl(RemoteSwitch_t *sw, uint8_t val);
+
 #endif

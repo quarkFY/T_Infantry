@@ -66,7 +66,8 @@ extern float rotateSpeed;
 extern uint8_t g_isGYRO_Rested ;
 
 extern WorkState_e g_workState;//张雁大符
-
+extern InputMode_e inputmode;
+extern Get_Bullet_e GetBulletState;
 
 void RControlTask(void const * argument){
 	uint8_t data[18];
@@ -76,10 +77,10 @@ void RControlTask(void const * argument){
 	while(1){
 		if(first_frame == 0)
 		{
-//			MX_IWDG_Init();
+			MX_IWDG_Init();
 		}
 		//一旦遥控信号中断，此进程就会被一直阻塞，就会引起看门狗复位
-//		HAL_IWDG_Refresh(&hiwdg);
+		HAL_IWDG_Refresh(&hiwdg);
 		/*等待串口接收中断回调函数释放信号量*/
 		xSemaphoreTake(xSemaphore_rcuart, osWaitForever);
 		//fw_printfln("RC is running");
@@ -195,13 +196,14 @@ void RemoteDataProcess(uint8_t *pData)
 					MouseKeyControlProcess(&RC_CtrlData.mouse,&RC_CtrlData.key);//键鼠模式
 			}
 		}break;
-		case STOP:
+		case GETBULLET_INPUT:
 		{
-			 //停止
+			 GetBulletControlprocess(&(RC_CtrlData.rc),&RC_CtrlData.mouse,&RC_CtrlData.key);//取弹模式
 		}break;
 	}
 }
 
+/////////////////////////遥控器模式//////////////////////////
 float forward_kp = 1.0 ;
 void RemoteControlProcess(Remote *rc)
 {
@@ -217,15 +219,18 @@ void RemoteControlProcess(Remote *rc)
 		yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
 		
 		//机械臂控制，暂时放在这
-		ArmSpeedRef.forward_back_ref = (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
-		ArmSpeedRef.up_down_ref = (rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
+//		ArmSpeedRef.forward_back_ref = (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
+//		ArmSpeedRef.up_down_ref = (rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
 	}
 	RemoteShootControl(&g_switch1, rc->s1);
 }
 
 
 extern uint8_t JUDGE_State;
-
+static uint16_t forward_back_speed = 0;
+static uint16_t left_right_speed = 0;
+static uint16_t rotate_speed=0;
+///////////////////////////键鼠模式//////////////////////////
 //调整鼠标灵敏度
 #define MOUSE_TO_PITCH_ANGLE_INC_FACT 		0.025f * 2
 #define MOUSE_TO_YAW_ANGLE_INC_FACT 		0.025f * 2
@@ -234,9 +239,7 @@ extern uint8_t JUDGE_State;
 //遥控器模式下机器人无级变速  键鼠模式下机器人速度为固定档位
 void MouseKeyControlProcess(Mouse *mouse, Key *key)
 {
-	static uint16_t forward_back_speed = 0;
-	static uint16_t left_right_speed = 0;
-	static uint16_t rotate_speed=0;
+	
 	if(GetWorkState() == NORMAL_STATE)
 	{
 		VAL_LIMIT(mouse->x, -150, 150); 
@@ -369,10 +372,10 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		{
 			getGolf();//要去抖，不过不去抖好像也没啥关系
 		}
-		if(key->v == 272)  // key: r+Shift
-		{
-			armReset();
-		}
+//		if(key->v == 272)  // key: r+Shift
+//		{
+//			armReset();
+//		}
 		
 		MouseShootControl(mouse);
 	}
@@ -380,7 +383,59 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 
 }
 
-
-
+/////////////////////////取弹模式/////////////////////////////
+void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
+{
+		if(GetWorkState() == NORMAL_STATE)
+	{
+//		//
+//		ChassisSpeedRef.forward_back_ref = -(rc->ch1 - 1024) / 66.0 * 1000;   //慢速移动
+//		ChassisSpeedRef.left_right_ref = (rc->ch0 - 1024) / 66.0 * 1000;
+//		ChassisSpeedRef.rotate_ref=  -(rc->ch2 - 1024) /66.0*1000;
+//			//yawAngleTarget   -= (rc->ch2 - 1024)/6600.0 * (YAWUPLIMIT-YAWDOWNLIMIT); 
+		//取弹模式下，左侧摇杆控制底盘移动,慢速
+		ChassisSpeedRef.forward_back_ref = (RC_CtrlData.rc.ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_CHASSIS_SPEED_REF_FACT/10;
+		ChassisSpeedRef.left_right_ref   = (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_CHASSIS_SPEED_REF_FACT/10; 	
+		//鼠标控制pitch&yaw
+		pitchAngleTarget -= mouse->y* MOUSE_TO_PITCH_ANGLE_INC_FACT; 
+    if(key->v & 0x0400) GMMode = UNLOCK;  //解锁云台  G
+		if(key->v & 0x0200) GMMode = LOCK;    //锁定云台  F		
+		if(GMMode == LOCK)
+		{
+			ChassisSpeedRef.rotate_ref += mouse->x/15.0*3000;
+			yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
+		}
+		if(GMMode == UNLOCK) 
+		{
+			yawAngleTarget    -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
+		}
+		
+				if(inputmode==GETBULLET_INPUT)
+				{
+				    if(GetBulletState == NO_GETBULLET)
+				    {
+							armReset();
+            }
+				    else if(GetBulletState == MANUL_GETBULLET)
+				    {
+						  //取弹模式下，右侧摇杆控制取弹机械臂运动
+		          ArmSpeedRef.forward_back_ref = (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
+		          ArmSpeedRef.up_down_ref = (rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
+							armStretch();
+				    }
+						else if(GetBulletState == AUTO_GETBULLET)
+						{
+							
+						}
+				}
+				else
+				{
+					armReset();
+				}
+				
+			RemoteGetBulletControl(&g_switch1, rc->s1);
+	}
+	
+}
 
 

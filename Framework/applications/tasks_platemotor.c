@@ -69,20 +69,20 @@ void PlateMotorTask(void const * argument)
 		}
 
 	//遥控器输入模式下，只要处于发射态，就一直转动
-		if(GetShootState() == SHOOTING && GetInputMode() == REMOTE_INPUT) //&& Stuck==0
-		{
-			RotateAdd += 4;
-			//fw_printfln("ref = %f",ShootMotorPositionPID.ref);
-			if(RotateAdd>OneShoot)
-			{
-				ShootOneBullet();
-				RotateAdd = 0;
-			}
-		}
-		else if(GetShootState() == NOSHOOTING && GetInputMode() == REMOTE_INPUT)
-		{
-			RotateAdd = 0;
-		}
+//		if(GetShootState() == SHOOTING && GetInputMode() == REMOTE_INPUT) //&& Stuck==0
+//		{
+//			RotateAdd += 4;
+//			//fw_printfln("ref = %f",ShootMotorPositionPID.ref);
+//			if(RotateAdd>OneShoot)
+//			{
+//				ShootOneBullet();
+//				RotateAdd = 0;
+//			}
+//		}
+//		else if(GetShootState() == NOSHOOTING && GetInputMode() == REMOTE_INPUT)
+//		{
+//			RotateAdd = 0;
+//		}
 
 		//卡弹检测
 		//当参考值和反馈值长时间保持较大差别时，判定卡弹

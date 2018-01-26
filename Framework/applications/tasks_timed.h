@@ -32,7 +32,6 @@ typedef enum
 	PREPARE_STATE,     	//上电准备状态
 	NORMAL_STATE,		    //正常状态
 	STOP_STATE,         //停止状态
-	RUNE_STATE          //大符状态
 }WorkState_e;
 
 

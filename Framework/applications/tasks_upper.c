@@ -36,34 +36,13 @@
 NaiveIOPoolDefine(upperIOPool, {0});
 
 extern uint16_t yawAngle, pitchAngle;
-int forPidDebug = 0;
 
-//extern float yawAngleTarget, pitchAngleTarget;
-//extern xSemaphoreHandle xSemaphore_mfuart;
-//extern xdata_ctrlUart ctrlData; 
-//extern uint16_t x;
-//uint8_t CReceive = 0;
-//uint8_t rune_flag = 0;
-//float yawAdd = 0;
-//float last_yawAdd = 0;
-//float yaw_speed = 0;
-
-
-//extern float pitchRealAngle;
-//extern float ZGyroModuleAngle;	//陀螺仪角度
-
-extern int8_t flUpDown, frUpDown, blUpDown, brUpDown, allUpDown;//？？
 
 void getCtrlUartTask(void const * argument){
 	while(1){
 			static int cnt=0;
 	zykProcessData();
 	osDelay(1);
-//		if(cnt++>2000)
-//		{
-//			fw_printf("alive\r\n");
-//			cnt=0;
-//		}
 
 	 }
 }
@@ -71,15 +50,11 @@ void getCtrlUartTask(void const * argument){
 uint8_t print_data=0;
 
 extern float yawAngleTarget, pitchAngleTarget;
-//extern int16_t YawZeroEncoderBias;
-//extern int16_t PitchZeroEncoderBias;
-//extern uint8_t GM_RUN;
 extern float angles[3];
 extern PID_Regulator_t CMFLSpeedPID,CMFRSpeedPID,CMBLSpeedPID,CMBRSpeedPID;
 extern fw_PID_Regulator_t AM1RPositionPID,AM1RSpeedPID,AM2RPositionPID,AM2RSpeedPID;
 extern IMUDataTypedef imu_data;
 extern float AM2RRealAngle,AM1RRealAngle;
-//extern float yawRealSpeed;
 extern double aux_motor34_position_target;
 extern float q0,q1,q2,q3;
 extern float gx, gy, gz, ax, ay, az, mx, my, mz;

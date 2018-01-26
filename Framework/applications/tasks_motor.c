@@ -37,46 +37,48 @@
 
 
 //PID_INIT(Kp, Ki, Kd, KpMax, KiMax, KdMax, OutputMax)
-//云台PID
-
+//云台
+#define yaw_zero 4708//100
+#define pitch_zero 6400
+float yawRealAngle = 0.0;
+float yawAngleTarget = 0.0;
+float pitchRealAngle = 0.0;
+float pitchAngleTarget = 0.0;
 fw_PID_Regulator_t pitchPositionPID = fw_PID_INIT(8.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
 fw_PID_Regulator_t yawPositionPID = fw_PID_INIT(5.0, 0.0, 0.5, 10000.0, 10000.0, 10000.0, 10000.0);//等幅振荡P37.3 I11.9 D3.75  原26.1 8.0 1.1
 fw_PID_Regulator_t pitchSpeedPID = fw_PID_INIT(40.0, 0.0, 15.0, 10000.0, 10000.0, 10000.0, 3500.0);
 fw_PID_Regulator_t yawSpeedPID = fw_PID_INIT(30.0, 0.0, 5, 10000.0, 10000.0, 10000.0, 4000.0);
-#define yaw_zero 4708//100
-#define pitch_zero 6400
 
-//底盘速度PID
+//底盘
 PID_Regulator_t CMRotatePID = CHASSIS_MOTOR_ROTATE_PID_DEFAULT; 
 PID_Regulator_t CM1SpeedPID = CHASSIS_MOTOR_SPEED_PID_DEFAULT;
 PID_Regulator_t CM2SpeedPID = CHASSIS_MOTOR_SPEED_PID_DEFAULT;
 PID_Regulator_t CM3SpeedPID = CHASSIS_MOTOR_SPEED_PID_DEFAULT;
 PID_Regulator_t CM4SpeedPID = CHASSIS_MOTOR_SPEED_PID_DEFAULT;
 
-//推弹电机PID
-fw_PID_Regulator_t PM1PositionPID = fw_PID_INIT(80, 0.0, 200.0, 10000.0, 10000.0, 10000.0, 16384.0);
-fw_PID_Regulator_t PM2PositionPID = fw_PID_INIT(100.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
-fw_PID_Regulator_t PM1SpeedPID = fw_PID_INIT(2, 0.0, 40.0, 10000.0, 10000.0, 10000.0, 4000.0);
-
-//extern uint8_t g_isGYRO_Rested;//没用到
-
-//陀螺仪角速度
-extern float gYroXs, gYroYs, gYroZs;
-
-//外接单轴陀螺仪角度
-//extern float ZGyroModuleAngle;	//这就是yawRealAngle
-float yawAngleTarget = 0.0;
-float gap_angle = 0.0;
-float rotateSpeed = 0.0;
-
-float pitchRealAngle = 0.0;
-float pitchAngleTarget = 0.0;
-
+//推弹电机
+#define PM1ZeroAngle 0
+#define PM2ZeroAngle 0
 float PM1RealAngle = 0.0;
 float PM2RealAngle = 0.0;
 float PM1AngleTarget = 0.0;
 float PM2AngleTarget = 0.0;
+fw_PID_Regulator_t PM1PositionPID = fw_PID_INIT(80, 0.0, 200.0, 10000.0, 10000.0, 10000.0, 16384.0);
+fw_PID_Regulator_t PM2PositionPID = fw_PID_INIT(100.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
+fw_PID_Regulator_t PM1SpeedPID = fw_PID_INIT(2, 0.0, 40.0, 10000.0, 10000.0, 10000.0, 4000.0);
+fw_PID_Regulator_t PM2SpeedPID = fw_PID_INIT(2, 0.0, 40.0, 10000.0, 10000.0, 10000.0, 4000.0);
 
+//陀螺仪角速度（板载）
+extern float gYroXs, gYroYs, gYroZs;
+
+//extern uint8_t g_isGYRO_Rested;//没用到
+//外接单轴陀螺仪角度
+//extern float ZGyroModuleAngle;	//这就是yawRealAngle
+
+float gap_angle = 0.0;
+float rotateSpeed = 0.0;
+
+//减小系统开销
 static uint8_t s_yawCount = 0;
 static uint8_t s_pitchCount = 0;
 static uint8_t s_CMFLCount = 0;
@@ -86,8 +88,7 @@ static uint8_t s_CMBRCount = 0;
 static uint8_t s_PM1Count = 0;
 static uint8_t s_PM2Count = 0;
 
-#define PM1ZeroAngle 0
-#define PM2ZeroAngle 0
+
 
 void Can1ControlTask(void const * argument)
 {
@@ -107,52 +108,26 @@ void Can1ControlTask(void const * argument)
 		ControlPitch();		
 		ControlYaw();
 		
-		
 		ControlPM1();
 		ControlPM2();
 		
-		
-	
-		
-	}//end of while
+	  }//end of while
 }
 
 
 
 /*Yaw电机*/
-      uint16_t yawZeroAngle = yaw_zero;
-			float yawRealAngle = 0.0;
-			int16_t yawIntensity = 0;
-//void ControlYawWithChassis(void)
-//{
-//		if(s_yawCount == 1)
-//		{
-//	/*从IOPool读编码器*/
-//			IOPool_getNextRead(GMYAWRxIOPool, 0); 
-//	//		fw_printfln("yaw%d",IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle);
-//			yawRealAngle = (IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle - yawZeroAngle) * 360 / 8192.0f;
-//			NORMALIZE_ANGLE180(yawRealAngle);//正规化到±180°
-//	  
-////		  yawAngleTarget = yawZeroAngle;
-//	    yawIntensity = ProcessYawPID(yawAngleTarget, yawRealAngle, -gYroZs);
-//	    setMotor(GMYAW, yawIntensity);
-//		  s_yawCount = 0;
-//		}
-//		else
-//		{
-//			s_yawCount++;
-//		}
-//			
-//}
-//		
-	
-void ControlYaw(void)
+      
+
+	void ControlYaw(void)
 {
-	//yaw轴的实际角度可以从单轴陀螺仪或者yaw轴电机编码器获取
+	//yaw轴的实际角度可以从单轴陀螺仪或者yaw轴电机编码器获取，英雄用编码器读取
 	if(IOPool_hasNextRead(GMYAWRxIOPool, 0))
 	{
 		if(s_yawCount == 1)
 		{
+			uint16_t yawZeroAngle = yaw_zero;
+			int16_t yawIntensity = 0;
 			/*从IOPool读编码器*/
 			IOPool_getNextRead(GMYAWRxIOPool, 0); 
 	//		fw_printfln("yaw%d",IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle);
@@ -163,8 +138,6 @@ void ControlYaw(void)
 //			{
 //				yawRealAngle = -ZGyroModuleAngle;//yawrealangle的值改为复位后陀螺仪的绝对值，进行yaw轴运动设定
 //			}
-			
-							
 			yawIntensity = ProcessYawPID(yawAngleTarget, yawRealAngle, -gYroZs);
 			setMotor(GMYAW, yawIntensity);
 			s_yawCount = 0;
@@ -424,9 +397,13 @@ void ControlPM2()
 			PM2PositionPID.target = PM2AngleTarget;
 			PM2PositionPID.Calc(&PM2PositionPID);
 			
+			PM2SpeedPID.target = PM2PositionPID.output;
+			PM2SpeedPID.feedback = pData->RotateSpeed;
+			PM2SpeedPID.Calc(&PM2SpeedPID);
+
 			PM2LastAngle = PM2ThisAngle;
-			
-			setMotor(PM2, PM2PositionPID.output);
+	
+			setMotor(PM2, -PM2SpeedPID.output);
 			
 			s_PM2Count = 0;
 		}

@@ -50,14 +50,28 @@ extern PID_Regulator_t CM1SpeedPID;
 extern PID_Regulator_t CM2SpeedPID;
 extern PID_Regulator_t CM3SpeedPID;
 extern PID_Regulator_t CM4SpeedPID;
+void CMControlInit(void)
+{
+//底盘电机PID初始化，copy from官方开源程序
+	//ShootMotorSpeedPID.Reset(&ShootMotorSpeedPID);
+	CMRotatePID.Reset(&CMRotatePID);
+	CM1SpeedPID.Reset(&CM1SpeedPID);
+	CM2SpeedPID.Reset(&CM2SpeedPID);
+	CM3SpeedPID.Reset(&CM3SpeedPID);
+	CM4SpeedPID.Reset(&CM4SpeedPID);
+}
 
 
-
-Shoot_State_e last_shoot_state = NOSHOOTING;
-Shoot_State_e this_shoot_state = NOSHOOTING;
+///////////////////表示状态的变量/////////////////////
+Shoot_State_e last_shoot_state = NO_SHOOT;
+Shoot_State_e this_shoot_state = NO_SHOOT;
 //uint32_t last_Encoder = 0;
 //uint32_t this_Encoder = 0;
-int flag = 0;
+
+extern uint8_t JUDGE_STATE;
+extern uint8_t JUDGE_Received;
+extern uint8_t JUDGE_State;
+extern Emergency_Flag emergency_Flag;
 
 WorkState_e g_workState = PREPARE_STATE;
 WorkState_e lastWorkState = PREPARE_STATE;
@@ -65,51 +79,16 @@ WorkState_e GetWorkState()
 {
 	return g_workState;
 }
+
+
 /*2ms定时任务*/
-
-//extern float ZGyroModuleAngle;
-//float ZGyroModuleAngleMAX;
-//float ZGyroModuleAngleMIN;
-extern float yawRealAngle;
-//extern uint8_t g_isGYRO_Rested;
-extern float pitchAngleTarget;
-extern float pitchRealAngle;
-extern float gYroZs;
 extern float yawAngleTarget;
-extern float yawRealAngle;
-extern float rotateSpeed;
-
-extern float PM1SpeedPID;
-
-extern uint8_t JUDGE_STATE;
-
-int mouse_click_left = 0;
-
-
-extern uint8_t JUDGE_Received;
-extern uint8_t JUDGE_State;
-
-extern float PM1AngleTarget;
-extern float PM2AngleTarget;
-extern float PM1RealAngle;
-extern float PM2RealAngle;
-extern float AM2RAngleTarget;
-extern double Arm_Vertical_Position;
-
+extern float pitchAngleTarget;
+extern RampGen_t frictionRamp ;
 
 static uint32_t s_time_tick_2ms = 0;
-
-
-extern RampGen_t frictionRamp ;
-//extern uint8_t bShoot;
-uint16_t zyShootTimeCount=0;
-uint8_t zyRuneMode=0;
 uint16_t checkRecTime=300;
-//Location_Number_s pRunePosition[3];
 uint16_t checkKeyTime=500;
-
-//	uint8_t visualscopeCount = 0;
-//uint8_t delay30ms_flag = 0;
 
 
 void Timer_2ms_lTask(void const * argument)
@@ -126,18 +105,9 @@ void Timer_2ms_lTask(void const * argument)
 //unsigned portBASE_TYPE StackResidue; //栈剩余
 	while(1)  
 	{       
-		
 		WorkStateFSM();//状态机
 	  WorkStateSwitchProcess();//状态机动作
-
-		//陀螺仪复位计时
-    if(s_time_tick_2ms == 2000)
-		{
-			//GYRO_RST();//给单轴陀螺仪将当前位置写零，注意需要一定的稳定时间,单纯注释掉
-		}            //在从STOP切换到其他状态时，s_time_tick_2ms清零重加，会重新复位陀螺仪
 		
-		armStretch();
-
 		getJudgeState();
 		
 		if(checkRecTime<65534)
@@ -149,51 +119,19 @@ void Timer_2ms_lTask(void const * argument)
 			checkKeyTime++;
 		}
 
-//		if(visualscopeCount>=15)
-//		{
-//			visualscopeCount = 0;
-//		}
-//		else
-//		{
-//			visualscopeCount++ ;
-//		}
-//		
-//		if(visualscopeCount==0)
-//			//printf("%f\r\n", PM1RealAngle);
-//		else if(visualscopeCount==14)
+
 //			VisualScope(&huart3, (int)PM1RealAngle, 0, 0, 0); 
 		
 		
-		
+//定时1s,发送调试信息		
 		if(s_countWhile >= 2000)//150 1000
-		{//定时1s,发送调试信息
-			
+		{
 			s_countWhile = 0;
-//			if(Arm_Vertical_Position<0||Arm_Vertical_Position>700)
-//			{Arm_Vertical_Position=0;}
-//			Arm_Vertical_Position++;
+
 			/*
-//			IOPool_getNextRead(GMYAWRxIOPool, 0); 
-//			float tempYaw = (IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle-100) * 360 / 8192.0f;
-//			NORMALIZE_ANGLE180(tempYaw);
-//			fw_printfln("YawAngle= %f,targetYaw:%f", tempYaw,yawAngleTarget);
-////		fw_printfln("YawAngle= %f", tempYaw);
-////			IOPool_getNextRead(GMPITCHRxIOPool, 0); 
-//			float tempPitch = -(IOPool_pGetReadData(GMPITCHRxIOPool, 0)->angle - 6400) * 360 / 8192.0f;
-//			NORMALIZE_ANGLE180(tempPitch);
-//			fw_printfln("PitchAngle= %f,targetPitch:%f", tempPitch,pitchAngleTarget);
-//			fw_printfln("PitchAngle= %f", tempPitch);
-			//fw_printfln("ZGyroModuleAngle:  %f",ZGyroModuleAngle);
-//			fw_printfln("YawAngle= %d", IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle);
-//			fw_printfln("PitchAngle= %d", IOPool_pGetReadData(GMPITCHRxIOPool, 0)->angle);
 			*****查看任务栈空间剩余示例*******
 			//		StackResidue = uxTaskGetStackHighWaterMark( GMControlTaskHandle );
 			//		fw_printfln("GM%ld",StackResidue);*/
-			
-//			fw_printfln("PM1AngelTarget is %f", PM1AngleTarget);
-//			fw_printfln("PM2AngelTarget is %f", PM2AngleTarget);
-
-//			PM2AngleTarget += 360.0;
 			
 			if(JUDGE_State == OFFLINE)
 			{
@@ -210,16 +148,7 @@ void Timer_2ms_lTask(void const * argument)
 }
 	
 
-void CMControlInit(void)
-{
-//底盘电机PID初始化，copy from官方开源程序
-	//ShootMotorSpeedPID.Reset(&ShootMotorSpeedPID);
-	CMRotatePID.Reset(&CMRotatePID);
-	CM1SpeedPID.Reset(&CM1SpeedPID);
-	CM2SpeedPID.Reset(&CM2SpeedPID);
-	CM3SpeedPID.Reset(&CM3SpeedPID);
-	CM4SpeedPID.Reset(&CM4SpeedPID);
-}
+
 /**********************************************************
 *工作状态切换状态机
 **********************************************************/
@@ -238,7 +167,7 @@ void WorkStateFSM(void)
 	{
 		case PREPARE_STATE:
 		{
-			if(GetInputMode() == STOP )
+			if(emergency_Flag == EMERGENCY )
 			{
 				g_workState = STOP_STATE;
 			}
@@ -251,7 +180,7 @@ void WorkStateFSM(void)
 		
 		case NORMAL_STATE:     
 		{
-			if(GetInputMode() == STOP )
+			if(emergency_Flag == EMERGENCY )
 			{
 				g_workState = STOP_STATE;
 			}
@@ -259,10 +188,11 @@ void WorkStateFSM(void)
 		
 		case STOP_STATE:   
 		{
-			if(GetInputMode() != STOP )
+			if(emergency_Flag == NORMAL )
 			{
 				g_workState = PREPARE_STATE;   
 			}
+			g_workState = STOP_STATE;
 		}break;
 
 		default:
@@ -281,7 +211,7 @@ void WorkStateSwitchProcess(void)
 	if((lastWorkState != g_workState) && (g_workState == STOP_STATE))  
 	{
 		LASER_OFF();
-		SetShootState(NOSHOOTING);
+		SetShootState(NO_SHOOT);
 		SetFrictionWheelSpeed(1000);
 		SetFrictionState(FRICTION_WHEEL_OFF);
 		frictionRamp.ResetCounter(&frictionRamp);
@@ -295,7 +225,7 @@ void WorkStateSwitchProcess(void)
 		pitchAngleTarget = 0;
 		CMControlInit();
 		RemoteTaskInit();
-		armReset();
+//		armReset();
 	}
 }
 

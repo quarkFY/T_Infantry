@@ -288,7 +288,7 @@ void setMotor(MotorId motorId, int16_t Intensity){
 	}
 }
 	
-
+//删除所有的GYRO
 //void GYRO_RST(void)
 //{
 //	CanTxMsgTypeDef *pData = IOPool_pGetWriteData(ZGYROTxIOPool);
