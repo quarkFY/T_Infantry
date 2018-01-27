@@ -33,7 +33,7 @@
 #include "drivers_uartupper_user.h"
 #include "tasks_arm.h"
 #include "peripheral_laser.h"
-
+#include "peripheral_sov.h"
 
 #define VAL_LIMIT(val, min, max)\
 if(val<=min)\
@@ -368,10 +368,10 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 			}
 		}
 		
-		if(key->v == 256)  // key: r
-		{
-			getGolf();//要去抖，不过不去抖好像也没啥关系
-		}
+//		if(key->v == 256)  // key: r
+//		{
+//			getGolf();//要去抖，不过不去抖好像也没啥关系
+//		}
 //		if(key->v == 272)  // key: r+Shift
 //		{
 //			armReset();
@@ -422,6 +422,15 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 		          ArmSpeedRef.forward_back_ref = (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
 		          ArmSpeedRef.up_down_ref = (rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
 							armStretch();
+							//取弹电磁阀
+							if(key->v & 0x0100)  //R
+							{
+								SOV1_ON();
+							}
+							else
+							{
+								SOV1_OFF();
+							}
 				    }
 						else if(GetBulletState == AUTO_GETBULLET)
 						{

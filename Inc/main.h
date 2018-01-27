@@ -9,7 +9,7 @@
   * inserted by the user or by software development tools
   * are owned by their respective copyright owners.
   *
-  * Copyright (c) 2017 STMicroelectronics International N.V. 
+  * Copyright (c) 2018 STMicroelectronics International N.V. 
   * All rights reserved.
   *
   * Redistribution and use in source and binary forms, with or without 
@@ -59,10 +59,14 @@
 
 #define LASER_Pin GPIO_PIN_13
 #define LASER_GPIO_Port GPIOG
-#define SOV_Pin GPIO_PIN_5
-#define SOV_GPIO_Port GPIOE
+#define SOV1_Pin GPIO_PIN_5
+#define SOV1_GPIO_Port GPIOE
+#define SOV2_Pin GPIO_PIN_6
+#define SOV2_GPIO_Port GPIOE
 #define LASER2_Pin GPIO_PIN_0
 #define LASER2_GPIO_Port GPIOI
+#define SOV3_Pin GPIO_PIN_1
+#define SOV3_GPIO_Port GPIOF
 #define EncoderB_Pin GPIO_PIN_11
 #define EncoderB_GPIO_Port GPIOH
 #define EncoderA_Pin GPIO_PIN_10

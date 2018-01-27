@@ -212,6 +212,7 @@ void WorkStateSwitchProcess(void)
 	{
 		LASER_OFF();
 		SetShootState(NO_SHOOT);
+		SetGetBulletState(NO_GETBULLET);
 		SetFrictionWheelSpeed(1000);
 		SetFrictionState(FRICTION_WHEEL_OFF);
 		frictionRamp.ResetCounter(&frictionRamp);

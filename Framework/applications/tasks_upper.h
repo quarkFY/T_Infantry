@@ -19,7 +19,7 @@ IOPoolDeclare(upperIOPool, struct{float yawAdd; float pitchAdd;});
 
 void getCtrlUartTask(void const * argument);
 
-void zykProcessData();
+void zykProcessData(void);
 void wave_task(void const * argument);
 
 #endif

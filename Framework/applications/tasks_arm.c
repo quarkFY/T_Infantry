@@ -53,7 +53,7 @@ extern float PM1AngleTarget;
 
 #define LengthOfArm1 500
 #define LengthOfArm2 250
-#define PI 3.141592
+#define PI 3.141592653589
 
 //机械臂电机目标物理角度值
 float AM1LAngleTarget = 0.0;
@@ -406,8 +406,14 @@ void armReset()
 	AM2RAngleTarget = 0;
 	LastAM1RAngleTarget = 0;
 	LastAM2RAngleTarget = 0;
-	Arm_Horizontal_Position = 250;
-	Arm_Vertical_Position = 0;
+	AM1LAngleTarget = 0;
+	AM2LAngleTarget = 0;
+	LastAM1LAngleTarget = 0;
+	LastAM2LAngleTarget = 0;
+	AM3RAngleTarget = 0;
+	LastAM3RAngleTarget = 0;
+	Arm_Horizontal_Position = 500;
+	Arm_Vertical_Position = 250;
 	
 }
 
@@ -463,12 +469,12 @@ void armStretch()
 				AM2LAngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI;
 			}
 			
-			
+		}
 			
 			Last_Arm_Horizontal_Position = Arm_Horizontal_Position;
 			Last_Arm_Vertical_Position = Arm_Vertical_Position;
 			
 
-		}
+		
 	
 }

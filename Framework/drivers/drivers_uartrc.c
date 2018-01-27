@@ -222,15 +222,13 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 				frictionRamp.ResetCounter(&frictionRamp);
 			}
 			
-			else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)	//左侧拨杆直接从上拨到下 取弹指令
+			else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)	
 			{
-				LASER_OFF();
-				SetShootState(NO_SHOOT);
-				SetFrictionWheelSpeed(1000);
-				g_friction_wheel_state = FRICTION_WHEEL_OFF;
-				frictionRamp.ResetCounter(&frictionRamp);
-				ARM_INIT();
-				getGolf();
+//				LASER_OFF();
+//				SetShootState(NO_SHOOT);
+//				SetFrictionWheelSpeed(1000);
+//				g_friction_wheel_state = FRICTION_WHEEL_OFF;
+//				frictionRamp.ResetCounter(&frictionRamp);
 				
 			}
 			

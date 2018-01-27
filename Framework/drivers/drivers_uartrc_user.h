@@ -129,7 +129,7 @@ Shoot_State_e GetShootState(void);
 void SetFrictionState(FrictionWheelState_e v);
 FrictionWheelState_e GetFrictionState(void);
 
-Get_Bullet_e GetGetBulletState();
+Get_Bullet_e GetGetBulletState(void);
 void SetGetBulletState(Get_Bullet_e v);
 
 
