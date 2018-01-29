@@ -10,7 +10,6 @@
   * PWM占空比对应舵机角度
   ******************************************************************************
   */
-/*
 #include "pwm_server_motor.h"
 
 void pwm_server_motor_init(uint8_t motorIndex)
@@ -213,4 +212,3 @@ void pwm_server_motor_set_angle(uint8_t motorIndex,float angle)
 		}
 	}
 }
-*/

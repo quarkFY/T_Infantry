@@ -34,12 +34,8 @@
 #include "drivers_uartupper_user.h"
 #include "stm32f4xx_hal_uart.h"
 #include "tasks_platemotor.h"
-#include "tasks_motor.h"
-#include "tasks_arm.h"
-
 NaiveIOPoolDefine(rcUartIOPool, {0});
 
-//遥控器串口初始化，操作系统初始化的时候调用
 void InitRemoteControl(){
 	//遥控器DMA接收开启(一次接收18个字节)
 	if(HAL_UART_Receive_DMA(&RC_UART, IOPool_pGetWriteData(rcUartIOPool)->ch, 18) != HAL_OK){
@@ -54,8 +50,6 @@ void rcUartRxCpltCallback(){
 	 xHigherPriorityTaskWoken = pdFALSE; 
 	//释放信号量
    xSemaphoreGiveFromISR(xSemaphore_rcuart, &xHigherPriorityTaskWoken);
-	
-	
 	//切换上下文，RTOS提供
 	//当在中断外有多个不同优先级任务等待信号量时
 	//在退出中断前进行一次切换上下文
@@ -101,25 +95,27 @@ void RemoteTaskInit()
   /*摩擦轮*/
 	SetFrictionState(FRICTION_WHEEL_OFF);
 }
-
-/*拨杆数据处理*/   
+/*拨杆数据处理*/
 void GetRemoteSwitchAction(RemoteSwitch_t *sw, uint8_t val)
 {
 	static uint32_t switch_cnt = 0;
 
+	/* ×îÐÂ×´Ì¬Öµ */
 	sw->switch_value_raw = val;
 	sw->switch_value_buf[sw->buf_index] = sw->switch_value_raw;
 
-	//value1 value2的值其实是一样的
-	//value1高4位始终为0
+	/* È¡×îÐÂÖµºÍÉÏÒ»´ÎÖµ */
 	sw->switch_value1 = (sw->switch_value_buf[sw->buf_last_index] << 2)|
 	(sw->switch_value_buf[sw->buf_index]);
 
+
+	/* ×îÀÏµÄ×´Ì¬ÖµµÄË÷Òý */
 	sw->buf_end_index = (sw->buf_index + 1)%REMOTE_SWITCH_VALUE_BUF_DEEP;
 
+	/* ºÏ²¢Èý¸öÖµ */
 	sw->switch_value2 = (sw->switch_value_buf[sw->buf_end_index]<<4)|sw->switch_value1;	
 
-	//如果两次数据一样，即没有更新数据，拨杆不动
+	/* ³¤°´ÅÐ¶Ï */
 	if(sw->switch_value_buf[sw->buf_index] == sw->switch_value_buf[sw->buf_last_index])
 	{
 		switch_cnt++;	
@@ -128,12 +124,13 @@ void GetRemoteSwitchAction(RemoteSwitch_t *sw, uint8_t val)
 	{
 		switch_cnt = 0;
 	}
-	//如果拨杆维持了一定时间，即连续来了40帧一样的数据，则把拨杆数据写入switch_long_value
+
 	if(switch_cnt >= 40)
 	{
 		sw->switch_long_value = sw->switch_value_buf[sw->buf_index]; 	
 	}
-	//指向下一个缓冲区
+
+	//Ë÷ÒýÑ­»·
 	sw->buf_last_index = sw->buf_index;
 	sw->buf_index++;		
 	if(sw->buf_index == REMOTE_SWITCH_VALUE_BUF_DEEP)
@@ -163,7 +160,26 @@ void SetInputMode(Remote *rc)
 	}	
 }
 
-
+//张雁大符
+void zySetLeftMode(Remote *rc)
+{
+	if(rc->s1 == 1)
+	{
+		zyLeftPostion = 1;
+	}
+	else if(rc->s1 == 3)
+	{
+		zyLeftPostion = 3;
+	}
+	else if(rc->s1 == 2)
+	{
+		zyLeftPostion = 2;
+	}	
+}
+unsigned int zyGetLeftPostion()
+{
+	return zyLeftPostion;
+}
 
 InputMode_e GetInputMode()
 {
@@ -173,9 +189,30 @@ InputMode_e GetInputMode()
 /*
 input: RemoteSwitch_t *sw, include the switch info
 */
-extern PID_Regulator_t PM1PositionPID;
-extern PID_Regulator_t PM2PositionPID;
-uint16_t remoteShootDelay = 500;
+#ifdef INFANTRY_1
+#define FRICTION_WHEEL_MAX_DUTY             1500
+#endif
+
+extern float yaw_zero, pitch_zero;
+extern float yawEncoder, pitchEncoder;
+extern float yawAngleTarget, pitchAngleTarget;
+extern int isSetGM;
+
+void SetGMZeroPoint(RemoteSwitch_t *sw, uint8_t val) 
+{
+	if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_1TO3)   //OFF->HL
+	{
+		yaw_zero = yawEncoder;
+		pitch_zero = pitchEncoder;
+		isSetGM = 1;
+	}
+	if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)	//CL->HL
+	{
+		pitchAngleTarget = 0;
+		yawAngleTarget = 0;
+	}
+}
+		
 void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val) 
 {
 	switch(g_friction_wheel_state)
@@ -188,11 +225,7 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 				frictionRamp.ResetCounter(&frictionRamp);
 				g_friction_wheel_state = FRICTION_WHEEL_START_TURNNING;	 
 				LASER_ON(); 
-			}
-			else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)		//收回取弹机械臂
-			{
-				armReset();
-			}
+			}				 		
 		}break;
 		case FRICTION_WHEEL_START_TURNNING:
 		{
@@ -204,23 +237,12 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 				g_friction_wheel_state = FRICTION_WHEEL_OFF;
 				frictionRamp.ResetCounter(&frictionRamp);
 			}
-			
-			else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)	//左侧拨杆直接从上拨到下 取弹指令
-			{
-				LASER_OFF();
-				SetShootState(NOSHOOTING);
-				SetFrictionWheelSpeed(1000);
-				g_friction_wheel_state = FRICTION_WHEEL_OFF;
-				frictionRamp.ResetCounter(&frictionRamp);
-				
-				getGolf();
-				
-			}
-			
 			else
 			{
 				/*斜坡函数必须有，避免电流过大烧坏主控板*/
 				SetFrictionWheelSpeed(1000 + (FRICTION_WHEEL_MAX_DUTY-1000)*frictionRamp.Calc(&frictionRamp)); 
+				//SetFrictionWheelSpeed(1000);
+				//g_friction_wheel_state = FRICTION_WHEEL_ON; 
 				if(frictionRamp.IsOverflow(&frictionRamp))
 				{
 					g_friction_wheel_state = FRICTION_WHEEL_ON; 	
@@ -238,16 +260,9 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 				frictionRamp.ResetCounter(&frictionRamp);
 				SetShootState(NOSHOOTING);
 			}
-			else if(sw->switch_value_raw == 3)	//左侧拨杆拨到中间便会开枪
+			else if(sw->switch_value_raw == 2)
 			{
 				SetShootState(SHOOTING);
-				if(remoteShootDelay!=0) 
-					--remoteShootDelay;
-				else
-				{
-					shootOneGolf();
-					remoteShootDelay = 50;
-				}
 			}
 			else
 			{
@@ -330,8 +345,7 @@ void MouseShootControl(Mouse *mouse)
 					if(CNT_250ms>17)
 					{
 						CNT_250ms = 0;
-						shootOneGolf();
-						
+						ShootOneBullet();
 					}
 				}
 				else if(getLaunchMode() == CONSTENT_4 && GetFrictionState()==FRICTION_WHEEL_ON)	//四连发模式下，点一下打四发
@@ -340,10 +354,10 @@ void MouseShootControl(Mouse *mouse)
 					if(CNT_1s>75)
 					{
 						CNT_1s = 0;
-						shootOneGolf();
-						shootOneGolf();
-						shootOneGolf();
-						shootOneGolf();
+						ShootOneBullet();
+						ShootOneBullet();
+						ShootOneBullet();
+						ShootOneBullet();
 					}
 				}
 			}
@@ -357,7 +371,7 @@ void MouseShootControl(Mouse *mouse)
 				RotateCNT+=50;
 				if(RotateCNT>=OneShoot)
 				{
-					shootOneGolf();
+					ShootOneBullet();
 					RotateCNT = 0;
 				}
 					
@@ -429,9 +443,8 @@ void SetMoveSpeed(Move_Speed_e v)
 	movespeed = v;
 }
 
-
-/*
 Slab_Mode_e slabmode = CLOSE;
+
 Slab_Mode_e GetSlabState()
 {
 	return slabmode;
@@ -440,4 +453,4 @@ Slab_Mode_e GetSlabState()
 void SetSlabState(Slab_Mode_e v)
 {
 	slabmode = v;
-}*/
+}
