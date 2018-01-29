@@ -69,12 +69,12 @@ void zykProcessData()
 		if(strcmp(buf,"U")==0)
 		{
 			fw_printf("UP\r\n");
-			pitchAngleTarget+=5;
+			//pitchAngleTarget+=5;
 		}
 		else if(strcmp(buf,"D")==0)
 		{
 			fw_printf("DOWN\r\n");
-			pitchAngleTarget-=5;
+			//pitchAngleTarget-=5;
 		}
 		else if(strcmp(buf,"OK")==0)
 		{
@@ -83,12 +83,12 @@ void zykProcessData()
 		if(strcmp(buf,"L")==0)
 		{
 			fw_printf("LEFT\r\n");
-			yawAngleTarget+=5;
+			//yawAngleTarget+=5;
 		}
 		else if(strcmp(buf,"R")==0)
 		{
 			fw_printf("RIGHT\r\n");
-			yawAngleTarget-=5;
+			//yawAngleTarget-=5;
 		}
 		else if(strcmp(buf,"GM")==0)
 		{

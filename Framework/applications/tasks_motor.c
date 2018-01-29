@@ -38,16 +38,26 @@
 
 //PID_INIT(Kp, Ki, Kd, KpMax, KiMax, KdMax, OutputMax)
 //云台
-#define yaw_zero 4708//100
-#define pitch_zero 6400
+#define yaw_zero 5300
+#define pitch_zero 3600
+float yawEncoder = 0;
+float GMYAWThisAngle, GMYAWLastAngle;
 float yawRealAngle = 0.0;
 float yawAngleTarget = 0.0;
+float pitchEncoder = 0;
+float GMPITCHThisAngle, GMPITCHLastAngle;
 float pitchRealAngle = 0.0;
 float pitchAngleTarget = 0.0;
-fw_PID_Regulator_t pitchPositionPID = fw_PID_INIT(8.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
-fw_PID_Regulator_t yawPositionPID = fw_PID_INIT(5.0, 0.0, 0.5, 10000.0, 10000.0, 10000.0, 10000.0);//等幅振荡P37.3 I11.9 D3.75  原26.1 8.0 1.1
-fw_PID_Regulator_t pitchSpeedPID = fw_PID_INIT(40.0, 0.0, 15.0, 10000.0, 10000.0, 10000.0, 3500.0);
-fw_PID_Regulator_t yawSpeedPID = fw_PID_INIT(30.0, 0.0, 5, 10000.0, 10000.0, 10000.0, 4000.0);
+float pitchMotorTarget = 0.0;
+
+int isGMYAWFirstEnter = 1;
+int isGMPITCHFirstEnter = 1;
+int isSetGM;
+
+fw_PID_Regulator_t pitchPositionPID = fw_PID_INIT(8.0, 25.0, 20.0, 10000.0, 10000.0, 10000.0, 10000.0);
+fw_PID_Regulator_t yawPositionPID = fw_PID_INIT(8.0, 25.0, 20, 10000.0, 10000.0, 10000.0, 10000.0);//等幅振荡P37.3 I11.9 D3.75  原26.1 8.0 1.1
+fw_PID_Regulator_t pitchSpeedPID = fw_PID_INIT(30.0, 0.0, 5.0, 10000.0, 10000.0, 10000.0, 5000.0);
+fw_PID_Regulator_t yawSpeedPID = fw_PID_INIT(30.0, 0.0, 5.0, 10000.0, 10000.0, 10000.0, 5000.0);
 
 //底盘
 PID_Regulator_t CMRotatePID = CHASSIS_MOTOR_ROTATE_PID_DEFAULT; 
@@ -115,42 +125,69 @@ void Can1ControlTask(void const * argument)
 }
 
 
-
+int16_t yawIntensity = 0;
 /*Yaw电机*/
-      
-
-	void ControlYaw(void)
+void ControlYaw(void)
 {
-	//yaw轴的实际角度可以从单轴陀螺仪或者yaw轴电机编码器获取，英雄用编码器读取
 	if(IOPool_hasNextRead(GMYAWRxIOPool, 0))
 	{
 		if(s_yawCount == 1)
 		{
-			uint16_t yawZeroAngle = yaw_zero;
-			int16_t yawIntensity = 0;
+			int16_t yawZeroAngle = 0;
+      yawZeroAngle = yaw_zero;
+			
 			/*从IOPool读编码器*/
 			IOPool_getNextRead(GMYAWRxIOPool, 0); 
-	//		fw_printfln("yaw%d",IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle);
-			yawRealAngle = (IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle - yawZeroAngle) * 360 / 8192.0f;
-			NORMALIZE_ANGLE180(yawRealAngle);//正规化到±180°
+			//fw_printfln("yaw%d",IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle);
+			//yawRealAngle = (IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle- yawZeroAngle) * 360 * 11 / (8192.0f * 50);
 			
-//			if(GetWorkState() == NORMAL_STATE) 
-//			{
-//				yawRealAngle = -ZGyroModuleAngle;//yawrealangle的值改为复位后陀螺仪的绝对值，进行yaw轴运动设定
-//			}
+			GMYAWThisAngle = IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle;
+			//yawEncoder = IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle;
+			if(isGMYAWFirstEnter==1) 
+			{
+				GMYAWLastAngle = GMYAWThisAngle;
+				yawRealAngle = (IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle- yawZeroAngle) * 360 * 11 / (8192.0f * 50);
+				isGMYAWFirstEnter = 0;
+			}	//初始化时，记录下当前编码器的值
+			
+			if(GMYAWThisAngle <= GMYAWLastAngle)
+			{
+				if((GMYAWLastAngle-GMYAWThisAngle)>3000)//编码器上溢
+					yawRealAngle = yawRealAngle + (GMYAWThisAngle+8192-GMYAWLastAngle) * 360 * 11 / (8192.0 * 50) ;
+				else//反转
+				 yawRealAngle =  yawRealAngle + (GMYAWThisAngle - GMYAWLastAngle) * 360 * 11 / (8192.0f * 50) ;
+			}
+			else
+			{
+				if((GMYAWThisAngle-GMYAWLastAngle)>3000)//编码器下溢
+					yawRealAngle = yawRealAngle - (GMYAWLastAngle+8192-GMYAWThisAngle) * 360 * 11 / (8192.0 * 50)  ;
+				else//正转
+					yawRealAngle = yawRealAngle + (GMYAWThisAngle - GMYAWLastAngle) * 360 * 11 / (8192.0f * 50) ;
+			}
+							
+			//NORMALIZE_ANGLE180(yawRealAngle);
+			//限位
+			//MINMAX(yawAngleTarget, -180.0f, 180.0f);	
 			yawIntensity = ProcessYawPID(yawAngleTarget, yawRealAngle, -gYroZs);
-			setMotor(GMYAW, yawIntensity);
+			
+//			if (isSetGM == 1)
+//			{
+//				setMotor(GMYAW, -yawIntensity);
+//			}
+			//setMotor(GMYAW, -yawIntensity);
+      GMYAWLastAngle = GMYAWThisAngle ;
 			s_yawCount = 0;
 			
-//			ControlRotate();
+		//	ControlRotate();
 		}
 		else
 		{
 			s_yawCount++;
 		}
-		 
 	}
 }
+
+int16_t pitchIntensity = 0;
 /*Pitch电机*/
 void ControlPitch(void)
 {
@@ -158,17 +195,50 @@ void ControlPitch(void)
 	{
 		if(s_pitchCount == 1)
 		{
-			uint16_t pitchZeroAngle = pitch_zero;
-			int16_t pitchIntensity = 0;
+		  int16_t pitchZeroAngle = 0;
+      pitchZeroAngle = pitch_zero;
+		  
+			/*从IOPool读编码器*/
+			IOPool_getNextRead(GMPITCHRxIOPool, 0); 
+			//fw_printfln("pitch%d",IOPool_pGetReadData(GMPITCHRxIOPool, 0)->angle);
+			//pitchRealAngle = (IOPool_pGetReadData(GMPITCHRxIOPool, 0)->angle- pitchZeroAngle) * 360 * 11 / (8192.0f * 50);
 			
-			IOPool_getNextRead(GMPITCHRxIOPool, 0);
-			pitchRealAngle = -(IOPool_pGetReadData(GMPITCHRxIOPool, 0)->angle - pitchZeroAngle) * 360 / 8192.0;
-			NORMALIZE_ANGLE180(pitchRealAngle);
-			MINMAX(pitchAngleTarget, -9.0f, 32);
-
-			pitchIntensity = ProcessPitchPID(pitchAngleTarget,pitchRealAngle,-gYroXs);
-			setMotor(GMPITCH, pitchIntensity);
+			GMPITCHThisAngle = IOPool_pGetReadData(GMPITCHRxIOPool, 0)->angle;
+			//pitchEncoder = IOPool_pGetReadData(GMPITCHRxIOPool, 0)->angle;
+			if(isGMPITCHFirstEnter==1) 
+			{
+				GMPITCHLastAngle = GMPITCHThisAngle;
+				pitchRealAngle = (IOPool_pGetReadData(GMPITCHRxIOPool, 0)->angle- pitchZeroAngle) * 360 * 11 / (8192.0f * 50);
+				isGMPITCHFirstEnter = 0;
+			}	//初始化时，记录下当前编码器的值
 			
+			if(GMPITCHThisAngle <= GMPITCHLastAngle)
+			{
+				if((GMPITCHLastAngle-GMPITCHThisAngle)>3000)//编码器上溢
+					pitchRealAngle = pitchRealAngle + (GMPITCHThisAngle+8192-GMPITCHLastAngle) * 360 * 11 / (8192.0 * 50) ;
+				else//反转
+				 pitchRealAngle =  pitchRealAngle + (GMPITCHThisAngle - GMPITCHLastAngle) * 360 * 11 / (8192.0f * 50) ;
+			}
+			else
+			{
+				if((GMPITCHThisAngle-GMPITCHLastAngle)>3000)//编码器下溢
+					pitchRealAngle = pitchRealAngle - (GMPITCHLastAngle+8192-GMPITCHThisAngle) * 360 * 11 / (8192.0 * 50)  ;
+				else//正转
+					pitchRealAngle = pitchRealAngle + (GMPITCHThisAngle - GMPITCHLastAngle) * 360 * 11 / (8192.0f * 50) ;
+			}
+			
+			//NORMALIZE_ANGLE180(pitchRealAngle);
+			//限位
+			//MINMAX(pitchAngleTarget, -10.0f, 60.0f);	
+		  pitchMotorTarget = pitchAngleTarget - yawAngleTarget ; 
+			pitchIntensity = ProcessPitchPID(-pitchMotorTarget,pitchRealAngle,-gYroXs);
+	
+//		  if (isSetGM == 1)
+//			{
+//				setMotor(GMPITCH, -pitchIntensity);
+//			}
+			//setMotor(GMPITCH, -pitchIntensity);
+			GMPITCHLastAngle = GMPITCHThisAngle;
 			s_pitchCount = 0;
 		}
 		else

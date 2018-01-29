@@ -31,7 +31,7 @@ void InitRemoteControl(void);
 #define RC_FRAME_LENGTH                     18u
 #define STICK_TO_CHASSIS_SPEED_REF_FACT     2.f
 #define STICK_TO_ARM_SPEED_REF_FACT     0.001f
-#define STICK_TO_PITCH_ANGLE_INC_FACT       0.008f
+#define STICK_TO_PITCH_ANGLE_INC_FACT       0.005f
 #define STICK_TO_YAW_ANGLE_INC_FACT         0.005f
 
 #define FRICTION_WHEEL_MAX_DUTY             1350
@@ -182,5 +182,5 @@ void zySetLeftMode(Remote *rc);
 unsigned int zyGetLeftPostion(void);
 
 void RemoteGetBulletControl(RemoteSwitch_t *sw, uint8_t val);
-
+void SetGMZeroPoint(RemoteSwitch_t *sw, uint8_t val);
 #endif

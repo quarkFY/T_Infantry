@@ -90,6 +90,27 @@ unsigned int zyLeftPostion; //大符用左拨杆位置
 static uint32_t RotateCNT = 0;	//长按连发计数
 static uint16_t CNT_1s = 75;	//用于避免四连发模式下两秒内连射8发过于密集的情况
 static uint16_t CNT_250ms = 18;	//用于点射模式下射频限制
+
+//左上拨杆用于调试云台，记得要注释掉
+extern float yaw_zero, pitch_zero;
+extern float yawEncoder, pitchEncoder;
+extern float yawAngleTarget, pitchAngleTarget;
+extern int isSetGM;
+
+void SetGMZeroPoint(RemoteSwitch_t *sw, uint8_t val) 
+{
+//	if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_1TO3)   //OFF->HL
+//	{
+//		yaw_zero = yawEncoder;
+//		pitch_zero = pitchEncoder;
+//		isSetGM = 1;
+//	}
+	if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)	//CL->HL
+	{
+		pitchAngleTarget = 0;
+		yawAngleTarget = 0;
+	}
+}
  
 
 RampGen_t frictionRamp = RAMP_GEN_DAFAULT;  
