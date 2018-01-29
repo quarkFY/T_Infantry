@@ -706,6 +706,16 @@
               <FilePath>..\Framework\peripheral\peripheral_define.h</FilePath>
             </File>
             <File>
+              <FileName>peripheral_can.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Framework\peripheral\peripheral_can.c</FilePath>
+            </File>
+            <File>
+              <FileName>peripheral_can.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Framework\peripheral\peripheral_can.h</FilePath>
+            </File>
+            <File>
               <FileName>peripheral_gpio.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Framework\peripheral\peripheral_gpio.c</FilePath>
@@ -716,14 +726,29 @@
               <FilePath>..\Framework\peripheral\peripheral_gpio.h</FilePath>
             </File>
             <File>
+              <FileName>peripheral_spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Framework\peripheral\peripheral_spi.c</FilePath>
+            </File>
+            <File>
+              <FileName>peripheral_spi.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Framework\peripheral\peripheral_spi.h</FilePath>
+            </File>
+            <File>
+              <FileName>peripheral_usart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Framework\peripheral\peripheral_usart.c</FilePath>
+            </File>
+            <File>
+              <FileName>peripheral_usart.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Framework\peripheral\peripheral_usart.h</FilePath>
+            </File>
+            <File>
               <FileName>peripheral_tim.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Framework\peripheral\peripheral_tim.h</FilePath>
-            </File>
-            <File>
-              <FileName>peripheral_tim.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Framework\peripheral\peripheral_tim.c</FilePath>
             </File>
             <File>
               <FileName>peripheral_laser.h</FileName>
@@ -766,19 +791,14 @@
               <FilePath>..\Framework\utilities\utilities_tim.c</FilePath>
             </File>
             <File>
+              <FileName>peripheral_tim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Framework\peripheral\peripheral_tim.c</FilePath>
+            </File>
+            <File>
               <FileName>utilities_tim.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Framework\utilities\utilities_tim.h</FilePath>
-            </File>
-            <File>
-              <FileName>visualscope.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Framework\utilities\visualscope.c</FilePath>
-            </File>
-            <File>
-              <FileName>visualscope.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Framework\utilities\visualscope.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -819,6 +839,11 @@
               <FileName>drivers_imu_low.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Framework\drivers\drivers_imu_low.h</FilePath>
+            </File>
+            <File>
+              <FileName>drivers_imu_user.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Framework\drivers\drivers_imu_user.h</FilePath>
             </File>
             <File>
               <FileName>drivers_buzzer_low.h</FileName>
@@ -909,6 +934,21 @@
               <FileName>drivers_flash.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Framework\drivers\drivers_flash.h</FilePath>
+            </File>
+            <File>
+              <FileName>drivers_sonar.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Framework\drivers\drivers_sonar.c</FilePath>
+            </File>
+            <File>
+              <FileName>drivers_sonar_low.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Framework\drivers\drivers_sonar_low.h</FilePath>
+            </File>
+            <File>
+              <FileName>drivers_sonar_user.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Framework\drivers\drivers_sonar_user.h</FilePath>
             </File>
             <File>
               <FileName>drivers_ramp.h</FileName>
@@ -1054,21 +1094,6 @@
               <FileName>tasks_platemotor.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Framework\applications\tasks_platemotor.h</FilePath>
-            </File>
-            <File>
-              <FileName>ReadMe.txt</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\ReadMe.txt</FilePath>
-            </File>
-            <File>
-              <FileName>tasks_arm.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Framework\applications\tasks_arm.c</FilePath>
-            </File>
-            <File>
-              <FileName>tasks_arm.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Framework\applications\tasks_arm.h</FilePath>
             </File>
           </Files>
         </Group>

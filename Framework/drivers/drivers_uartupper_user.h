@@ -33,7 +33,6 @@ typedef enum{
 	Locating = 0,
 	Located = 1,
 }Locate_State_e;
-
 void SetLocateState(Locate_State_e v);
 Locate_State_e GetLocateState(void);
 
@@ -42,7 +41,6 @@ typedef enum{
 	BIGRUNE = 1,
 	SMALLRUNE = 2,
 }Rune_State_e;
-
 void SetRuneState(Rune_State_e v);
 Rune_State_e GetRuneState(void);
 
@@ -56,11 +54,9 @@ void vRefreshLocation(float yaw_center, float pitch_center);
 	
 IOPoolDeclare(ctrlUartIOPool, struct{uint8_t ch[size_frame];});
 
-//void manifoldUartRxCpltCallback(void);
+void manifoldUartRxCpltCallback(void);
 
 //void zyLocationInit(float yaw_center, float pitch_center);
 void zyLocationInit(Location_Number_s * Rune3Position);//张雁大符初始
 
-
-	
 #endif

@@ -30,17 +30,17 @@ void InitRemoteControl(void);
 #define REMOTE_CONTROLLER_STICK_OFFSET      1024u   
 #define RC_FRAME_LENGTH                     18u
 #define STICK_TO_CHASSIS_SPEED_REF_FACT     2.f
-#define STICK_TO_PITCH_ANGLE_INC_FACT       0.008f
+#define STICK_TO_PITCH_ANGLE_INC_FACT       0.005f
+
 #define STICK_TO_YAW_ANGLE_INC_FACT         0.005f
-
 #define FRICTION_WHEEL_MAX_DUTY             1350
-
 //mouse control parameters
 //#define MOUSE_TO_PITCH_ANGLE_INC_FACT 		0.025f * 3
 //#define MOUSE_TO_YAW_ANGLE_INC_FACT 		0.025f * 3
 
 #define NORMAL_FORWARD_BACK_SPEED 			500
 #define NORMAL_LEFT_RIGHT_SPEED   			650
+
 #define HIGH_FORWARD_BACK_SPEED 			660
 #define HIGH_LEFT_RIGHT_SPEED   			800
 #define LOW_FORWARD_BACK_SPEED 			100
@@ -76,7 +76,6 @@ typedef struct{
 	uint8_t rc_bytes[RC_FRAME_LENGTH];
 }RC_Raw_t;
 
-
 typedef __packed struct
 {
 	int16_t ch0;
@@ -101,7 +100,6 @@ typedef	__packed struct
 	uint16_t v;
 }Key;
 
-
 typedef __packed struct
 {
 	Remote rc;
@@ -116,6 +114,8 @@ typedef enum
 }Shoot_State_e;
 
 
+
+//����ģʽ:ң����/�������/ֹͣ����
 typedef enum
 {
 	REMOTE_INPUT = 1,
@@ -123,6 +123,7 @@ typedef enum
 	STOP = 2,
 }InputMode_e;
 
+//Ħ����״̬ö��
 typedef enum
 {
 	FRICTION_WHEEL_OFF = 0,
@@ -130,6 +131,7 @@ typedef enum
 	FRICTION_WHEEL_ON = 2,
 }FrictionWheelState_e;
 
+//���˶���ö��
 typedef enum
 {
 	FROM1TO2,
@@ -182,6 +184,7 @@ FrictionWheelState_e GetFrictionState(void);
 uint8_t IsRemoteBeingAction(void);
 void GetRemoteSwitchAction(RemoteSwitch_t *sw, uint8_t val);
 void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val);
+void SetGMZeroPoint(RemoteSwitch_t *sw, uint8_t val);
 void MouseShootControl(Mouse *mouse);
 void SetInputMode(Remote *rc);
 void SetFrictionWheelSpeed(uint16_t x);

@@ -33,5 +33,6 @@ extern osThreadId AMCanTransmitTaskHandle;
 
 extern osThreadId sonarTaskHandle;
 
+//extern osThreadId testFlashTaskHandle;
 
 #endif
