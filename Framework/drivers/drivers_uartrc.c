@@ -95,16 +95,16 @@ static uint16_t CNT_250ms = 18;	//用于点射模式下射频限制
 extern float yaw_zero, pitch_zero;
 extern float yawEncoder, pitchEncoder;
 extern float yawAngleTarget, pitchAngleTarget;
-extern int isSetGM;
+extern int isGMSet;
 
 void SetGMZeroPoint(RemoteSwitch_t *sw, uint8_t val) 
 {
-//	if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_1TO3)   //OFF->HL
-//	{
+	if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_1TO3)   //OFF->HL
+	{
 //		yaw_zero = yawEncoder;
 //		pitch_zero = pitchEncoder;
-//		isSetGM = 1;
-//	}
+		isGMSet = 1;
+	}
 	if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)	//CL->HL
 	{
 		pitchAngleTarget = 0;
