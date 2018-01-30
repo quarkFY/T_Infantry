@@ -30,7 +30,7 @@
 #include "tasks_timed.h"
 #include "drivers_canmotor_low.h"
 #include "tasks_motor.h"
-#include "tasks_arm.h"
+#include "tasks_can2motor.h"
 #include "drivers_sonar_low.h"
 #include "tasks_platemotor.h"
 #include "utilities_debug.h"

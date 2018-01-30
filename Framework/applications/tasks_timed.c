@@ -41,7 +41,7 @@
 #include "peripheral_laser.h"
 #include "drivers_uartrc_low.h"
 #include "tasks_motor.h"//zy
-#include "tasks_arm.h"
+#include "tasks_can2motor.h"
 #include <stdbool.h>
 #include "visualscope.h"
 
@@ -132,7 +132,6 @@ void Timer_2ms_lTask(void const * argument)
 			*****查看任务栈空间剩余示例*******
 			//		StackResidue = uxTaskGetStackHighWaterMark( GMControlTaskHandle );
 			//		fw_printfln("GM%ld",StackResidue);*/
-			
 			if(JUDGE_State == OFFLINE)
 			{
 				//fw_printfln("Judge not received");

@@ -31,7 +31,7 @@
 #include <stdbool.h>
 #include "tasks_platemotor.h"
 #include "drivers_uartupper_user.h"
-#include "tasks_arm.h"
+#include "tasks_can2motor.h"
 #include "peripheral_laser.h"
 #include "peripheral_sov.h"
 

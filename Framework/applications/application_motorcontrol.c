@@ -49,6 +49,9 @@ void setMotor(MotorId motorId, int16_t Intensity){
 	static int16_t AM3RIntensity = 0;
 	static int8_t AMReady = 0;
 	
+	static int16_t SMIntensity = 0;
+	static int8_t SMReady = 0;
+	
 	switch(motorId)
 	{
 		case CMFL:
@@ -75,7 +78,7 @@ void setMotor(MotorId motorId, int16_t Intensity){
 			if(PMReady & 0x1){PMReady = 0x3;}else{PMReady |= 0x1;}
 			PM1Intensity = Intensity;break;
 		case PM2:
-			if(PMReady & 0x2){PMReady = 0x3;}else{PMReady |= 0x12;}
+			if(PMReady & 0x2){PMReady = 0x3;}else{PMReady |= 0x2;}
 			PM2Intensity = Intensity;break;
 		
 		case AM1L:
@@ -93,6 +96,10 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		case AM3R:
 			if(AMReady & 0x10){AMReady = 0x1F;}else{AMReady |= 0x10;}
 			AM3RIntensity = Intensity;break;
+			
+		case SM:
+			if(SMReady & 0x1){SMReady = 0x1;}else{SMReady |= 0x1;}
+			SMIntensity = Intensity;break;
 			
 		default:
 			fw_Error_Handler();
@@ -285,6 +292,24 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		TransmitCAN2();
 		AMReady = 0;
 		
+	}
+	
+	if(SMReady == 0x1)
+	{
+		CanTxMsgTypeDef *pData = IOPool_pGetWriteData(SMTxIOPool);
+		pData->StdId = SM_TXID;
+		pData->Data[0] = 0;
+		pData->Data[1] = 0;
+		pData->Data[2] = 0;
+		pData->Data[3] = 0;
+		pData->Data[4] = 0;
+		pData->Data[5] = 0;
+		pData->Data[6] = (uint8_t)(SMIntensity >> 8);
+		pData->Data[7] = (uint8_t)SMIntensity;
+		IOPool_getNextWrite(SMTxIOPool);
+		SMReady = 0;
+		
+		TransmitCAN2();
 	}
 }
 	

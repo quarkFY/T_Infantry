@@ -35,7 +35,7 @@
 #include "stm32f4xx_hal_uart.h"
 #include "tasks_platemotor.h"
 #include "tasks_motor.h"
-#include "tasks_arm.h"
+#include "tasks_can2motor.h"
 
 NaiveIOPoolDefine(rcUartIOPool, {0});
 

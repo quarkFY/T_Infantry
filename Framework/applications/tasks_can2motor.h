@@ -19,13 +19,14 @@
 
 #define AM1Reduction 189.0
 #define AM23Reduction 36.0
-
+#define SMReduction 72.0 //2006减速比，未知
 void Can2ControlTask(void const * argument);
 void ControlAM1L(void);
 void ControlAM1R(void);
 void ControlAM2L(void);
 void ControlAM2R(void);
 void ControlAM3R(void);
+void ControlSM(void);
 
 void setAMAngle(MotorId id, float angle);
 void getGolf(void);
