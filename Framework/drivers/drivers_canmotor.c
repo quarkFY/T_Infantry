@@ -42,6 +42,7 @@ NaiveIOPoolDefine(PM2RxIOPool, {0});
 NaiveIOPoolDefine(GMPITCHRxIOPool, {0});
 NaiveIOPoolDefine(GMYAWRxIOPool, {0});
 
+NaiveIOPoolDefine(SMRxIOPool, {0});
 //TxIOPool
 #define DataPoolInit \
 	{ \
@@ -88,6 +89,14 @@ NaiveIOPoolDefine(AM23TxIOPool, DataPoolInit);
 NaiveIOPoolDefine(PMTxIOPool, DataPoolInit);
 #undef DataPoolInit 
 
+#define DataPoolInit \
+	{ \
+		{SM_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}}, \
+		{SM_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}}, \
+		{SM_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}} \
+}
+NaiveIOPoolDefine(SMTxIOPool, DataPoolInit);
+#undef DataPoolInit 
 //#define DataPoolInit \
 //	{ \
 //		{ZGYRO_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}}, \
@@ -236,6 +245,11 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan){
 				IOPool_pGetWriteData(AM3RRxIOPool)->RotateSpeed = CanRxGetU16(Can2RxMsg, 1);
 				IOPool_getNextWrite(AM3RRxIOPool);
 				break;
+			case SM_RXID:
+				IOPool_pGetWriteData(SMRxIOPool)->angle = CanRxGetU16(Can1RxMsg, 0);
+				IOPool_pGetWriteData(SMRxIOPool)->RotateSpeed = CanRxGetU16(Can1RxMsg, 1);
+				IOPool_getNextWrite(SMRxIOPool);
+				break;
 //			case ZGYRO_RXID:
 //			 {
 //				//单轴陀螺仪没有datasheet，完全参照官方程序
@@ -346,7 +360,19 @@ void TransmitCAN2(void){
 			}
 			taskEXIT_CRITICAL();
 	}
-	
+	if(IOPool_hasNextRead(SMTxIOPool, 0))
+	{
+			osSemaphoreWait(Can2TransmitSemaphoreHandle, osWaitForever);
+			
+			IOPool_getNextRead(SMTxIOPool, 0);
+			hcan2.pTxMsg = IOPool_pGetReadData(SMTxIOPool, 0);
+			
+			taskENTER_CRITICAL();
+			if(HAL_CAN_Transmit_IT(&hcan2) != HAL_OK){
+				fw_Warning();
+			}
+			taskEXIT_CRITICAL();
+	}
 //	if(IOPool_hasNextRead(ZGYROTxIOPool, 0))
 //	{
 //			osSemaphoreWait(Can2TransmitSemaphoreHandle, osWaitForever);

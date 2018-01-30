@@ -54,10 +54,10 @@ int isGMYAWFirstEnter = 1;
 int isGMPITCHFirstEnter = 1;
 int isSetGM;
 
-fw_PID_Regulator_t pitchPositionPID = fw_PID_INIT(8.0, 25.0, 20.0, 10000.0, 10000.0, 10000.0, 10000.0);
-fw_PID_Regulator_t yawPositionPID = fw_PID_INIT(8.0, 25.0, 20, 10000.0, 10000.0, 10000.0, 10000.0);//等幅振荡P37.3 I11.9 D3.75  原26.1 8.0 1.1
-fw_PID_Regulator_t pitchSpeedPID = fw_PID_INIT(30.0, 0.0, 5.0, 10000.0, 10000.0, 10000.0, 5000.0);
-fw_PID_Regulator_t yawSpeedPID = fw_PID_INIT(30.0, 0.0, 5.0, 10000.0, 10000.0, 10000.0, 5000.0);
+fw_PID_Regulator_t pitchPositionPID = fw_PID_INIT(8.0, 25.0, 20.0, 0.0, 10000.0, 10000.0, 10000.0);
+fw_PID_Regulator_t yawPositionPID = fw_PID_INIT(8.0, 25.0, 20, 0.0, 10000.0, 10000.0, 10000.0);//等幅振荡P37.3 I11.9 D3.75  原26.1 8.0 1.1
+fw_PID_Regulator_t pitchSpeedPID = fw_PID_INIT(30.0, 0.0, 5.0, 100.0, 10000.0, 10000.0, 5000.0);
+fw_PID_Regulator_t yawSpeedPID = fw_PID_INIT(30.0, 0.0, 5.0, 100.0, 10000.0, 10000.0, 5000.0);
 
 //底盘
 PID_Regulator_t CMRotatePID = CHASSIS_MOTOR_ROTATE_PID_DEFAULT; 
@@ -73,6 +73,12 @@ float PM1RealAngle = 0.0;
 float PM2RealAngle = 0.0;
 float PM1AngleTarget = 0.0;
 float PM2AngleTarget = 0.0;
+uint16_t PM1ThisAngle = 0;
+uint16_t PM1LastAngle = 0;
+uint8_t isPM1FirstEnter = 1;
+uint16_t PM2ThisAngle = 0;
+uint16_t PM2LastAngle = 0;
+uint8_t isPM2FirstEnter = 1;
 fw_PID_Regulator_t PM1PositionPID = fw_PID_INIT(80, 0.0, 200.0, 10000.0, 10000.0, 10000.0, 16384.0);
 fw_PID_Regulator_t PM2PositionPID = fw_PID_INIT(100.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
 fw_PID_Regulator_t PM1SpeedPID = fw_PID_INIT(2, 0.0, 40.0, 10000.0, 10000.0, 10000.0, 4000.0);
@@ -125,10 +131,11 @@ void Can1ControlTask(void const * argument)
 }
 
 
-int16_t yawIntensity = 0;
+
 /*Yaw电机*/
 void ControlYaw(void)
 {
+	int16_t yawIntensity = 0;
 	if(IOPool_hasNextRead(GMYAWRxIOPool, 0))
 	{
 		if(s_yawCount == 1)
@@ -187,10 +194,11 @@ void ControlYaw(void)
 	}
 }
 
-int16_t pitchIntensity = 0;
+
 /*Pitch电机*/
 void ControlPitch(void)
 {
+	int16_t pitchIntensity = 0;
 	if(IOPool_hasNextRead(GMPITCHRxIOPool, 0))
 	{
 		if(s_pitchCount == 1)
@@ -381,9 +389,7 @@ void ControlCMBR()
 	}
 }
 
-uint16_t PM1ThisAngle = 0;
-uint16_t PM1LastAngle = 0;
-uint8_t isPM1FirstEnter = 1;
+
 void ControlPM1()
 {
 	if(IOPool_hasNextRead(PM1RxIOPool, 0))
@@ -433,9 +439,7 @@ void ControlPM1()
 	}
 }
 
-uint16_t PM2ThisAngle = 0;
-uint16_t PM2LastAngle = 0;
-uint8_t isPM2FirstEnter = 1;
+
 void ControlPM2()
 {
 	if(IOPool_hasNextRead(PM2RxIOPool, 0))
