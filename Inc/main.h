@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * File Name          : main.h
+  * File Name          : main.hpp
   * Description        : This file contains the common defines of the application
   ******************************************************************************
   * This notice applies to any and all portions of this file
@@ -9,7 +9,7 @@
   * inserted by the user or by software development tools
   * are owned by their respective copyright owners.
   *
-  * Copyright (c) 2017 STMicroelectronics International N.V. 
+  * Copyright (c) 2018 STMicroelectronics International N.V. 
   * All rights reserved.
   *
   * Redistribution and use in source and binary forms, with or without 
@@ -50,6 +50,7 @@
 #define __MAIN_H
   /* Includes ------------------------------------------------------------------*/
 
+/* Includes ------------------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
@@ -58,8 +59,14 @@
 
 #define LASER_Pin GPIO_PIN_13
 #define LASER_GPIO_Port GPIOG
+#define SOV1_Pin GPIO_PIN_5
+#define SOV1_GPIO_Port GPIOE
+#define SOV2_Pin GPIO_PIN_6
+#define SOV2_GPIO_Port GPIOE
 #define LASER2_Pin GPIO_PIN_0
 #define LASER2_GPIO_Port GPIOI
+#define SOV3_Pin GPIO_PIN_1
+#define SOV3_GPIO_Port GPIOF
 #define EncoderB_Pin GPIO_PIN_11
 #define EncoderB_GPIO_Port GPIOH
 #define EncoderA_Pin GPIO_PIN_10
@@ -71,13 +78,26 @@
 #define PM_Dir_Ctrl2_Pin GPIO_PIN_5
 #define PM_Dir_Ctrl2_GPIO_Port GPIOA
 
+/* ########################## Assert Selection ############################## */
+/**
+  * @brief Uncomment the line below to expanse the "assert_param" macro in the 
+  *        HAL drivers code
+  */
+/* #define USE_FULL_ASSERT    1U */
+
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
 
+#ifdef __cplusplus
+ extern "C" {
+#endif
 void _Error_Handler(char *, int);
 
 #define Error_Handler() _Error_Handler(__FILE__, __LINE__)
+#ifdef __cplusplus
+}
+#endif
 
 /**
   * @}

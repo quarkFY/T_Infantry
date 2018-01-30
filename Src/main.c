@@ -9,7 +9,7 @@
   * inserted by the user or by software development tools
   * are owned by their respective copyright owners.
   *
-  * Copyright (c) 2017 STMicroelectronics International N.V. 
+  * Copyright (c) 2018 STMicroelectronics International N.V. 
   * All rights reserved.
   *
   * Redistribution and use in source and binary forms, with or without 
@@ -45,6 +45,7 @@
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f4xx_hal.h"
@@ -87,16 +88,16 @@ int main(void)
 
   /* USER CODE BEGIN 1 */
 	
-	/*硬件决定性能边界，软件发挥硬件性能并定义机器人行为*/
+	/*硬件决定性能边界，软件发挥硬件�?�能并定义机器人行为*/
 	
-	/*各位请抱紧机械大腿*/
+	/*各位请抱紧机械大�?*/
 	
 	/*
 	TPP2016步兵电控
-	骆庭晟：底层与代码框架
-	荣岌昆：运动逻辑与整机调试
+	骆庭晟：底层与代码框�?
+	荣岌昆：运动逻辑与整机调�?
 	邱志康：拨盘电机调试
-	张雁：大符调试
+	张雁：大符调�?
 	陈小枫：基地反击Demo
 	*/
 	//我好帅啊

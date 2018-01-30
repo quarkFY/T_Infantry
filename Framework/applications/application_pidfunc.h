@@ -9,30 +9,30 @@
 	&PID_Calc, &PID_Reset \
 };
 
-typedef struct PID_Regulator_t
-{
-	float target;
-	float feedback;
-	float errorCurr;
-	float errorSum;
-	float errorLast;
-	float kp;
-	float ki;
-	float kd;
-	float componentKp;
-	float componentKi;
-	float componentKd;
-	float componentKpMax;
-	float componentKiMax;
-	float componentKdMax;
-	float output;
-	float outputMax;
-	
-	void (*Calc)(struct PID_Regulator_t *pid);
-	void (*Reset)(struct PID_Regulator_t *pid);
-}PID_Regulator_t;
+//typedef struct PID_Regulator_t
+//{
+//	float target;
+//	float feedback;
+//	float errorCurr;
+//	float errorSum;
+//	float errorLast;
+//	float kp;
+//	float ki;
+//	float kd;
+//	float componentKp;
+//	float componentKi;
+//	float componentKd;
+//	float componentKpMax;
+//	float componentKiMax;
+//	float componentKdMax;
+//	float output;
+//	float outputMax;
+//	
+//	void (*Calc)(struct PID_Regulator_t *pid);
+//	void (*Reset)(struct PID_Regulator_t *pid);
+//}PID_Regulator_t;
 
-void PID_Reset(PID_Regulator_t *pid);
-void PID_Calc(PID_Regulator_t *pid);
+//void PID_Reset(PID_Regulator_t *pid);
+//void PID_Calc(PID_Regulator_t *pid);
 
 #endif

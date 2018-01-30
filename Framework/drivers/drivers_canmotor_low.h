@@ -25,7 +25,6 @@ void InitCanReception(void);
 #define RATE_BUF_SIZE 6
 
 //æ²¡ç”¨åˆ°
-/*
 typedef struct{
 	int32_t raw_value;   									//±àÂëÆ÷²»¾­´¦ÀíµÄÔ­Ê¼Öµ
 	int32_t last_raw_value;								//ÉÏÒ»´ÎµÄ±àÂëÆ÷Ô­Ê¼Öµ
@@ -40,7 +39,7 @@ typedef struct{
 	int32_t filter_rate;											//ËÙ¶È
 	float ecd_angle;											//½Ç¶È
 }Encoder;
-*/
+
 
 
 #endif

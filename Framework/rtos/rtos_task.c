@@ -92,6 +92,12 @@ void rtos_AddThreads()
 //	osThreadDef(ManifoldUartTask, ManifoldUartTask, osPriorityAboveNormal, 0, 128);
 //  getCtrlUartTaskHandle = osThreadCreate(osThread(ManifoldUartTask), NULL);
 
+  osThreadDef(getCtrlUartTask, getCtrlUartTask, osPriorityAboveNormal, 0, 256);
+  getCtrlUartTaskHandle = osThreadCreate(osThread(getCtrlUartTask), NULL);
+	
+	//osThreadDef(Wave_Task, wave_task, osPriorityNormal, 0, 128);
+  //WaveTaskHandle = osThreadCreate(osThread(Wave_Task), NULL);
+	
 //CAN1电机控制任务
 	osThreadDef(Can1_Task, Can1ControlTask, osPriorityAboveNormal, 0, 800);
   Can1ControlTaskHandle = osThreadCreate(osThread(Can1_Task), NULL);

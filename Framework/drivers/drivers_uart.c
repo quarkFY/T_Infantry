@@ -27,11 +27,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 		//遥控器
 		rcUartRxCpltCallback();
 		
-	}else if(UartHandle == &MANIFOLD_UART){
+	}else if(UartHandle == &huart3){
 		//妙算通信串口
 		//自定义协议
 //		fw_printfln("manifold get!!!");
-		manifoldUartRxCpltCallback();
+		ctrlUartRxCpltCallback();
 	}
 	else if(UartHandle == &JUDGE_UART){
 		//裁判系统读取采用单字节阻塞接收方式
@@ -39,7 +39,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 		//血量
 		//底盘电压、电流
 		//能量槽*****重要，超功率掉血
-		pidTuneRxCpltCallback();
 		//judgeUartRxCpltCallback();
 	}
 }   

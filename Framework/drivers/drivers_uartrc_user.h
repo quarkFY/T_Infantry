@@ -50,11 +50,7 @@ typedef struct{
 
 IOPoolDeclare(rcUartIOPool, struct{uint8_t ch[18];});
 
-typedef enum
-{
-	AUTO = 0,
-	MANUL = 1,
-}Shoot_Mode_e;
+
 
 typedef enum
 {
@@ -69,6 +65,49 @@ typedef enum
 	HIGH_s = 2,
 }Move_Speed_e;
 
+typedef enum
+{
+	NO_GETBULLET = 0,
+	AUTO_GETBULLET = 1,
+	MANUL_GETBULLET = 2,
+	HERO_STANDBY=3,
+}Get_Bullet_e;
+
+typedef enum
+{
+	NO_SHOOT = 0,
+	AUTO_SHOOT = 1,
+	MANUL_SHOOT_ONE = 2,
+	MANUL_SHOOT_FOUR = 3,
+}Shoot_State_e;
+
+typedef enum
+{
+	LOCK,
+	UNLOCK,
+}GMMode_e;
+
+typedef enum
+{
+	REMOTE_INPUT = 1,
+	KEY_MOUSE_INPUT = 3,
+	GETBULLET_INPUT = 2,
+}InputMode_e;
+
+typedef enum
+{
+	FRICTION_WHEEL_OFF = 0,
+	FRICTION_WHEEL_START_TURNNING = 1,
+	FRICTION_WHEEL_ON = 2,
+}FrictionWheelState_e;
+
+typedef enum
+{
+	NO_GETGOLF = 0,
+	MANUL_GETGOLF = 1,
+  AUTO_GETGOLF = 2,
+}GetGolf_State_e;
+
 /*没用到
 typedef enum
 {
@@ -77,13 +116,21 @@ typedef enum
 }Slab_Mode_e;
 */
 
-Shoot_Mode_e GetShootMode(void);
-void SetShootMode(Shoot_Mode_e v);
+//Shoot_State_e GetShootMode(void);
+//void SetShootMode(Shoot_Mode_e v);
 Emergency_Flag GetEmergencyFlag(void);
 void SetEmergencyFlag(Emergency_Flag v);
 Move_Speed_e GetMoveSpeed(void);
 void SetMoveSpeed(Move_Speed_e v);
-//Slab_Mode_e GetSlabState(void);
-//void SetSlabState(Slab_Mode_e v);
+
+InputMode_e GetInputMode(void);
+void SetShootState(Shoot_State_e v);
+Shoot_State_e GetShootState(void);
+void SetFrictionState(FrictionWheelState_e v);
+FrictionWheelState_e GetFrictionState(void);
+
+Get_Bullet_e GetGetBulletState(void);
+void SetGetBulletState(Get_Bullet_e v);
+
 
 #endif

@@ -46,7 +46,7 @@ void setMotor(MotorId motorId, int16_t Intensity){
 	static int16_t AM1RIntensity = 0;
 	static int16_t AM2LIntensity = 0;
 	static int16_t AM2RIntensity = 0;
-	static int16_t AM3LIntensity = 0;
+	static int16_t AM3RIntensity = 0;
 	static int8_t AMReady = 0;
 	
 	switch(motorId)
@@ -90,9 +90,9 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		case AM2R:
 			if(AMReady & 0x08){AMReady = 0x1F;}else{AMReady |= 0x08;}
 			AM2RIntensity = Intensity;break;
-		case AM3L:
+		case AM3R:
 			if(AMReady & 0x10){AMReady = 0x1F;}else{AMReady |= 0x10;}
-			AM3LIntensity = Intensity;break;
+			AM3RIntensity = Intensity;break;
 			
 		default:
 			fw_Error_Handler();
@@ -197,7 +197,7 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		AM1RIntensity = 0;
 		AM2LIntensity = 0;
 		AM2RIntensity = 0;
-		AM3LIntensity = 0;
+		AM3RIntensity = 0;
 	}
 
 	if(CMReady == 0xF)
@@ -276,8 +276,8 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		pData->Data[1] = (uint8_t)AM2LIntensity;
 		pData->Data[2] = (uint8_t)(AM2RIntensity >> 8);
 		pData->Data[3] = (uint8_t)AM2RIntensity;
-		pData->Data[4] = (uint8_t)(AM3LIntensity >> 8);
-		pData->Data[5] = (uint8_t)AM3LIntensity;
+		pData->Data[4] = (uint8_t)(AM3RIntensity >> 8);
+		pData->Data[5] = (uint8_t)AM3RIntensity;
 		pData->Data[6] = 0;
 		pData->Data[7] = 0;
 		IOPool_getNextWrite(AM23TxIOPool);
@@ -288,20 +288,20 @@ void setMotor(MotorId motorId, int16_t Intensity){
 	}
 }
 	
+//删除所有的GYRO
+//void GYRO_RST(void)
+//{
+//	CanTxMsgTypeDef *pData = IOPool_pGetWriteData(ZGYROTxIOPool);
+//	pData->StdId = ZGYRO_TXID;
+//	pData->Data[0] = 0x00;
+//	pData->Data[1] = 0x01;
+//	pData->Data[2] = 0x02;
+//	pData->Data[3] = 0x03;
+//	pData->Data[4] = 0x04;
+//	pData->Data[5] = 0x05;
+//	pData->Data[6] = 0x06;
+//	pData->Data[7] = 0x07;
+//	IOPool_getNextWrite(ZGYROTxIOPool);
 
-void GYRO_RST(void)
-{
-	CanTxMsgTypeDef *pData = IOPool_pGetWriteData(ZGYROTxIOPool);
-	pData->StdId = ZGYRO_TXID;
-	pData->Data[0] = 0x00;
-	pData->Data[1] = 0x01;
-	pData->Data[2] = 0x02;
-	pData->Data[3] = 0x03;
-	pData->Data[4] = 0x04;
-	pData->Data[5] = 0x05;
-	pData->Data[6] = 0x06;
-	pData->Data[7] = 0x07;
-	IOPool_getNextWrite(ZGYROTxIOPool);
-
-	TransmitCAN2();
-}
+//	TransmitCAN2();
+//}

@@ -21,6 +21,7 @@ void RemoteTaskInit(void);
 void RemoteDataProcess(uint8_t *pData);
 void MouseKeyControlProcess(Mouse *mouse, Key *key);
 void RemoteControlProcess(Remote *rc);
+void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key);
 
 
 #endif

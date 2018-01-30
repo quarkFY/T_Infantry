@@ -22,7 +22,7 @@
 #include "rtos_semaphore.h"
 
 
-float ZGyroModuleAngle = 0.0f;
+//float ZGyroModuleAngle = 0.0f;
 
 //RxIOPool
 NaiveIOPoolDefine(CMFLRxIOPool, {0});
@@ -34,7 +34,7 @@ NaiveIOPoolDefine(AM1LRxIOPool, {0});
 NaiveIOPoolDefine(AM1RRxIOPool, {0});
 NaiveIOPoolDefine(AM2LRxIOPool, {0});
 NaiveIOPoolDefine(AM2RRxIOPool, {0});
-NaiveIOPoolDefine(AM3LRxIOPool, {0});
+NaiveIOPoolDefine(AM3RRxIOPool, {0});
 
 NaiveIOPoolDefine(PM1RxIOPool, {0});
 NaiveIOPoolDefine(PM2RxIOPool, {0});
@@ -42,6 +42,7 @@ NaiveIOPoolDefine(PM2RxIOPool, {0});
 NaiveIOPoolDefine(GMPITCHRxIOPool, {0});
 NaiveIOPoolDefine(GMYAWRxIOPool, {0});
 
+NaiveIOPoolDefine(SMRxIOPool, {0});
 //TxIOPool
 #define DataPoolInit \
 	{ \
@@ -90,12 +91,20 @@ NaiveIOPoolDefine(PMTxIOPool, DataPoolInit);
 
 #define DataPoolInit \
 	{ \
-		{ZGYRO_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}}, \
-		{ZGYRO_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}}, \
-		{ZGYRO_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}} \
-	}
-NaiveIOPoolDefine(ZGYROTxIOPool, DataPoolInit);
+		{SM_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}}, \
+		{SM_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}}, \
+		{SM_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}} \
+}
+NaiveIOPoolDefine(SMTxIOPool, DataPoolInit);
 #undef DataPoolInit 
+//#define DataPoolInit \
+//	{ \
+//		{ZGYRO_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}}, \
+//		{ZGYRO_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}}, \
+//		{ZGYRO_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}} \
+//	}
+//NaiveIOPoolDefine(ZGYROTxIOPool, DataPoolInit);
+//#undef DataPoolInit 
 
 #define CanRxGetU16(canRxMsg, num) (((uint16_t)canRxMsg.Data[num * 2] << 8) | (uint16_t)canRxMsg.Data[num * 2 + 1])
 
@@ -231,19 +240,24 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan){
 				IOPool_pGetWriteData(AM2RRxIOPool)->RotateSpeed = CanRxGetU16(Can2RxMsg, 1);
 				IOPool_getNextWrite(AM2RRxIOPool);
 				break;
-			case AM3L_RXID:
-				IOPool_pGetWriteData(AM3LRxIOPool)->angle = CanRxGetU16(Can2RxMsg, 0);
-				IOPool_pGetWriteData(AM3LRxIOPool)->RotateSpeed = CanRxGetU16(Can2RxMsg, 1);
-				IOPool_getNextWrite(AM3LRxIOPool);
+			case AM3R_RXID:
+				IOPool_pGetWriteData(AM3RRxIOPool)->angle = CanRxGetU16(Can2RxMsg, 0);
+				IOPool_pGetWriteData(AM3RRxIOPool)->RotateSpeed = CanRxGetU16(Can2RxMsg, 1);
+				IOPool_getNextWrite(AM3RRxIOPool);
 				break;
-			case ZGYRO_RXID:
-			 {
-				//单轴陀螺仪没有datasheet，完全参照官方程序
-				 //解算成角度值
-				CanRxMsgTypeDef *msg = &Can2RxMsg;
-				ZGyroModuleAngle = -0.01f*((int32_t)(msg->Data[0]<<24)|(int32_t)(msg->Data[1]<<16) | (int32_t)(msg->Data[2]<<8) | (int32_t)(msg->Data[3])); 
-			 }
-			 break;
+			case SM_RXID:
+				IOPool_pGetWriteData(SMRxIOPool)->angle = CanRxGetU16(Can1RxMsg, 0);
+				IOPool_pGetWriteData(SMRxIOPool)->RotateSpeed = CanRxGetU16(Can1RxMsg, 1);
+				IOPool_getNextWrite(SMRxIOPool);
+				break;
+//			case ZGYRO_RXID:
+//			 {
+//				//单轴陀螺仪没有datasheet，完全参照官方程序
+//				 //解算成角度值
+//				CanRxMsgTypeDef *msg = &Can2RxMsg;
+//				ZGyroModuleAngle = -0.01f*((int32_t)(msg->Data[0]<<24)|(int32_t)(msg->Data[1]<<16) | (int32_t)(msg->Data[2]<<8) | (int32_t)(msg->Data[3])); 
+//			 }
+//			 break;
 			default:
 			fw_Error_Handler();
 		}
@@ -346,21 +360,33 @@ void TransmitCAN2(void){
 			}
 			taskEXIT_CRITICAL();
 	}
-	
-	if(IOPool_hasNextRead(ZGYROTxIOPool, 0))
+	if(IOPool_hasNextRead(SMTxIOPool, 0))
 	{
 			osSemaphoreWait(Can2TransmitSemaphoreHandle, osWaitForever);
-		
-			IOPool_getNextRead(ZGYROTxIOPool, 0);
-			hcan2.pTxMsg = IOPool_pGetReadData(ZGYROTxIOPool, 0);
-		
+			
+			IOPool_getNextRead(SMTxIOPool, 0);
+			hcan2.pTxMsg = IOPool_pGetReadData(SMTxIOPool, 0);
+			
 			taskENTER_CRITICAL();
-			if(HAL_CAN_Transmit_IT(&hcan2) != HAL_OK)
-			{
+			if(HAL_CAN_Transmit_IT(&hcan2) != HAL_OK){
 				fw_Warning();
 			}
 			taskEXIT_CRITICAL();
 	}
+//	if(IOPool_hasNextRead(ZGYROTxIOPool, 0))
+//	{
+//			osSemaphoreWait(Can2TransmitSemaphoreHandle, osWaitForever);
+//		
+//			IOPool_getNextRead(ZGYROTxIOPool, 0);
+//			hcan2.pTxMsg = IOPool_pGetReadData(ZGYROTxIOPool, 0);
+//		
+//			taskENTER_CRITICAL();
+//			if(HAL_CAN_Transmit_IT(&hcan2) != HAL_OK)
+//			{
+//				fw_Warning();
+//			}
+//			taskEXIT_CRITICAL();
+//	}
 }
 
 

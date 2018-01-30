@@ -20,54 +20,92 @@
 #include "drivers_canmotor_user.h"
 #include "application_motorcontrol.h"
 #include "utilities_debug.h"
+#include "tasks_remotecontrol.h"
+#include <math.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <usart.h>
 
 //PID_INIT(Kp, Ki, Kd, KpMax, KiMax, KdMax, OutputMax)
 //机械臂电机PID
 
-fw_PID_Regulator_t AM1LPositionPID = fw_PID_INIT(1.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
-fw_PID_Regulator_t AM1RPositionPID = fw_PID_INIT(1.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
-fw_PID_Regulator_t AM2LPositionPID = fw_PID_INIT(1.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
-fw_PID_Regulator_t AM2RPositionPID = fw_PID_INIT(1.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
-fw_PID_Regulator_t AM3LPositionPID = fw_PID_INIT(1.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
-fw_PID_Regulator_t AM1LSpeedPID = fw_PID_INIT(10.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 4000.0);
-fw_PID_Regulator_t AM1RSpeedPID = fw_PID_INIT(10.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 4000.0);
-fw_PID_Regulator_t AM2LSpeedPID = fw_PID_INIT(10.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 4000.0);
-fw_PID_Regulator_t AM2RSpeedPID = fw_PID_INIT(10.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 4000.0);
-fw_PID_Regulator_t AM3LSpeedPID = fw_PID_INIT(10.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 4000.0);
+fw_PID_Regulator_t AM1LPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
+fw_PID_Regulator_t AM1RPositionPID = fw_PID_INIT(100.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 16384.0);
+fw_PID_Regulator_t AM2LPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
+fw_PID_Regulator_t AM2RPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
+fw_PID_Regulator_t AM3RPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
+fw_PID_Regulator_t AM1LSpeedPID = fw_PID_INIT(2.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 16384.0);
+fw_PID_Regulator_t AM1RSpeedPID = fw_PID_INIT(5.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 16384.0);
+fw_PID_Regulator_t AM2LSpeedPID = fw_PID_INIT(2.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 6000.0);
+fw_PID_Regulator_t AM2RSpeedPID = fw_PID_INIT(2.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 6000.0);
+fw_PID_Regulator_t AM3RSpeedPID = fw_PID_INIT(2.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 6000.0);
 
 ////待标定
 //#define AM1L_zero 0
 //#define AM1R_zero 0
 //#define AM2L_zero 0
 //#define AM2R_zero 0
-//#define AM3L_zero 0
+//#define AM3R_zero 0
+extern float PM1AngleTarget;
+
+#define LengthOfArm1 500
+#define LengthOfArm2 250
+#define PI 3.141592653589
 
 //机械臂电机目标物理角度值
 float AM1LAngleTarget = 0.0;
 float AM1RAngleTarget = 0.0;
 float AM2LAngleTarget = 0.0;
 float AM2RAngleTarget = 0.0;
-float AM3LAngleTarget = 0.0;
+float AM3RAngleTarget = 0.0;
+
+double Last_Arm_Horizontal_Position;
+double Last_Arm_Vertical_Position;
+
+float LastAM1LAngleTarget;
+float LastAM1RAngleTarget;
+float LastAM2LAngleTarget;
+float LastAM2RAngleTarget;
+float LastAM3RAngleTarget;
 
 //机械臂电机实际物理角度值
 float AM1LRealAngle = 0.0;
 float AM1RRealAngle = 0.0;
 float AM2LRealAngle = 0.0;
 float AM2RRealAngle = 0.0;
-float AM3LRealAngle = 0.0;
+float AM3RRealAngle = 0.0;
+
+//末端水平垂直位置
+double Arm_Horizontal_Position = LengthOfArm1 - LengthOfArm2;
+double Arm_Vertical_Position = 0.0;
+double SquareOfRadius = 250.0*250.0;
+double AngleOfTarget = 0.0;
+
+//水平垂直运动目标解算值
+//double AM1R_AddUpAngle = 0;
+//double AM1L_AddUpAngle = 0;
+//double AM2R_AddUpAngle = 0;
+//double AM2L_AddUpAngle = 0;
+//double AM3R_AddUpAngle = 0;
+	
+extern ArmSpeed_Ref_t ArmSpeedRef;
 
 //uint16_t AM1LRawAngle = 0;
 //uint16_t AM1RRawAngle = 0;
 //uint16_t AM2LRawAngle = 0;
 //uint16_t AM2RRawAngle = 0;
-//uint16_t AM3LRawAngle = 0;
+//uint16_t AM3RRawAngle = 0;
+
 
 //用于减小系统开销
 static uint8_t s_AM1LCount = 0;
 static uint8_t s_AM1RCount = 0;
 static uint8_t s_AM2LCount = 0;
 static uint8_t s_AM2RCount = 0;
-static uint8_t s_AM3LCount = 0;
+static uint8_t s_AM3RCount = 0;
 
 void Can2ControlTask(void const * argument)
 {
@@ -79,7 +117,7 @@ void Can2ControlTask(void const * argument)
 		ControlAM1R();
 		ControlAM2L();
 		ControlAM2R();
-		ControlAM3L();
+		ControlAM3R();
 	}
 }
 
@@ -280,51 +318,51 @@ void ControlAM2R()
 	}
 }
 
-uint8_t isAM3LFirstEnter = 1;
-uint16_t AM3LThisAngle = 0;
-uint16_t AM3LLastAngle = 0;
-void ControlAM3L()
+uint8_t isAM3RFirstEnter = 1;
+uint16_t AM3RThisAngle = 0;
+uint16_t AM3RLastAngle = 0;
+void ControlAM3R()
 {
-	if(IOPool_hasNextRead(AM3LRxIOPool, 0))
+	if(IOPool_hasNextRead(AM3RRxIOPool, 0))
 	{
-		if(s_AM3LCount == 1)
+		if(s_AM3RCount == 1)
 		{
-			IOPool_getNextRead(AM3LRxIOPool, 0);
-			AM3LThisAngle = IOPool_pGetReadData(AM3LRxIOPool, 0)->angle;
+			IOPool_getNextRead(AM3RRxIOPool, 0);
+			AM3RThisAngle = IOPool_pGetReadData(AM3RRxIOPool, 0)->angle;
 			
-			if(isAM3LFirstEnter==1) {AM3LLastAngle = AM3LThisAngle;isAM3LFirstEnter = 0;return;}	//初始化时，记录下当前编码器的值
+			if(isAM3RFirstEnter==1) {AM3RLastAngle = AM3RThisAngle;isAM3RFirstEnter = 0;return;}	//初始化时，记录下当前编码器的值
 			
-			if(AM3LThisAngle<=AM3LLastAngle)
+			if(AM3RThisAngle<=AM3RLastAngle)
 			{
-				if((AM3LLastAngle-AM3LThisAngle)>3000)//编码器上溢
-					AM3LRealAngle = AM3LRealAngle + (AM3LThisAngle+8192-AM3LLastAngle) * 360 / 8192.0 / AM23Reduction;
+				if((AM3RLastAngle-AM3RThisAngle)>3000)//编码器上溢
+					AM3RRealAngle = AM3RRealAngle + (AM3RThisAngle+8192-AM3RLastAngle) * 360 / 8192.0 / AM23Reduction;
 				else//反转
-					AM3LRealAngle = AM3LRealAngle - (AM3LLastAngle - AM3LThisAngle) * 360 / 8192.0 / AM23Reduction;
+					AM3RRealAngle = AM3RRealAngle - (AM3RLastAngle - AM3RThisAngle) * 360 / 8192.0 / AM23Reduction;
 			}
 			else
 			{
-				if((AM3LThisAngle-AM3LLastAngle)>3000)//编码器下溢
-					AM3LRealAngle = AM3LRealAngle - (AM3LLastAngle+8192-AM3LThisAngle) *360 / 8192.0 / AM23Reduction;
+				if((AM3RThisAngle-AM3RLastAngle)>3000)//编码器下溢
+					AM3RRealAngle = AM3RRealAngle - (AM3RLastAngle+8192-AM3RThisAngle) *360 / 8192.0 / AM23Reduction;
 				else//正转
-					AM3LRealAngle = AM3LRealAngle + (AM3LThisAngle - AM3LLastAngle) * 360 / 8192.0 / AM23Reduction;
+					AM3RRealAngle = AM3RRealAngle + (AM3RThisAngle - AM3RLastAngle) * 360 / 8192.0 / AM23Reduction;
 			}
 			
 			
-			AM3LPositionPID.target = AM3LAngleTarget;
-			AM3LPositionPID.feedback = AM3LRealAngle;
-			AM3LPositionPID.Calc(&AM3LPositionPID);
+			AM3RPositionPID.target = AM3RAngleTarget;
+			AM3RPositionPID.feedback = AM3RRealAngle;
+			AM3RPositionPID.Calc(&AM3RPositionPID);
 			
-			AM3LSpeedPID.target = AM3LPositionPID.output;
-			AM3LSpeedPID.feedback = IOPool_pGetReadData(AM3LRxIOPool, 0)->RotateSpeed;
-			AM3LSpeedPID.Calc(&AM3LSpeedPID);
+			AM3RSpeedPID.target = AM3RPositionPID.output;
+			AM3RSpeedPID.feedback = IOPool_pGetReadData(AM3RRxIOPool, 0)->RotateSpeed;
+			AM3RSpeedPID.Calc(&AM3RSpeedPID);
 			
-			setMotor(AM3L, AM3LSpeedPID.output);
-			s_AM3LCount = 0;
-			AM3LLastAngle = AM3LThisAngle;
+			setMotor(AM3R, AM3RSpeedPID.output);
+			s_AM3RCount = 0;
+			AM3RLastAngle = AM3RThisAngle;
 		}
 		else
 		{
-			s_AM3LCount++;
+			s_AM3RCount++;
 		}
 	}
 }
@@ -341,8 +379,8 @@ void setAMAngle(MotorId id, float angle)
 			AM2LAngleTarget = angle;break;
 		case AM2R:
 			AM2RAngleTarget = angle;break;
-		case AM3L:
-			AM3LAngleTarget = angle;break;
+		case AM3R:
+			AM3RAngleTarget = angle;break;
 		default:
 			fw_Error_Handler();
 	}
@@ -363,4 +401,80 @@ void armReset()
 	//待完善
 	//思路：
 	//取弹flag清零，回收flag置位，具体动作由2ms定时器任务完成，完成后flag清零
+	
+	AM1RAngleTarget = 0;
+	AM2RAngleTarget = 0;
+	LastAM1RAngleTarget = 0;
+	LastAM2RAngleTarget = 0;
+	AM1LAngleTarget = 0;
+	AM2LAngleTarget = 0;
+	LastAM1LAngleTarget = 0;
+	LastAM2LAngleTarget = 0;
+	AM3RAngleTarget = 0;
+	LastAM3RAngleTarget = 0;
+	Arm_Horizontal_Position = 500;
+	Arm_Vertical_Position = 250;
+	
+}
+
+void ARM_INIT()
+{
+	
+	Arm_Horizontal_Position = 250;
+	Arm_Vertical_Position = 30;
+//	AM2RAngleTarget = 10;
+}
+
+void armStretch()
+{
+	
+	Arm_Horizontal_Position -= ArmSpeedRef.forward_back_ref;
+	Arm_Vertical_Position += ArmSpeedRef.up_down_ref;
+	SquareOfRadius = Arm_Horizontal_Position*Arm_Horizontal_Position + Arm_Vertical_Position*Arm_Vertical_Position;
+	if(SquareOfRadius <= 250*250 ||  Arm_Vertical_Position< 0 || SquareOfRadius >= 750*750)
+	{
+		Arm_Horizontal_Position = Last_Arm_Horizontal_Position;
+	  Arm_Vertical_Position = Last_Arm_Vertical_Position;
+	}
+	
+		else
+		{
+			//AM1R_AddUpAngle = asin((SquareOfRadius+LengthOfArm1*LengthOfArm1-LengthOfArm2*LengthOfArm2)/(2*LengthOfArm1*sqrt(SquareOfRadius)))-acos(Arm_Vertical_Position/sqrt(SquareOfRadius))
+			//AM2R_AddUpAngle = asin((SquareOfRadius+LengthOfArm2*LengthOfArm2-LengthOfArm1*LengthOfArm1)/(2*LengthOfArm2*sqrt(SquareOfRadius)))+acos(Arm_Vertical_Position/sqrt(SquareOfRadius))+AM1R_AddUpAngle
+			//AM1RAngleTarget 0-180 ; AM2RAngleTarget 0-180 ;
+
+			
+			if(Arm_Horizontal_Position > 0 )
+			{
+				AngleOfTarget = 180*atan(Arm_Vertical_Position/Arm_Horizontal_Position)/PI;
+				AM1RAngleTarget = AngleOfTarget - 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
+				AM2RAngleTarget = -180*acos((312500-SquareOfRadius)/250000)/PI;
+				AM1LAngleTarget = -AngleOfTarget + 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
+				AM2LAngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI;
+			}
+			else if(Arm_Horizontal_Position == 0)
+			{
+				AngleOfTarget = 90.0;
+				AM1RAngleTarget = AngleOfTarget - 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
+				AM2RAngleTarget = -180*acos((312500-SquareOfRadius)/250000)/PI;
+				AM1LAngleTarget = -AngleOfTarget + 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
+				AM2LAngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI;
+			}
+			else
+			{
+				AngleOfTarget = 180*atan(Arm_Vertical_Position/Arm_Horizontal_Position)/PI + 180.0;
+				AM1RAngleTarget = AngleOfTarget - 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
+				AM2RAngleTarget = -180*acos((312500-SquareOfRadius)/250000)/PI;
+				AM1LAngleTarget = -AngleOfTarget + 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
+				AM2LAngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI;
+			}
+			
+		}
+			
+			Last_Arm_Horizontal_Position = Arm_Horizontal_Position;
+			Last_Arm_Vertical_Position = Arm_Vertical_Position;
+			
+
+		
+	
 }
