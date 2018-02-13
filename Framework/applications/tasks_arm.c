@@ -13,7 +13,7 @@
   ******************************************************************************
   */
 	
-#include "tasks_can2motor.h"
+#include "tasks_arm.h"
 #include "rtos_semaphore.h"
 #include "pid_regulator.h"
 #include "utilities_iopool.h"
@@ -30,15 +30,13 @@
 #include <usart.h>
 
 //PID_INIT(Kp, Ki, Kd, KpMax, KiMax, KdMax, OutputMax)
-//机械臂电机PID、分弹电机PID
+//机械臂电机PID
 
 fw_PID_Regulator_t AM1LPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
 fw_PID_Regulator_t AM1RPositionPID = fw_PID_INIT(100.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 16384.0);
 fw_PID_Regulator_t AM2LPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
 fw_PID_Regulator_t AM2RPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
 fw_PID_Regulator_t AM3RPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
-fw_PID_Regulator_t SMPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 6000.0);
-fw_PID_Regulator_t SMSpeedPID = fw_PID_INIT(2.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 6000.0);
 fw_PID_Regulator_t AM1LSpeedPID = fw_PID_INIT(2.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 16384.0);
 fw_PID_Regulator_t AM1RSpeedPID = fw_PID_INIT(5.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 16384.0);
 fw_PID_Regulator_t AM2LSpeedPID = fw_PID_INIT(2.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 6000.0);
@@ -51,6 +49,7 @@ fw_PID_Regulator_t AM3RSpeedPID = fw_PID_INIT(2.0, 0.0, 0.0, 10000.0, 10000.0, 1
 //#define AM2L_zero 0
 //#define AM2R_zero 0
 //#define AM3R_zero 0
+extern float PM1AngleTarget;
 
 #define LengthOfArm1 500
 #define LengthOfArm2 250
@@ -62,7 +61,6 @@ float AM1RAngleTarget = 0.0;
 float AM2LAngleTarget = 0.0;
 float AM2RAngleTarget = 0.0;
 float AM3RAngleTarget = 0.0;
-float SMAngleTarget = 0.0;
 
 double Last_Arm_Horizontal_Position;
 double Last_Arm_Vertical_Position;
@@ -72,7 +70,6 @@ float LastAM1RAngleTarget;
 float LastAM2LAngleTarget;
 float LastAM2RAngleTarget;
 float LastAM3RAngleTarget;
-float LastSMAngleTarget;
 
 //机械臂电机实际物理角度值
 float AM1LRealAngle = 0.0;
@@ -80,7 +77,6 @@ float AM1RRealAngle = 0.0;
 float AM2LRealAngle = 0.0;
 float AM2RRealAngle = 0.0;
 float AM3RRealAngle = 0.0;
-float SMRealAngle = 0.0;
 
 //末端水平垂直位置
 double Arm_Horizontal_Position = LengthOfArm1 - LengthOfArm2;
@@ -110,7 +106,6 @@ static uint8_t s_AM1RCount = 0;
 static uint8_t s_AM2LCount = 0;
 static uint8_t s_AM2RCount = 0;
 static uint8_t s_AM3RCount = 0;
-static uint8_t s_SMCount = 0;
 
 void Can2ControlTask(void const * argument)
 {
@@ -123,7 +118,6 @@ void Can2ControlTask(void const * argument)
 		ControlAM2L();
 		ControlAM2R();
 		ControlAM3R();
-		ControlSM();
 	}
 }
 
@@ -369,55 +363,6 @@ void ControlAM3R()
 		else
 		{
 			s_AM3RCount++;
-		}
-	}
-}
-
-uint8_t isSMFirstEnter = 1;
-uint16_t SMThisAngle = 0;
-uint16_t SMLastAngle = 0;
-void ControlSM()
-{
-	if(IOPool_hasNextRead(SMRxIOPool, 0))
-	{
-		if(s_SMCount == 1)
-		{		
-			IOPool_getNextRead(SMRxIOPool, 0);
-			SMThisAngle = IOPool_pGetReadData(SMRxIOPool, 0)->angle;
-			
-			if(isSMFirstEnter==1) {SMLastAngle = SMThisAngle;isSMFirstEnter = 0;return;}	//初始化时，记录下当前编码器的值
-			
-			if(SMThisAngle<=SMLastAngle)
-			{
-				if((SMLastAngle-SMThisAngle)>3000)//编码器上溢
-					SMRealAngle = SMRealAngle + (SMThisAngle+8192-SMLastAngle) * 360 / 8192.0 / SMReduction;
-				else//反转
-					SMRealAngle = SMRealAngle - (SMLastAngle - SMThisAngle) * 360 / 8192.0 / SMReduction;
-			}
-			else
-			{
-				if((SMThisAngle-SMLastAngle)>3000)//编码器下溢
-					SMRealAngle = SMRealAngle - (SMLastAngle+8192-SMThisAngle) *360 / 8192.0 / SMReduction;
-				else//正转
-					SMRealAngle = SMRealAngle + (SMThisAngle - SMLastAngle) * 360 / 8192.0 / SMReduction;
-			}
-			
-				
-			SMPositionPID.target = SMAngleTarget;
-			SMPositionPID.feedback = SMRealAngle;
-			SMPositionPID.Calc(&SMPositionPID);
-			
-			SMSpeedPID.target = SMPositionPID.output;
-			SMSpeedPID.feedback = IOPool_pGetReadData(SMRxIOPool, 0)->RotateSpeed;
-			SMSpeedPID.Calc(&SMSpeedPID);
-			
-			setMotor(SM, SMSpeedPID.output);
-			s_AM1LCount = 0;
-			SMLastAngle = SMThisAngle;
-		}
-		else
-		{
-			s_SMCount++;
 		}
 	}
 }
