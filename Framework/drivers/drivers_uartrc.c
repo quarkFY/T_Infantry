@@ -274,7 +274,7 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 				frictionRamp.ResetCounter(&frictionRamp);
 				SetShootState(NO_SHOOT);
 			}
-			else if(sw->switch_value_raw == 3)	//左侧拨杆拨到中间便会开枪
+			else if(sw->switch_value_raw == REMOTE_SWITCH_CHANGE_3TO2)	//左侧拨杆拨到中间便会开枪
 			{
 				SetShootState(MANUL_SHOOT_ONE);
 				if(remoteShootDelay!=0) 
@@ -282,7 +282,7 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 				else
 				{
 					shootOneGolf();
-					remoteShootDelay = 50;
+					remoteShootDelay = 500;
 				}
 			}
 			else
