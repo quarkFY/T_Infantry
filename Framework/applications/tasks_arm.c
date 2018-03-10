@@ -21,6 +21,7 @@
 #include "application_motorcontrol.h"
 #include "utilities_debug.h"
 #include "tasks_remotecontrol.h"
+#include "drivers_uartrc_user.h"
 #include <math.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -50,6 +51,7 @@ fw_PID_Regulator_t AM3RSpeedPID = fw_PID_INIT(2.0, 0.0, 0.0, 10000.0, 10000.0, 1
 //#define AM2R_zero 0
 //#define AM3R_zero 0
 extern float PM1AngleTarget;
+extern Emergency_Flag emergency_Flag;
 
 #define LengthOfArm1 500
 #define LengthOfArm2 250
@@ -401,19 +403,18 @@ void armReset()
 	//待完善
 	//思路：
 	//取弹flag清零，回收flag置位，具体动作由2ms定时器任务完成，完成后flag清零
-	
-	AM1RAngleTarget = 0;
-	AM2RAngleTarget = 0;
-	LastAM1RAngleTarget = 0;
-	LastAM2RAngleTarget = 0;
-	AM1LAngleTarget = 0;
-	AM2LAngleTarget = 0;
-	LastAM1LAngleTarget = 0;
-	LastAM2LAngleTarget = 0;
-	AM3RAngleTarget = 0;
-	LastAM3RAngleTarget = 0;
-	Arm_Horizontal_Position = 500;
-	Arm_Vertical_Position = 250;
+//	AM1RAngleTarget = 0;
+//	AM2RAngleTarget = 0;
+//	LastAM1RAngleTarget = 0;
+//	LastAM2RAngleTarget = 0;
+//	AM1LAngleTarget = 0;
+//	AM2LAngleTarget = 0;
+//	LastAM1LAngleTarget = 0;
+//	LastAM2LAngleTarget = 0;
+//	AM3RAngleTarget = 0;
+//	LastAM3RAngleTarget = 0;
+//	Arm_Horizontal_Position = 250;
+//	Arm_Vertical_Position = 0;
 	
 }
 
@@ -470,11 +471,50 @@ void armStretch()
 			}
 			
 		}
-			
+		 //机械臂末端，保持45°于地面
+			AM3RAngleTarget = AM2RAngleTarget - AM1RAngleTarget + 135;
+		
 			Last_Arm_Horizontal_Position = Arm_Horizontal_Position;
 			Last_Arm_Vertical_Position = Arm_Vertical_Position;
 			
 
 		
 	
+}
+
+//角度跟踪精确控制，分段，精确到1°
+uint8_t Hero_Angle_Track(float final,float currentAngle,float *angleTarget,uint32_t *time_milis)
+{
+	uint8_t motorReady = 1;
+	float tmp = (final - currentAngle)/(*time_milis);
+	while(time_milis>0 && motorReady)
+	{
+		if(emergency_Flag==EMERGENCY)
+		{	
+			return 0;
+		}
+		if(-1<( *angleTarget - currentAngle ) < 1)
+		{
+		  *angleTarget += tmp;
+		  time_milis--;
+			motorReady = 1;
+		}
+		else motorReady = 0;
+		osDelay(1);
+	}
+	if(-1< (final - currentAngle ) < 1) return 1;
+	else return 0;
+}
+
+uint8_t taskDelay(uint32_t time_milis)
+{
+	for(int i=0;i<time_milis;i++)
+	{
+		if(emergency_Flag==EMERGENCY)
+		{	
+			return 0;
+		}
+		osDelay(1);
+	}
+	return 1;
 }

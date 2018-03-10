@@ -248,7 +248,11 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		VAL_LIMIT(mouse->y, -150, 150); 
 	
 		pitchAngleTarget -= mouse->y* MOUSE_TO_PITCH_ANGLE_INC_FACT;  
-		if(GMMode == UNLOCK) yawAngleTarget    -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
+		if(GMMode == UNLOCK) 
+		{
+			yawAngleTarget    -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
+			GetGMRealZero();
+		}
 		//yawAngleTarget    -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
 
 		//speed mode: normal speed/high speed 
@@ -319,6 +323,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		//mouse x y control
 		if(GMMode == LOCK)
 		{
+			GMReset();
 			ChassisSpeedRef.rotate_ref += mouse->x/15.0*3000;
 			yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
 		}
@@ -404,12 +409,14 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 		if(key->v & 0x0200) GMMode = LOCK;    //锁定云台  F		
 		if(GMMode == LOCK)
 		{
+			GMReset();
 			ChassisSpeedRef.rotate_ref += mouse->x/15.0*3000;
 			yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
 		}
 		if(GMMode == UNLOCK) 
 		{
 			yawAngleTarget    -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
+			GetGMRealZero();
 		}
 		
 				if(inputmode==GETBULLET_INPUT)
@@ -427,11 +434,11 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 							//取弹电磁阀
 							if(key->v & 0x0100)  //R
 							{
-								SOV1_ON();
+								GRIP_SOV_ON();
 							}
-							else
+						  if(key->v == 272)  // key: r+Shift松开机械爪
 							{
-								SOV1_OFF();
+								GRIP_SOV_OFF();
 							}
 				    }
 						else if(GetBulletState == AUTO_GETBULLET)

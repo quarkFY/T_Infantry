@@ -38,8 +38,9 @@
 
 //PID_INIT(Kp, Ki, Kd, KpMax, KiMax, KdMax, OutputMax)
 //云台
-#define yaw_zero 1800
-#define pitch_zero 2350
+int yaw_zero = 1800;
+int yaw_zero_revise = 1800;
+int pitch_zero = 2350;
 float yawEncoder = 0;
 float GMYAWThisAngle, GMYAWLastAngle;
 float yawRealAngle = 0.0;
@@ -283,8 +284,8 @@ void ControlCMFL(void)
 			Motor820RRxMsg_t *pData = IOPool_pGetReadData(CMFLRxIOPool, 0);
 			
 			CM2SpeedPID.ref = - ChassisSpeedRef.forward_back_ref*0.075 
-											 + ChassisSpeedRef.left_right_ref*0.075 
-											 + ChassisSpeedRef.rotate_ref
+											 - ChassisSpeedRef.left_right_ref*0.075 
+											 - ChassisSpeedRef.rotate_ref
 			                 ;
 			CM2SpeedPID.ref = 160 * CM2SpeedPID.ref;
 			
@@ -292,7 +293,7 @@ void ControlCMFL(void)
 			CM2SpeedPID.fdb = pData->RotateSpeed;
 			CM2SpeedPID.Calc(&CM2SpeedPID);
 			
-			setMotor(CMFR, CHASSIS_SPEED_ATTENUATION * CM2SpeedPID.output);
+			setMotor(CMFR, -CHASSIS_SPEED_ATTENUATION * CM2SpeedPID.output);
 			
 			s_CMFLCount = 0;
 		}
@@ -313,15 +314,15 @@ void ControlCMFR(void)
 			Motor820RRxMsg_t *pData = IOPool_pGetReadData(CMFRRxIOPool, 0);
 			
 			CM1SpeedPID.ref =  ChassisSpeedRef.forward_back_ref*0.075 
-											 + ChassisSpeedRef.left_right_ref*0.075 
-											 + ChassisSpeedRef.rotate_ref
+											 - ChassisSpeedRef.left_right_ref*0.075 
+											 - ChassisSpeedRef.rotate_ref
 			                 ;	
 			CM1SpeedPID.ref = 160 * CM1SpeedPID.ref;
 			CM1SpeedPID.fdb = pData->RotateSpeed;
 			
 			CM1SpeedPID.Calc(&CM1SpeedPID);
 			
-			setMotor(CMFL, CHASSIS_SPEED_ATTENUATION * CM1SpeedPID.output);
+			setMotor(CMFL, -CHASSIS_SPEED_ATTENUATION * CM1SpeedPID.output);
 			
 			s_CMFRCount = 0;
 		}
@@ -341,9 +342,9 @@ void ControlCMBL(void)
 			IOPool_getNextRead(CMBLRxIOPool, 0);
 			Motor820RRxMsg_t *pData = IOPool_pGetReadData(CMBLRxIOPool, 0);
 			
-			CM3SpeedPID.ref =  ChassisSpeedRef.forward_back_ref*0.075 
-											 - ChassisSpeedRef.left_right_ref*0.075 
-											 + ChassisSpeedRef.rotate_ref
+			CM3SpeedPID.ref = -ChassisSpeedRef.forward_back_ref*0.075 
+											 + ChassisSpeedRef.left_right_ref*0.075 
+											 - ChassisSpeedRef.rotate_ref
 			                 ;
 			CM3SpeedPID.ref = 160 * CM3SpeedPID.ref;
 			CM3SpeedPID.fdb = pData->RotateSpeed;
@@ -370,16 +371,16 @@ void ControlCMBR()
 			IOPool_getNextRead(CMBRRxIOPool, 0);
 			Motor820RRxMsg_t *pData = IOPool_pGetReadData(CMBRRxIOPool, 0);
 			
-			CM4SpeedPID.ref = - ChassisSpeedRef.forward_back_ref*0.075 
-											 - ChassisSpeedRef.left_right_ref*0.075 
-											 + ChassisSpeedRef.rotate_ref
+			CM4SpeedPID.ref = ChassisSpeedRef.forward_back_ref*0.075 
+											 + ChassisSpeedRef.left_right_ref*0.075 
+											 - ChassisSpeedRef.rotate_ref
 			                 ;
 			CM4SpeedPID.ref = 160 * CM4SpeedPID.ref;
 			CM4SpeedPID.fdb = pData->RotateSpeed;
 					
 			CM4SpeedPID.Calc(&CM4SpeedPID);
 			
-			setMotor(CMBR, CHASSIS_SPEED_ATTENUATION * CM4SpeedPID.output);
+			setMotor(CMBR, -CHASSIS_SPEED_ATTENUATION * CM4SpeedPID.output);
 			
 			s_CMBRCount = 0;
 		}
@@ -491,10 +492,22 @@ void ControlPM2()
 
 void shootOneGolf()
 {
-	PM1AngleTarget = PM1AngleTarget + 360;
-	PM2AngleTarget = PM2AngleTarget + 360;
+	PM1AngleTarget = PM1AngleTarget + 64;
+	PM2AngleTarget = PM2AngleTarget + 64;
 }
 
-
+void GetGMRealZero(void)
+{
+	if(!HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_2))
+	{
+		IOPool_getNextRead(GMYAWRxIOPool, 0); 
+		yaw_zero_revise = IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle;
+	}
+}
+	
+void GMReset(void)
+{
+	yaw_zero = yaw_zero_revise;
+}
 
 
