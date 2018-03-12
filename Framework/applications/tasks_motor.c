@@ -429,7 +429,7 @@ void ControlPM1()
 
 			PM1LastAngle = PM1ThisAngle;
 	
-			setMotor(PM1, -PM1SpeedPID.output);
+			setMotor(PM1, PM1SpeedPID.output);
 			//setMotor(PM1, 800);
 			
 			s_PM1Count = 0;
@@ -479,7 +479,7 @@ void ControlPM2()
 
 			PM2LastAngle = PM2ThisAngle;
 	
-			setMotor(PM2, -PM2SpeedPID.output);
+			setMotor(PM2, PM2SpeedPID.output);
 			
 			s_PM2Count = 0;
 		}
@@ -492,8 +492,8 @@ void ControlPM2()
 
 void shootOneGolf()
 {
-	PM1AngleTarget = PM1AngleTarget + 64;
-	PM2AngleTarget = PM2AngleTarget + 64;
+	PM1AngleTarget = PM1AngleTarget - 80;
+	PM2AngleTarget = PM2AngleTarget - 80;
 }
 
 void GetGMRealZero(void)

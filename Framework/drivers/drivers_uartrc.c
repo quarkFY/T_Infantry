@@ -238,25 +238,25 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 			{
 				LASER_OFF();//zy0802
 				SetShootState(NO_SHOOT);
-				SetFrictionWheelSpeed(1000);
+				SetFrictionWheelSpeed(800);
 				g_friction_wheel_state = FRICTION_WHEEL_OFF;
 				frictionRamp.ResetCounter(&frictionRamp);
 			}
 			
-			else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)	
-			{
+	//		else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)	
+	//		{
 //				LASER_OFF();
 //				SetShootState(NO_SHOOT);
 //				SetFrictionWheelSpeed(1000);
 //				g_friction_wheel_state = FRICTION_WHEEL_OFF;
 //				frictionRamp.ResetCounter(&frictionRamp);
 				
-			}
+	//		}
 			
 			else
 			{
 				/*斜坡函数必须有，避免电流过大烧坏主控板*/
-				SetFrictionWheelSpeed(1000 + (FRICTION_WHEEL_MAX_DUTY-1000)*frictionRamp.Calc(&frictionRamp)); 
+				SetFrictionWheelSpeed(800 + (FRICTION_WHEEL_MAX_DUTY-800)*frictionRamp.Calc(&frictionRamp)); 
 				if(frictionRamp.IsOverflow(&frictionRamp))
 				{
 					g_friction_wheel_state = FRICTION_WHEEL_ON; 	
@@ -270,11 +270,11 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 			{
 				LASER_OFF();//zy0802
 				g_friction_wheel_state = FRICTION_WHEEL_OFF;				  
-				SetFrictionWheelSpeed(1000); 
+				SetFrictionWheelSpeed(800); 
 				frictionRamp.ResetCounter(&frictionRamp);
 				SetShootState(NO_SHOOT);
 			}
-			else if(sw->switch_value_raw == REMOTE_SWITCH_CHANGE_3TO2)	//左侧拨杆拨到中间便会开枪
+			else if(sw->switch_value_raw == 2)	//左侧拨杆拨到中间便会开枪
 			{
 				SetShootState(MANUL_SHOOT_ONE);
 				if(remoteShootDelay!=0) 
@@ -282,7 +282,7 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 				else
 				{
 					shootOneGolf();
-					remoteShootDelay = 500;
+					remoteShootDelay = 50;
 				}
 			}
 			else
@@ -325,14 +325,14 @@ void MouseShootControl(Mouse *mouse)
 			{
 				LASER_OFF();//zy0802
 				g_friction_wheel_state = FRICTION_WHEEL_OFF;				  
-				SetFrictionWheelSpeed(1000); 
+				SetFrictionWheelSpeed(800); 
 				frictionRamp.ResetCounter(&frictionRamp);
 				SetShootState(NO_SHOOT);
 			}
 			else
 			{
 		    /*摩擦轮转速修改 FRICTION_WHEEL_MAX_DUTY*/
-				SetFrictionWheelSpeed(1000 + (FRICTION_WHEEL_MAX_DUTY-1000)*frictionRamp.Calc(&frictionRamp)); 
+				SetFrictionWheelSpeed(800 + (FRICTION_WHEEL_MAX_DUTY-800)*frictionRamp.Calc(&frictionRamp)); 
 				if(frictionRamp.IsOverflow(&frictionRamp))
 				{
 					g_friction_wheel_state = FRICTION_WHEEL_ON; 	
@@ -354,7 +354,7 @@ void MouseShootControl(Mouse *mouse)
 			{
 				LASER_OFF();//zy0802
 				g_friction_wheel_state = FRICTION_WHEEL_OFF;				  
-				SetFrictionWheelSpeed(1000); 
+				SetFrictionWheelSpeed(800); 
 				frictionRamp.ResetCounter(&frictionRamp);
 				SetShootState(NO_SHOOT);
 			}			
