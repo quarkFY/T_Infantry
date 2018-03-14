@@ -137,6 +137,9 @@ void RemoteTaskInit()
 	SetFrictionState(FRICTION_WHEEL_OFF);
 	ArmSpeedRef.forward_back_ref = 0.0f;
 	ArmSpeedRef.up_down_ref = 0.0f;
+	/*摩擦轮电调*/
+	SetFrictionWheelSpeed(800);
+	
 }
 
 /*拨杆数据处理*/   

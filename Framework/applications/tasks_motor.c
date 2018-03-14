@@ -40,7 +40,7 @@
 //云台
 int yaw_zero = 1800;
 int yaw_zero_revise = 1800;
-int pitch_zero = 2350;
+int pitch_zero = 350;
 float yawEncoder = 0;
 float GMYAWThisAngle, GMYAWLastAngle;
 float yawRealAngle = 0.0;
@@ -55,8 +55,8 @@ int isGMYAWFirstEnter = 1;
 int isGMPITCHFirstEnter = 1;
 int isGMSet;
 
-fw_PID_Regulator_t pitchPositionPID = fw_PID_INIT(8, 25.0, 20.0, 0.0, 10000.0, 10000.0, 10000.0);
-fw_PID_Regulator_t yawPositionPID = fw_PID_INIT(8.0, 25.0, 20.0, 0.0, 10000.0, 10000.0, 10000.0);//等幅振荡P37.3 I11.9 D3.75  原26.1 8.0 1.1
+fw_PID_Regulator_t pitchPositionPID = fw_PID_INIT(30, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
+fw_PID_Regulator_t yawPositionPID = fw_PID_INIT(30.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);//等幅振荡P37.3 I11.9 D3.75  原26.1 8.0 1.1
 fw_PID_Regulator_t pitchSpeedPID = fw_PID_INIT(5.0, 0.0, 5.0, 100.0, 10000.0, 10000.0, 5000);
 fw_PID_Regulator_t yawSpeedPID = fw_PID_INIT(5.0, 0.0, 5.0, 100.0, 10000.0, 10000.0, 5000.0);
 
@@ -179,10 +179,10 @@ void ControlYaw(void)
 			yawIntensity = ProcessYawPID(yawAngleTarget, yawRealAngle, -gYroZs);
 			GMYAWLastAngle = GMYAWThisAngle ;
 			
-			if (isGMSet == 1)
-			{
+//			if (isGMSet == 1)
+//			{
 				setMotor(GMYAW, -yawIntensity);
-			}
+//			}
 
 
 			s_yawCount = 0;
@@ -239,15 +239,15 @@ void ControlPitch(void)
 			
 			//NORMALIZE_ANGLE180(pitchRealAngle);
 			//限位
-			MINMAX(pitchAngleTarget, -10.0f, 60.0f);	
+			//MINMAX(pitchAngleTarget, -10.0f, 60.0f);	
 		  pitchMotorTarget = pitchAngleTarget - yawAngleTarget ; 
 			pitchIntensity = ProcessPitchPID(-pitchMotorTarget,pitchRealAngle,-gYroXs);
 			GMPITCHLastAngle = GMPITCHThisAngle;
 	
-		  if (isGMSet == 1)
-			{
-				setMotor(GMPITCH, -pitchIntensity);
-			}
+//		  if (isGMSet == 1)
+//			{
+					setMotor(GMPITCH, -pitchIntensity);
+//			}
 
 			s_pitchCount = 0;
 		}
