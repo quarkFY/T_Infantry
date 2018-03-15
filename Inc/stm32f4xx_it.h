@@ -55,6 +55,7 @@ void UsageFault_Handler(void);
 void DebugMon_Handler(void);
 void SysTick_Handler(void);
 void EXTI1_IRQHandler(void);
+void EXTI3_IRQHandler(void);
 void DMA1_Stream1_IRQHandler(void);
 void CAN1_TX_IRQHandler(void);
 void CAN1_RX0_IRQHandler(void);
