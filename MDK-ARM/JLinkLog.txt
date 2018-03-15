@@ -1,6 +1,7 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 T0A78 000:298 SEGGER J-Link V4.96d Log File (0003ms, 0276ms total)
 T0A78 000:298 DLL Compiled: Jan 29 2015 11:45:37 (0003ms, 0276ms total)
 T0A78 000:298 Logging started @ 2018-03-14 20:12 (0003ms, 0276ms total)
@@ -2592,11 +2593,16 @@ T2FF0 000:047 Logging started @ 2018-03-12 22:01 (0000ms, 0021ms total)
 T2FF0 000:047 JLINK_SetWarnOutHandler(...) (0000ms, 0021ms total)
 T2FF0 000:047 JLINK_OpenEx(...)
 =======
+=======
+>>>>>>> parent of e515eec... 一点修改
 T2248 000:039 SEGGER J-Link V6.00e Log File (0000ms, 0016ms total)
 T2248 000:039 DLL Compiled: Aug  4 2016 09:37:38 (0000ms, 0016ms total)
 T2248 000:039 Logging started @ 2018-03-10 23:41 (0000ms, 0016ms total)
 T2248 000:039 JLINK_SetWarnOutHandler(...) (0000ms, 0016ms total)
 T2248 000:039 JLINK_OpenEx(...)
+<<<<<<< HEAD
+>>>>>>> parent of e515eec... 一点修改
+=======
 >>>>>>> parent of e515eec... 一点修改
 Firmware: J-Link V9 compiled Dec  1 2017 14:40:21
 Hardware: V9.40
@@ -2620,6 +2626,7 @@ T2248 000:152 JLINK_GetId() >0x108 TIF>Found SWD-DP with ID 0x2BA01477 >0x0D TIF
  >0x21 TIF> >0x0D TIF> >0x21 TIF>AP-IDR: 0x24770011, Type: AHB-AP >0x0D TIF> >0x28 TIF> >0x0D TIF> >0x28 TIF> >0x0D TIF> >0x28 TIF> >0x0D TIF> >0x21 TIF> >0x0D TIF> >0x21 TIF> >0x0D TIF> >0x28 TIF> >0x0D TIF> >0x21 TIF> >0x0D TIF> >0x21 TIF>Found Cortex-M4 r0p1, Little endian. -- CPU_ReadMem(4 bytes @ 0xE000EDF0) -- CPU_WriteMem(4 bytes @ 0xE000EDF0) -- CPU_ReadMem(4 bytes @ 0xE0002000)FPUnit: 6 code (BP) slots and 2 literal slots -- CPU_ReadMem(4 bytes @ 0xE000EDFC) -- CPU_WriteMem(4 bytes @ 0xE000EDFC)
  -- CPU_ReadMem(4 bytes @ 0xE0001000) -- CPU_WriteMem(4 bytes @ 0xE0001000) -- CPU_ReadMem(4 bytes @ 0xE000ED88) -- CPU_WriteMem(4 bytes @ 0xE000ED88) -- CPU_ReadMem(4 bytes @ 0xE000ED88) -- CPU_WriteMem(4 bytes @ 0xE000ED88)CoreSight components:ROMTbl 0 @ E00FF000 -- CPU_ReadMem(16 bytes @ 0xE00FF000) -- CPU_ReadMem(16 bytes @ 0xE000EFF0) -- CPU_ReadMem(16 bytes @ 0xE000EFE0)ROMTbl 0 [0]: FFF0F000, CID: B105E00D, PID: 000BB00C SCS -- CPU_ReadMem(16 bytes @ 0xE0001FF0)
  -- CPU_ReadMem(16 bytes @ 0xE0001FE0)ROMTbl 0 [1]: FFF02000, CID: B105E00D, PID: 003BB002 DWT -- CPU_ReadMem(16 bytes @ 0xE0002FF0) -- CPU_ReadMem(16 bytes @ 0xE0002FE0)ROMTbl 0 [2]: FFF03000, CID: B105E00D, PID: 002BB003 FPB -- CPU_ReadMem(16 bytes @ 0xE0000FF0) -- CPU_ReadMem(16 bytes @ 0xE0000FE0)ROMTbl 0 [3]: FFF01000, CID: B105E00D, PID: 003BB001 ITM -- CPU_ReadMem(16 bytes @ 0xE00FF010) -- CPU_ReadMem(16 bytes @ 0xE0040FF0) -- CPU_ReadMem(16 bytes @ 0xE0040FE0)
+<<<<<<< HEAD
 <<<<<<< HEAD
 ROMTbl 0 [4]: FFF41000, CID: B105900D, PID: 000BB9A1 TPIU -- CPU_ReadMem(16 bytes @ 0xE0041FF0) -- CPU_ReadMem(16 bytes @ 0xE0041FE0)ROMTbl 0 [5]: FFF42000, CID: B105900D, PID: 000BB925 ETM >0x0D TIF> >0x21 TIF>  returns 0x2BA01477 (0038ms, 0179ms total)
 T2FF0 000:217 JLINK_GetDLLVersion()  returns 60005 (0000ms, 0179ms total)
@@ -5515,6 +5522,8 @@ T2FF0 003:175  (0009ms, 0591ms total)
 T2FF0 003:175 Closed (0009ms, 0591ms total)
 >>>>>>> quarkFY
 =======
+=======
+>>>>>>> parent of e515eec... 一点修改
 ROMTbl 0 [4]: FFF41000, CID: B105900D, PID: 000BB9A1 TPIU -- CPU_ReadMem(16 bytes @ 0xE0041FF0) -- CPU_ReadMem(16 bytes @ 0xE0041FE0)ROMTbl 0 [5]: FFF42000, CID: B105900D, PID: 000BB925 ETM >0x0D TIF> >0x21 TIF>  returns 0x2BA01477 (0059ms, 0177ms total)
 T2248 000:211 JLINK_GetDLLVersion()  returns 60005 (0000ms, 0177ms total)
 T2248 000:211 JLINK_CORE_GetFound()  returns 0xE0000FF (0000ms, 0177ms total)
@@ -8418,4 +8427,7 @@ T2248 003:037 JLINK_Go() -- CPU_ReadMem(4 bytes @ 0xE0001000) -- CPU_WriteMem(4 
 T2248 003:048 JLINK_Close() -- CPU is running -- CPU_WriteMem(4 bytes @ 0xE0002008) -- CPU is running -- CPU_WriteMem(4 bytes @ 0xE000200C) -- CPU is running -- CPU_WriteMem(4 bytes @ 0xE0002010) -- CPU is running -- CPU_WriteMem(4 bytes @ 0xE0002014) -- CPU is running -- CPU_WriteMem(4 bytes @ 0xE0002018) -- CPU is running -- CPU_WriteMem(4 bytes @ 0xE000201C) (0008ms, 0568ms total)
 T2248 003:048  (0008ms, 0568ms total)
 T2248 003:048 Closed (0008ms, 0568ms total)
+<<<<<<< HEAD
+>>>>>>> parent of e515eec... 一点修改
+=======
 >>>>>>> parent of e515eec... 一点修改

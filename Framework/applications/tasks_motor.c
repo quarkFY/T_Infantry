@@ -40,6 +40,7 @@
 //云台
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 int yaw_zero = 1800;
 int yaw_zero_revise = 1800;
 int pitch_zero = 350;
@@ -48,6 +49,11 @@ int yaw_zero = 2400;
 int yaw_zero_revise =2400;
 int pitch_zero = 7000;
 >>>>>>> quarkFY
+=======
+int yaw_zero = 1800;
+int yaw_zero_revise = 1800;
+int pitch_zero = 2350;
+>>>>>>> parent of e515eec... 一点修改
 =======
 int yaw_zero = 1800;
 int yaw_zero_revise = 1800;
@@ -253,6 +259,7 @@ void ControlPitch(void)
 			//限位
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 			//MINMAX(pitchAngleTarget, -10.0f, 60.0f);	
 =======
 //			MINMAX(pitchAngleTarget, -10.0f, 60.0f);	
@@ -260,10 +267,14 @@ void ControlPitch(void)
 =======
 			MINMAX(pitchAngleTarget, -10.0f, 60.0f);	
 >>>>>>> parent of e515eec... 一点修改
+=======
+			MINMAX(pitchAngleTarget, -10.0f, 60.0f);	
+>>>>>>> parent of e515eec... 一点修改
 		  pitchMotorTarget = pitchAngleTarget - yawAngleTarget ; 
 			pitchIntensity = ProcessPitchPID(-pitchMotorTarget,pitchRealAngle,-gYroXs);
 			GMPITCHLastAngle = GMPITCHThisAngle;
 	
+<<<<<<< HEAD
 <<<<<<< HEAD
 //		  if (isGMSet == 1)
 //			{
@@ -273,6 +284,12 @@ void ControlPitch(void)
 				setMotor(GMPITCH, -pitchIntensity);
 >>>>>>> quarkFY
 //			}
+=======
+		  if (isGMSet == 1)
+			{
+				setMotor(GMPITCH, -pitchIntensity);
+			}
+>>>>>>> parent of e515eec... 一点修改
 =======
 		  if (isGMSet == 1)
 			{
