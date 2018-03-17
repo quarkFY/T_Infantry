@@ -61,6 +61,8 @@ osThreadId sonarTaskHandle;
 
 osThreadId visualScopeTaskHandle;
 
+//osThreadId HeroTaskHandle;
+
 //extern osThreadId testFlashTaskHandle;
 //#include "drivers_flash.h"
 //osThreadId testFlashTaskHandle;
@@ -113,7 +115,9 @@ void rtos_AddThreads()
 //2ms定时任务，状态机切换，调试信息输出等
 	osThreadDef(Timer_Task, Timer_2ms_lTask, osPriorityAboveNormal, 0, 512);//zy512
   TimerTaskHandle = osThreadCreate(osThread(Timer_Task), NULL);
-
+	//新增取弹任务，不知道为什么提示HeroTask undefined
+//  osThreadDef(HeroTask, HeroTask, osPriorityAboveNormal, 0, 512);
+//	HeroTaskHandle = osThreadCreate(osThread(HeroTask), NULL);
 
 
 }

@@ -67,10 +67,9 @@ typedef enum
 
 typedef enum
 {
-	NO_GETBULLET = 0,
-	AUTO_GETBULLET = 1,
-	MANUL_GETBULLET = 2,
-	HERO_STANDBY=3,
+	NO_GETBULLET = 1,
+	AUTO_GETBULLET = 2,
+	MANUL_GETBULLET = 3,
 }Get_Bullet_e;
 
 typedef enum
@@ -101,12 +100,6 @@ typedef enum
 	FRICTION_WHEEL_ON = 2,
 }FrictionWheelState_e;
 
-typedef enum
-{
-	NO_GETGOLF = 0,
-	MANUL_GETGOLF = 1,
-  AUTO_GETGOLF = 2,
-}GetGolf_State_e;
 
 /*没用到
 typedef enum
@@ -131,6 +124,7 @@ FrictionWheelState_e GetFrictionState(void);
 
 Get_Bullet_e GetGetBulletState(void);
 void SetGetBulletState(Get_Bullet_e v);
+
 
 
 #endif

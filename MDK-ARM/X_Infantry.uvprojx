@@ -1004,6 +1004,16 @@
               <FileType>5</FileType>
               <FilePath>..\Framework\applications\tasks_arm.h</FilePath>
             </File>
+            <File>
+              <FileName>tasks_hero.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Framework\applications\tasks_hero.c</FilePath>
+            </File>
+            <File>
+              <FileName>tasks_hero.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Framework\applications\tasks_hero.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
