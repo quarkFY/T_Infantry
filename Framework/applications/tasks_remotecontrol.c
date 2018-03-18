@@ -53,6 +53,10 @@ extern Gimbal_Ref_t GimbalRef;
 extern FrictionWheelState_e g_friction_wheel_state ;
 extern GMMode_e GMMode;
 
+extern float AM1RAngleTarget,AM1LAngleTarget,AM2RAngleTarget,AM2LAngleTarget,AM3RAngleTarget;
+extern float AM1RRealAngle,AM1LRealAngle,AM2RRealAngle,AM2LRealAngle,AM3RRealAngle;
+extern uint16_t load_cnt;
+
 RemoteSwitch_t g_switch1;   
 
 extern RampGen_t frictionRamp ;  //摩擦轮斜坡
@@ -422,7 +426,7 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 		
 		if(inputmode==GETBULLET_INPUT)
 		{
-			HeroTask();
+			//HeroTask();
 			if(GetBulletState == NO_GETBULLET)
 			{
 				armReset();
@@ -477,11 +481,43 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 			else if(GetBulletState == AUTO_GETBULLET)
 			{
 				
+				
+				/*
+						AM1RAngleTarget = 100;
+		AM1LAngleTarget = -100;
+		AM2RAngleTarget = -100;
+		AM2LAngleTarget = 100;
+		AM3RAngleTarget = 90;
+		osDelay(1);
+		if((-1<(AM1RAngleTarget -AM1RRealAngle)<1)&&(-1<(AM1LAngleTarget -AM1LRealAngle)<1)&&(-1<(AM2RAngleTarget -AM2RRealAngle)<1)&&(-1<(AM2LAngleTarget -AM2LRealAngle)<1)&&(-1<(AM3RAngleTarget -AM3RRealAngle)<1))
+		{	
+		load_cnt = 2;
+		}
+		
+		if(load_cnt == 2)
+		{
+		AM2RAngleTarget = -190;
+			AM2LAngleTarget = 190;
+			AM3RAngleTarget = 120;
+			osDelay(1);
+			if((-1<(AM1RAngleTarget -AM1RRealAngle)<1)&&(-1<(AM1LAngleTarget -AM1LRealAngle)<1)&&(-1<(AM2RAngleTarget -AM2RRealAngle)<1)&&(-1<(AM2LAngleTarget -AM2LRealAngle)<1)&&(-1<(AM3RAngleTarget -AM3RRealAngle)<1))
+			{	
+			load_cnt = 3;
+			}
+		}
+		if(load_cnt ==3)
+		{
+			AM2RAngleTarget = -250;
+			AM2LAngleTarget = 250;
+			AM3RAngleTarget = 30;
+		}
+			
+				*/
 			}
 		}
 		else
 		{
-			armReset();
+		//	armReset();
 		}
 				
 		RemoteGetBulletControl(&g_switch1, rc->s1);

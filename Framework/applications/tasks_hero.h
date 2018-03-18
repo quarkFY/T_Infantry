@@ -2,9 +2,10 @@
 #define __TASKS_HERO_H
 
 #include "stdint.h"
-void HeroTask(void);
+void HeroTask(void const * argument);
 void HERO_Manul_Discard(void);
 void HERO_Load(void);
+uint8_t gapOK(float AngleTarget,float RealAngle);
 
 
 

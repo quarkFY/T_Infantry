@@ -52,74 +52,76 @@ HERO_Order_t HERO_Order=HERO_STANDBY;
 //fw_PID_Regulator_t HERO_LeftRightPID = fw_PID_INIT(0.5, 0.0, 0.0, 150, 150, 150, 50);
 //fw_PID_Regulator_t HERO_RotatePID = fw_PID_INIT(0.5, 0.0, 0.0, 150, 150, 150, 50);
 
-void HeroTask(void)
+void HeroTask(void const * argument)
 	{
-	
-		switch(HERO_Order)
-			{
-				case HERO_MANUL_FETCH:
-				{
-					//机械臂正交运动，末端45°,由于机械问题，暂时转一点试试
-					armStretch();
-			    AM3RAngleTarget = AM2RAngleTarget - AM1RAngleTarget + 30;//
-					GRIP_SOV_OFF();
-//					if(!HERO_Grip_and_Load())
-//					{
-//						//急停
-//						HERO_Order=HERO_PAUSE;
-//						fw_printfln("ENGINEER TASK END!");
-//					}
-				}break;
-				case HERO_MANUL_READY:
-				{
-					armStretch();
-					AM3RAngleTarget = AM2RAngleTarget - AM1RAngleTarget + 90;
-					GRIP_SOV_OFF();
-				}break;
-				case HERO_MANUL_GRIP:
-				{
-					GRIP_SOV_ON();
-				}break;
-				case HERO_MANUL_LOAD:
-				{
-					HERO_Load();
-				}break;
-				case HERO_MANUL_DISCARD:
-				{
-					HERO_Manul_Discard();
-				}break;
-//				case HERO_REPLACE_STUFF:
-//				{
-//					fw_printfln("Now Replace!");
-//					HERO_Replacing();
-//				}break;
-//				case HERO_PAUSE:
-//				{
-//					fw_printfln("pause!");
-//					HERO_Recover();
-//				}break;
-//				case HERO_BELT_BACK:
-//				{
-//					fw_printfln("belt back");
-//					if(!engineer_belt_back())
-//						fw_printfln("belt not move");
-//				}break;
-//				case HERO_BELT_FORWARD:
-//				{
-//					fw_printfln("back forward");
-//					if(!engineer_belt_forward())
-//						fw_printfln("belt not move");
-//				}break;
-				case HERO_STANDBY:
-				{
-					osDelay(10);
-				}break;
-				
-			}
-			
-			osDelay(2);
-	
+		while(1)
+		{
 		
+			switch(HERO_Order)
+				{
+					case HERO_MANUL_FETCH:
+					{
+						//机械臂正交运动，末端45°,由于机械问题，暂时转一点试试
+						armStretch();
+						AM3RAngleTarget = AM2LAngleTarget - AM1RAngleTarget + 60;//
+						GRIP_SOV_OFF();
+	//					if(!HERO_Grip_and_Load())
+	//					{
+	//						//急停
+	//						HERO_Order=HERO_PAUSE;
+	//						fw_printfln("ENGINEER TASK END!");
+	//					}
+					}break;
+					case HERO_MANUL_READY:
+					{
+						armStretch();
+						AM3RAngleTarget =  180-AM2RAngleTarget - AM1RAngleTarget + 90;
+						GRIP_SOV_OFF();
+					}break;
+					case HERO_MANUL_GRIP:
+					{
+						GRIP_SOV_ON();
+					}break;
+					case HERO_MANUL_LOAD:
+					{
+						HERO_Load();
+					}break;
+					case HERO_MANUL_DISCARD:
+					{
+						HERO_Manul_Discard();
+					}break;
+	//				case HERO_REPLACE_STUFF:
+	//				{
+	//					fw_printfln("Now Replace!");
+	//					HERO_Replacing();
+	//				}break;
+	//				case HERO_PAUSE:
+	//				{
+	//					fw_printfln("pause!");
+	//					HERO_Recover();
+	//				}break;
+	//				case HERO_BELT_BACK:
+	//				{
+	//					fw_printfln("belt back");
+	//					if(!engineer_belt_back())
+	//						fw_printfln("belt not move");
+	//				}break;
+	//				case HERO_BELT_FORWARD:
+	//				{
+	//					fw_printfln("back forward");
+	//					if(!engineer_belt_forward())
+	//						fw_printfln("belt not move");
+	//				}break;
+					case HERO_STANDBY:
+					{
+						osDelay(10);
+					}break;
+					
+				}
+				
+				osDelay(2);
+	
+		}
 }
 uint16_t load_cnt = 1;
 void HERO_Load(void)
@@ -130,30 +132,42 @@ void HERO_Load(void)
 		{
 		AM1RAngleTarget = 100;
 		AM1LAngleTarget = -100;
-		AM2RAngleTarget = 100;
-		AM2LAngleTarget = -100;
+		AM2RAngleTarget = -100;
+		AM2LAngleTarget = 100;
 		AM3RAngleTarget = 90;
 		osDelay(1);
-		if((-1<(AM1RAngleTarget -AM1RRealAngle)<1)&&(-1<(AM1LAngleTarget -AM1LRealAngle)<1)&&(-1<(AM2RAngleTarget -AM2RRealAngle)<1)&&(-1<(AM2LAngleTarget -AM2LRealAngle)<1)&&(-1<(AM3RAngleTarget -AM3RRealAngle)<1))
+		if(gapOK(AM1RAngleTarget,AM1RRealAngle)&&gapOK(AM1LAngleTarget,AM1LRealAngle)&&gapOK(AM2LAngleTarget,AM2LRealAngle)&&gapOK(AM2RAngleTarget,AM2RRealAngle)&&gapOK(AM3RAngleTarget,AM3RRealAngle))
 			load_cnt = 2;
 		}break;
 		case 2:
 		{
-			AM2RAngleTarget = 190;
-			AM2LAngleTarget = -190;
+			AM2RAngleTarget = -190;
+			AM2LAngleTarget = 190;
 			AM3RAngleTarget = 120;
 			osDelay(1);
-		if((-1<(AM1RAngleTarget -AM1RRealAngle)<1)&&(-1<(AM1LAngleTarget -AM1LRealAngle)<1)&&(-1<(AM2RAngleTarget -AM2RRealAngle)<1)&&(-1<(AM2LAngleTarget -AM2LRealAngle)<1)&&(-1<(AM3RAngleTarget -AM3RRealAngle)<1))
+		if(gapOK(AM1RAngleTarget,AM1RRealAngle)&&gapOK(AM1LAngleTarget,AM1LRealAngle)&&gapOK(AM2LAngleTarget,AM2LRealAngle)&&gapOK(AM2RAngleTarget,AM2RRealAngle)&&gapOK(AM3RAngleTarget,AM3RRealAngle))
 			load_cnt = 3;
 		}break;
 		case 3:
 		{
-			AM3RAngleTarget = 50;
-		if((-1<(AM1RAngleTarget -AM1RRealAngle)<1)&&(-1<(AM1LAngleTarget -AM1LRealAngle)<1)&&(-1<(AM2RAngleTarget -AM2RRealAngle)<1)&&(-1<(AM2LAngleTarget -AM2LRealAngle)<1)&&(-1<(AM3RAngleTarget -AM3RRealAngle)<1))
-			load_cnt = 1;
+			AM2RAngleTarget = -250;
+			AM2LAngleTarget = 250;
+			AM3RAngleTarget = 30;
+		if(gapOK(AM1RAngleTarget,AM1RRealAngle)&&gapOK(AM1LAngleTarget,AM1LRealAngle)&&gapOK(AM2LAngleTarget,AM2LRealAngle)&&gapOK(AM2RAngleTarget,AM2RRealAngle)&&gapOK(AM3RAngleTarget,AM3RRealAngle))
+		{load_cnt = 1;
+			HERO_Order=HERO_STANDBY;}
 		}break;
 	}
 }
+
+uint8_t gapOK(float AngleTarget,float RealAngle)
+{
+	if((AngleTarget - RealAngle)> -7 && (AngleTarget - RealAngle)< 7)
+		return 1;
+	else
+		return 0;
+}
+
 uint16_t discard_cnt = 1;
 void HERO_Manul_Discard()
 {
@@ -161,23 +175,23 @@ void HERO_Manul_Discard()
 	{
 		case 1:
 		{
-			AM2RAngleTarget = 190;
-			AM2LAngleTarget = -190;
+			AM2RAngleTarget = -190;
+			AM2LAngleTarget = 190;
 			AM3RAngleTarget = 120;
 			osDelay(1);
-		if((-1<(AM1RAngleTarget -AM1RRealAngle)<1)&&(-1<(AM1LAngleTarget -AM1LRealAngle)<1)&&(-1<(AM2RAngleTarget -AM2RRealAngle)<1)&&(-1<(AM2LAngleTarget -AM2LRealAngle)<1)&&(-1<(AM3RAngleTarget -AM3RRealAngle)<1))
-			load_cnt = 3;
+		if(gapOK(AM1RAngleTarget,AM1RRealAngle)&&gapOK(AM1LAngleTarget,AM1LRealAngle)&&gapOK(AM2LAngleTarget,AM2LRealAngle)&&gapOK(AM2RAngleTarget,AM2RRealAngle)&&gapOK(AM3RAngleTarget,AM3RRealAngle))
+			discard_cnt = 2;
 		}break;
 		case 2:
 		{
 		AM1RAngleTarget = 100;
 		AM1LAngleTarget = -100;
-		AM2RAngleTarget = 100;
-		AM2LAngleTarget = -100;
+		AM2RAngleTarget = -100;
+		AM2LAngleTarget = 100;
 		AM3RAngleTarget = 90;
 		osDelay(1);
-		if((-1<(AM1RAngleTarget -AM1RRealAngle)<1)&&(-1<(AM1LAngleTarget -AM1LRealAngle)<1)&&(-1<(AM2RAngleTarget -AM2RRealAngle)<1)&&(-1<(AM2LAngleTarget -AM2LRealAngle)<1)&&(-1<(AM3RAngleTarget -AM3RRealAngle)<1))
-			load_cnt = 2;
+		if(gapOK(AM1RAngleTarget,AM1RRealAngle)&&gapOK(AM1LAngleTarget,AM1LRealAngle)&&gapOK(AM2LAngleTarget,AM2LRealAngle)&&gapOK(AM2RAngleTarget,AM2RRealAngle)&&gapOK(AM3RAngleTarget,AM3RRealAngle))
+			discard_cnt = 3;
 		}break;
 		case 3:
 		{
@@ -186,13 +200,13 @@ void HERO_Manul_Discard()
 		  AM2RAngleTarget = LastAM2RAngleTarget;
 		  AM2LAngleTarget = LastAM2LAngleTarget;
 		  AM3RAngleTarget = LastAM3RAngleTarget;
-		if((-1<(AM1RAngleTarget -AM1RRealAngle)<1)&&(-1<(AM1LAngleTarget -AM1LRealAngle)<1)&&(-1<(AM2RAngleTarget -AM2RRealAngle)<1)&&(-1<(AM2LAngleTarget -AM2LRealAngle)<1)&&(-1<(AM3RAngleTarget -AM3RRealAngle)<1))
-			load_cnt = 4;
+		if(gapOK(AM1RAngleTarget,AM1RRealAngle)&&gapOK(AM1LAngleTarget,AM1LRealAngle)&&gapOK(AM2LAngleTarget,AM2LRealAngle)&&gapOK(AM2RAngleTarget,AM2RRealAngle)&&gapOK(AM3RAngleTarget,AM3RRealAngle))
+			discard_cnt = 4;
 		}break;
 		case 4:
 		{
 			GRIP_SOV_OFF();
-			load_cnt = 1;
+			discard_cnt = 1;
 			HERO_Order=HERO_MANUL_FETCH;
 		}break;
 	}

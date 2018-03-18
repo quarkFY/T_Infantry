@@ -33,7 +33,7 @@ extern osThreadId AMCanTransmitTaskHandle;
 
 extern osThreadId sonarTaskHandle;
 
-//extern osThreadId HeroTaskHandle;
+extern osThreadId HeroTaskHandle;
 
 
 #endif
