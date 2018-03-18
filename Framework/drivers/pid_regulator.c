@@ -63,5 +63,5 @@ int16_t PID_PROCESS_Double(fw_PID_Regulator_t pid_position,fw_PID_Regulator_t pi
 	pid_speed.target = pid_position.output;
 	pid_speed.feedback = velocity_feedback;
 	pid_speed.Calc(&pid_speed);
-	return pid_speed.output;
+	return pid_position.output;
 }

@@ -30,4 +30,7 @@ void ControlPM2(void);
 
 void shootOneGolf(void);
 
+void GetGMRealZero(void);
+	
+void GMReset(void);
 #endif

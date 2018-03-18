@@ -38,8 +38,9 @@
 
 //PID_INIT(Kp, Ki, Kd, KpMax, KiMax, KdMax, OutputMax)
 //云台
-#define yaw_zero 1800
-#define pitch_zero 2350
+int yaw_zero = 2400;
+int yaw_zero_revise =2400;
+int pitch_zero = 7000;
 float yawEncoder = 0;
 float GMYAWThisAngle, GMYAWLastAngle;
 float yawRealAngle = 0.0;
@@ -49,13 +50,15 @@ float GMPITCHThisAngle, GMPITCHLastAngle;
 float pitchRealAngle = 0.0;
 float pitchAngleTarget = 0.0;
 float pitchMotorTarget = 0.0;
+int GMPITCHCurrent,GMYAWCurrent;
+uint8_t This_GM_RST,Last_GM_RST;
 
 int isGMYAWFirstEnter = 1;
 int isGMPITCHFirstEnter = 1;
 int isGMSet;
 
-fw_PID_Regulator_t pitchPositionPID = fw_PID_INIT(8, 25.0, 20.0, 0.0, 10000.0, 10000.0, 10000.0);
-fw_PID_Regulator_t yawPositionPID = fw_PID_INIT(8.0, 25.0, 20.0, 0.0, 10000.0, 10000.0, 10000.0);//等幅振荡P37.3 I11.9 D3.75  原26.1 8.0 1.1
+fw_PID_Regulator_t pitchPositionPID = fw_PID_INIT(30, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
+fw_PID_Regulator_t yawPositionPID = fw_PID_INIT(30.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);//等幅振荡P37.3 I11.9 D3.75  原26.1 8.0 1.1
 fw_PID_Regulator_t pitchSpeedPID = fw_PID_INIT(5.0, 0.0, 5.0, 100.0, 10000.0, 10000.0, 5000);
 fw_PID_Regulator_t yawSpeedPID = fw_PID_INIT(5.0, 0.0, 5.0, 100.0, 10000.0, 10000.0, 5000.0);
 
@@ -149,6 +152,7 @@ void ControlYaw(void)
 			//yawRealAngle = (IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle- yawZeroAngle) * 360 * 11 / (8192.0f * 50);
 			
 			GMYAWThisAngle = IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle;
+			GMYAWCurrent = IOPool_pGetWriteData(GMYAWRxIOPool)->realIntensity;
 			//yawEncoder = IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle;
 			if(isGMYAWFirstEnter==1) 
 			{
@@ -178,10 +182,10 @@ void ControlYaw(void)
 			yawIntensity = ProcessYawPID(yawAngleTarget, yawRealAngle, -gYroZs);
 			GMYAWLastAngle = GMYAWThisAngle ;
 			
-			if (isGMSet == 1)
-			{
+//			if (isGMSet == 1)
+//			{
 				setMotor(GMYAW, -yawIntensity);
-			}
+//			}
 
 
 			s_yawCount = 0;
@@ -213,6 +217,8 @@ void ControlPitch(void)
 			//pitchRealAngle = (IOPool_pGetReadData(GMPITCHRxIOPool, 0)->angle- pitchZeroAngle) * 360 * 11 / (8192.0f * 50);
 			
 			GMPITCHThisAngle = IOPool_pGetReadData(GMPITCHRxIOPool, 0)->angle;
+			GMPITCHCurrent = IOPool_pGetWriteData(GMPITCHRxIOPool)->realIntensity;
+
 			//pitchEncoder = IOPool_pGetReadData(GMPITCHRxIOPool, 0)->angle;
 			if(isGMPITCHFirstEnter==1) 
 			{
@@ -238,15 +244,15 @@ void ControlPitch(void)
 			
 			//NORMALIZE_ANGLE180(pitchRealAngle);
 			//限位
-			MINMAX(pitchAngleTarget, -10.0f, 60.0f);	
+//			MINMAX(pitchAngleTarget, -10.0f, 60.0f);	
 		  pitchMotorTarget = pitchAngleTarget - yawAngleTarget ; 
 			pitchIntensity = ProcessPitchPID(-pitchMotorTarget,pitchRealAngle,-gYroXs);
 			GMPITCHLastAngle = GMPITCHThisAngle;
 	
-		  if (isGMSet == 1)
-			{
+//		  if (isGMSet == 1)
+//			{
 				setMotor(GMPITCH, -pitchIntensity);
-			}
+//			}
 
 			s_pitchCount = 0;
 		}
@@ -283,8 +289,8 @@ void ControlCMFL(void)
 			Motor820RRxMsg_t *pData = IOPool_pGetReadData(CMFLRxIOPool, 0);
 			
 			CM2SpeedPID.ref = - ChassisSpeedRef.forward_back_ref*0.075 
-											 + ChassisSpeedRef.left_right_ref*0.075 
-											 + ChassisSpeedRef.rotate_ref
+											 - ChassisSpeedRef.left_right_ref*0.075 
+											 - ChassisSpeedRef.rotate_ref
 			                 ;
 			CM2SpeedPID.ref = 160 * CM2SpeedPID.ref;
 			
@@ -292,7 +298,7 @@ void ControlCMFL(void)
 			CM2SpeedPID.fdb = pData->RotateSpeed;
 			CM2SpeedPID.Calc(&CM2SpeedPID);
 			
-			setMotor(CMFR, CHASSIS_SPEED_ATTENUATION * CM2SpeedPID.output);
+			setMotor(CMFR, -CHASSIS_SPEED_ATTENUATION * CM2SpeedPID.output);
 			
 			s_CMFLCount = 0;
 		}
@@ -313,15 +319,15 @@ void ControlCMFR(void)
 			Motor820RRxMsg_t *pData = IOPool_pGetReadData(CMFRRxIOPool, 0);
 			
 			CM1SpeedPID.ref =  ChassisSpeedRef.forward_back_ref*0.075 
-											 + ChassisSpeedRef.left_right_ref*0.075 
-											 + ChassisSpeedRef.rotate_ref
+											 - ChassisSpeedRef.left_right_ref*0.075 
+											 - ChassisSpeedRef.rotate_ref
 			                 ;	
 			CM1SpeedPID.ref = 160 * CM1SpeedPID.ref;
 			CM1SpeedPID.fdb = pData->RotateSpeed;
 			
 			CM1SpeedPID.Calc(&CM1SpeedPID);
 			
-			setMotor(CMFL, CHASSIS_SPEED_ATTENUATION * CM1SpeedPID.output);
+			setMotor(CMFL, -CHASSIS_SPEED_ATTENUATION * CM1SpeedPID.output);
 			
 			s_CMFRCount = 0;
 		}
@@ -341,9 +347,9 @@ void ControlCMBL(void)
 			IOPool_getNextRead(CMBLRxIOPool, 0);
 			Motor820RRxMsg_t *pData = IOPool_pGetReadData(CMBLRxIOPool, 0);
 			
-			CM3SpeedPID.ref =  ChassisSpeedRef.forward_back_ref*0.075 
-											 - ChassisSpeedRef.left_right_ref*0.075 
-											 + ChassisSpeedRef.rotate_ref
+			CM3SpeedPID.ref = -ChassisSpeedRef.forward_back_ref*0.075 
+											 + ChassisSpeedRef.left_right_ref*0.075 
+											 - ChassisSpeedRef.rotate_ref
 			                 ;
 			CM3SpeedPID.ref = 160 * CM3SpeedPID.ref;
 			CM3SpeedPID.fdb = pData->RotateSpeed;
@@ -370,16 +376,16 @@ void ControlCMBR()
 			IOPool_getNextRead(CMBRRxIOPool, 0);
 			Motor820RRxMsg_t *pData = IOPool_pGetReadData(CMBRRxIOPool, 0);
 			
-			CM4SpeedPID.ref = - ChassisSpeedRef.forward_back_ref*0.075 
-											 - ChassisSpeedRef.left_right_ref*0.075 
-											 + ChassisSpeedRef.rotate_ref
+			CM4SpeedPID.ref = ChassisSpeedRef.forward_back_ref*0.075 
+											 + ChassisSpeedRef.left_right_ref*0.075 
+											 - ChassisSpeedRef.rotate_ref
 			                 ;
 			CM4SpeedPID.ref = 160 * CM4SpeedPID.ref;
 			CM4SpeedPID.fdb = pData->RotateSpeed;
 					
 			CM4SpeedPID.Calc(&CM4SpeedPID);
 			
-			setMotor(CMBR, CHASSIS_SPEED_ATTENUATION * CM4SpeedPID.output);
+			setMotor(CMBR, -CHASSIS_SPEED_ATTENUATION * CM4SpeedPID.output);
 			
 			s_CMBRCount = 0;
 		}
@@ -428,7 +434,7 @@ void ControlPM1()
 
 			PM1LastAngle = PM1ThisAngle;
 	
-			setMotor(PM1, -PM1SpeedPID.output);
+			setMotor(PM1, PM1SpeedPID.output);
 			//setMotor(PM1, 800);
 			
 			s_PM1Count = 0;
@@ -478,7 +484,7 @@ void ControlPM2()
 
 			PM2LastAngle = PM2ThisAngle;
 	
-			setMotor(PM2, -PM2SpeedPID.output);
+			setMotor(PM2, PM2SpeedPID.output);
 			
 			s_PM2Count = 0;
 		}
@@ -491,10 +497,25 @@ void ControlPM2()
 
 void shootOneGolf()
 {
-	PM1AngleTarget = PM1AngleTarget + 360;
-	PM2AngleTarget = PM2AngleTarget + 360;
+	PM1AngleTarget = PM1AngleTarget - 80;
+	PM2AngleTarget = PM2AngleTarget - 80;
 }
 
-
+//可能需要除抖
+void GetGMRealZero(void)
+{
+	This_GM_RST = HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_4);
+	if(This_GM_RST != Last_GM_RST)
+	{
+		IOPool_getNextRead(GMYAWRxIOPool, 0); 
+		yaw_zero_revise = IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle;
+	}
+	Last_GM_RST = This_GM_RST;
+}
+	
+void GMReset(void)
+{
+	yaw_zero = yaw_zero_revise;
+}
 
 

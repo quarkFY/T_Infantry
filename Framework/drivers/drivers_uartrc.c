@@ -36,6 +36,7 @@
 #include "tasks_platemotor.h"
 #include "tasks_motor.h"
 #include "tasks_arm.h"
+#include "tasks_hero.h"
 
 NaiveIOPoolDefine(rcUartIOPool, {0});
 
@@ -83,6 +84,8 @@ InputMode_e inputmode = REMOTE_INPUT;
 Get_Bullet_e GetBulletState = NO_GETBULLET;
 //云台底盘锁定状态
 GMMode_e GMMode = LOCK;
+ //取弹任务状态
+ extern HERO_Order_t HERO_Order;
 
 
 unsigned int zyLeftPostion; //大符用左拨杆位置
@@ -134,6 +137,7 @@ void RemoteTaskInit()
 	ChassisSpeedRef.left_right_ref = 0.0f;
 	ChassisSpeedRef.rotate_ref = 0.0f;
   /*摩擦轮*/
+	SetFrictionWheelSpeed(800); 
 	SetFrictionState(FRICTION_WHEEL_OFF);
 	ArmSpeedRef.forward_back_ref = 0.0f;
 	ArmSpeedRef.up_down_ref = 0.0f;
@@ -238,25 +242,25 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 			{
 				LASER_OFF();//zy0802
 				SetShootState(NO_SHOOT);
-				SetFrictionWheelSpeed(1000);
+				SetFrictionWheelSpeed(800);
 				g_friction_wheel_state = FRICTION_WHEEL_OFF;
 				frictionRamp.ResetCounter(&frictionRamp);
 			}
 			
-			else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)	
-			{
+	//		else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)	
+	//		{
 //				LASER_OFF();
 //				SetShootState(NO_SHOOT);
 //				SetFrictionWheelSpeed(1000);
 //				g_friction_wheel_state = FRICTION_WHEEL_OFF;
 //				frictionRamp.ResetCounter(&frictionRamp);
 				
-			}
+	//		}
 			
 			else
 			{
 				/*斜坡函数必须有，避免电流过大烧坏主控板*/
-				SetFrictionWheelSpeed(1000 + (FRICTION_WHEEL_MAX_DUTY-1000)*frictionRamp.Calc(&frictionRamp)); 
+				SetFrictionWheelSpeed(800 + (FRICTION_WHEEL_MAX_DUTY-800)*frictionRamp.Calc(&frictionRamp)); 
 				if(frictionRamp.IsOverflow(&frictionRamp))
 				{
 					g_friction_wheel_state = FRICTION_WHEEL_ON; 	
@@ -270,11 +274,11 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 			{
 				LASER_OFF();//zy0802
 				g_friction_wheel_state = FRICTION_WHEEL_OFF;				  
-				SetFrictionWheelSpeed(1000); 
+				SetFrictionWheelSpeed(800); 
 				frictionRamp.ResetCounter(&frictionRamp);
 				SetShootState(NO_SHOOT);
 			}
-			else if(sw->switch_value_raw == 3)	//左侧拨杆拨到中间便会开枪
+			else if(sw->switch_value_raw == 2)	//左侧拨杆拨到中间便会开枪
 			{
 				SetShootState(MANUL_SHOOT_ONE);
 				if(remoteShootDelay!=0) 
@@ -325,14 +329,14 @@ void MouseShootControl(Mouse *mouse)
 			{
 				LASER_OFF();//zy0802
 				g_friction_wheel_state = FRICTION_WHEEL_OFF;				  
-				SetFrictionWheelSpeed(1000); 
+				SetFrictionWheelSpeed(800); 
 				frictionRamp.ResetCounter(&frictionRamp);
 				SetShootState(NO_SHOOT);
 			}
 			else
 			{
 		    /*摩擦轮转速修改 FRICTION_WHEEL_MAX_DUTY*/
-				SetFrictionWheelSpeed(1000 + (FRICTION_WHEEL_MAX_DUTY-1000)*frictionRamp.Calc(&frictionRamp)); 
+				SetFrictionWheelSpeed(800 + (FRICTION_WHEEL_MAX_DUTY-800)*frictionRamp.Calc(&frictionRamp)); 
 				if(frictionRamp.IsOverflow(&frictionRamp))
 				{
 					g_friction_wheel_state = FRICTION_WHEEL_ON; 	
@@ -354,7 +358,7 @@ void MouseShootControl(Mouse *mouse)
 			{
 				LASER_OFF();//zy0802
 				g_friction_wheel_state = FRICTION_WHEEL_OFF;				  
-				SetFrictionWheelSpeed(1000); 
+				SetFrictionWheelSpeed(800); 
 				frictionRamp.ResetCounter(&frictionRamp);
 				SetShootState(NO_SHOOT);
 			}			
@@ -477,23 +481,29 @@ void RemoteGetBulletControl(RemoteSwitch_t *sw, uint8_t val)
 	{
 		ARM_INIT();
 		SetGetBulletState(MANUL_GETBULLET);
+		HERO_Order=HERO_MANUL_FETCH;
 	}
 	else if(sw->switch_value_raw == 1)
 	{
 		SetGetBulletState(NO_GETBULLET);
+		HERO_Order=HERO_STANDBY;
 	}
 	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)
 	{
 		SetGetBulletState(AUTO_GETBULLET);
+	//	HERO_Order=HERO_MANUL_LOAD;使用遥控器调试用
 	}
 	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_2TO3)
 	{
 		SetGetBulletState(MANUL_GETBULLET);
+	//	HERO_Order=HERO_MANUL_DISCARD;
 	}
 	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)
 	{
 		SetGetBulletState(NO_GETBULLET);
+		HERO_Order=HERO_STANDBY;
 	}
+
 }
 
 Get_Bullet_e GetGetBulletState()
