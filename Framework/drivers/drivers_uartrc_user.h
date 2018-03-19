@@ -100,6 +100,11 @@ typedef enum
 	FRICTION_WHEEL_ON = 2,
 }FrictionWheelState_e;
 
+typedef enum
+{
+	CLOCKWISE,     
+	ANTICLOCKWISE,		    
+}RotateDirection_e;
 
 /*没用到
 typedef enum

@@ -71,10 +71,14 @@
 #define EncoderB_GPIO_Port GPIOH
 #define EncoderA_Pin GPIO_PIN_10
 #define EncoderA_GPIO_Port GPIOH
-#define GM_RST_Pin GPIO_PIN_2
-#define GM_RST_GPIO_Port GPIOC
+#define BEHIND_SOV1_Pin GPIO_PIN_2
+#define BEHIND_SOV1_GPIO_Port GPIOC
+#define BEHIND_SOV2_Pin GPIO_PIN_3
+#define BEHIND_SOV2_GPIO_Port GPIOC
 #define PM_Dir_Ctrl1_Pin GPIO_PIN_4
 #define PM_Dir_Ctrl1_GPIO_Port GPIOA
+#define GM_RST_Pin GPIO_PIN_4
+#define GM_RST_GPIO_Port GPIOC
 #define PM_Ctrl_Pin GPIO_PIN_12
 #define PM_Ctrl_GPIO_Port GPIOD
 #define PM_Dir_Ctrl2_Pin GPIO_PIN_5
