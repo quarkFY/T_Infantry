@@ -103,6 +103,9 @@ fw_PID_Regulator_t PM2PositionPID = fw_PID_INIT(100.0, 0.0, 0.0, 10000.0, 10000.
 fw_PID_Regulator_t PM1SpeedPID = fw_PID_INIT(2, 0.0, 40.0, 10000.0, 10000.0, 10000.0, 4000.0);
 fw_PID_Regulator_t PM2SpeedPID = fw_PID_INIT(2, 0.0, 40.0, 10000.0, 10000.0, 10000.0, 4000.0);
 
+uint16_t PM1RotateCount = 0;
+uint8_t PM1RotateFlag = 0;
+
 //陀螺仪角速度（板载）
 extern float gYroXs, gYroYs, gYroZs;
 
@@ -544,6 +547,34 @@ void shootOneGolf()
 	PM2AngleTarget = PM2AngleTarget - 80;
 }
 
+<<<<<<< HEAD
+=======
+RotateDirection_e PMRotateDirection = CLOCKWISE;
+
+void PMRotate()
+{
+	if(PM1RotateFlag == 1)
+	{
+		switch(PMRotateDirection)
+		{
+			case CLOCKWISE:
+			{
+				PM2AngleTarget = PM2AngleTarget - 150;
+				PMRotateDirection = ANTICLOCKWISE;
+			}break;
+			case ANTICLOCKWISE:
+			{
+				PM2AngleTarget = PM2AngleTarget + 150;
+				PMRotateDirection = CLOCKWISE;
+			}break;
+		}
+		
+		PM1RotateFlag = 0;
+	}
+}
+
+//可能需要除抖
+>>>>>>> master
 void GetGMRealZero(void)
 {
 	if(!HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_2))
