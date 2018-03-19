@@ -86,9 +86,6 @@ extern float yawAngleTarget;
 extern float pitchAngleTarget;
 extern RampGen_t frictionRamp ;
 
-extern uint16_t PM1RotateCount;
-extern uint8_t PM1RotateFlag;
-
 static uint32_t s_time_tick_2ms = 0;
 uint16_t checkRecTime=300;
 uint16_t checkKeyTime=500;
@@ -144,16 +141,6 @@ void Timer_2ms_lTask(void const * argument)
 		else
 		{
 			s_countWhile++;
-		}
-		
-		if(PM1RotateCount <= 1000)
-		{
-			PM1RotateCount++;
-		}
-		else
-		{
-			PM1RotateCount = 0;
-			PM1RotateFlag = 1;
 		}
 		
 		vTaskDelayUntil( &xLastWakeTime, ( 2 / portTICK_RATE_MS ) );//这里进入阻塞态等待2ms
