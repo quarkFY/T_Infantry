@@ -16,7 +16,6 @@
 #define TASKS_ARM_H
 
 #include "application_motorcontrol.h"
-#include "rtos_semaphore.h"
 
 #define AM1Reduction 189.0
 #define AM23Reduction 36.0
@@ -28,14 +27,9 @@ void ControlAM2L(void);
 void ControlAM2R(void);
 void ControlAM3R(void);
 
-//void setAMAngle(MotorId id, float angle);
+void setAMAngle(MotorId id, float angle);
 void getGolf(void);
 void armReset(void);
 void armStretch(void);
 void ARM_INIT(void);
-
-//void GripLoadProcess(void);
-
-uint8_t Hero_Angle_Track(float final,float realAngle,float *angleTarget,uint8_t *time_milis);
-uint8_t taskDelay(uint32_t time_milis);
 #endif

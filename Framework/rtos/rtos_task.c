@@ -34,7 +34,6 @@
 #include "drivers_sonar_low.h"
 #include "tasks_platemotor.h"
 #include "utilities_debug.h"
-#include "tasks_hero.h"
 
 //#include "drivers_mpu6050_low.h"
 //#include "tasks_mpu6050.h"
@@ -61,8 +60,6 @@ osThreadId AMCanTransmitTaskHandle;
 osThreadId sonarTaskHandle;
 
 osThreadId visualScopeTaskHandle;
-
-osThreadId HeroTaskHandle;
 
 //extern osThreadId testFlashTaskHandle;
 //#include "drivers_flash.h"
@@ -116,9 +113,7 @@ void rtos_AddThreads()
 //2ms定时任务，状态机切换，调试信息输出等
 	osThreadDef(Timer_Task, Timer_2ms_lTask, osPriorityAboveNormal, 0, 512);//zy512
   TimerTaskHandle = osThreadCreate(osThread(Timer_Task), NULL);
-	//英雄取弹
-  osThreadDef(Hero_Task, HeroTask, osPriorityNormal, 0, 256);
-	HeroTaskHandle = osThreadCreate(osThread(Hero_Task), NULL);
+
 
 
 }
