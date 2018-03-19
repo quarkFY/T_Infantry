@@ -22,6 +22,7 @@
 #include "utilities_debug.h"
 #include "tasks_remotecontrol.h"
 #include "drivers_uartrc_user.h"
+#include "peripheral_sov.h"
 #include <math.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -370,33 +371,33 @@ void ControlAM3R()
 }
 
 
-void setAMAngle(MotorId id, float angle)
-{
-	switch(id){
-		case AM1L:
-			AM1LAngleTarget = angle;break;
-		case AM1R:
-			AM1RAngleTarget = angle;break;
-		case AM2L:
-			AM2LAngleTarget = angle;break;
-		case AM2R:
-			AM2RAngleTarget = angle;break;
-		case AM3R:
-			AM3RAngleTarget = angle;break;
-		default:
-			fw_Error_Handler();
-	}
-}
+//void setAMAngle(MotorId id, float angle)
+//{
+//	switch(id){
+//		case AM1L:
+//			AM1LAngleTarget = angle;break;
+//		case AM1R:
+//			AM1RAngleTarget = angle;break;
+//		case AM2L:
+//			AM2LAngleTarget = angle;break;
+//		case AM2R:
+//			AM2RAngleTarget = angle;break;
+//		case AM3R:
+//			AM3RAngleTarget = angle;break;
+//		default:
+//			fw_Error_Handler();
+//	}
+//}
 
 //一整套动作为下达取弹指令后，展开机械臂，进行取弹，取弹完毕后下达收回指令，机械臂收回
-void getGolf()
-{
+//void getGolf()
+//{
 	//待完善
 	//思路：
 	//目前两个电机的task都是用于跟踪的，即令反馈值跟踪上目标值
 	//在遥控器任务和2ms定时任务中对目标值进行修改，从而做出指定的动作
 	//取弹flag置位，当2ms任务检测到置位后，计数器开始计数，根据计数器的值来进行相应的取弹动作
-}
+//}
 
 void armReset()
 {
@@ -428,7 +429,6 @@ void ARM_INIT()
 
 void armStretch()
 {
-	
 	Arm_Horizontal_Position -= ArmSpeedRef.forward_back_ref;
 	Arm_Vertical_Position += ArmSpeedRef.up_down_ref;
 	SquareOfRadius = Arm_Horizontal_Position*Arm_Horizontal_Position + Arm_Vertical_Position*Arm_Vertical_Position;
@@ -471,50 +471,63 @@ void armStretch()
 			}
 			
 		}
-		 //机械臂末端，保持45°于地面
-			AM3RAngleTarget = AM2RAngleTarget - AM1RAngleTarget + 135;
+		
 		
 			Last_Arm_Horizontal_Position = Arm_Horizontal_Position;
 			Last_Arm_Vertical_Position = Arm_Vertical_Position;
-			
-
 		
-	
+	    LastAM1LAngleTarget = AM1LAngleTarget;
+      LastAM1RAngleTarget = AM1RAngleTarget;
+      LastAM2LAngleTarget = AM2LAngleTarget;
+      LastAM2RAngleTarget = AM2RAngleTarget;
+      LastAM3RAngleTarget = AM3RAngleTarget;
 }
+
+//void GripLoadProcess()
+//{
+//  float final;
+//	final = AM2RAngleTarget - AM1RAngleTarget + 180;
+//	Hero_Angle_Track( final,AM3RRealAngle,&AM3RAngleTarget,&AM3Rtime_milis);
+//	if(Hero_Angle_Track( final,AM3RRealAngle,&AM3RAngleTarget,&AM3Rtime_milis))
+//	{
+//		GRIP_SOV_ON();
+//	}
+	
+//}
 
 //角度跟踪精确控制，分段，精确到1°
-uint8_t Hero_Angle_Track(float final,float currentAngle,float *angleTarget,uint32_t *time_milis)
-{
-	uint8_t motorReady = 1;
-	float tmp = (final - currentAngle)/(*time_milis);
-	while(time_milis>0 && motorReady)
-	{
-		if(emergency_Flag==EMERGENCY)
-		{	
-			return 0;
-		}
-		if(-1<( *angleTarget - currentAngle ) < 1)
-		{
-		  *angleTarget += tmp;
-		  time_milis--;
-			motorReady = 1;
-		}
-		else motorReady = 0;
-		osDelay(1);
-	}
-	if(-1< (final - currentAngle ) < 1) return 1;
-	else return 0;
-}
+//uint8_t Hero_Angle_Track(float final,float currentAngle,float *angleTarget,uint8_t *time_milis)
+//{
+//	uint8_t motorReady = 1;
+//	float tmp = (final - currentAngle)/(*time_milis);
+//	while(time_milis>0 && motorReady)
+//	{
+//		if(emergency_Flag==EMERGENCY)
+//		{	
+//			return 0;
+//		}
+//		if(-1<( *angleTarget - currentAngle ) < 1)
+//		{
+//		  *angleTarget += tmp;
+//		  time_milis--;
+//			motorReady = 1;
+//		}
+//		else motorReady = 0;
+//		osDelay(1);
+//	}
+//	if(-1< (final - currentAngle ) < 1) return 1;
+//	else return 0;
+//}
 
-uint8_t taskDelay(uint32_t time_milis)
-{
-	for(int i=0;i<time_milis;i++)
-	{
-		if(emergency_Flag==EMERGENCY)
-		{	
-			return 0;
-		}
-		osDelay(1);
-	}
-	return 1;
-}
+//uint8_t taskDelay(uint32_t time_milis)
+//{
+//	for(int i=0;i<time_milis;i++)
+//	{
+//		if(emergency_Flag==EMERGENCY)
+//		{	
+//			return 0;
+//		}
+//		osDelay(1);
+//	}
+//	return 1;
+//}

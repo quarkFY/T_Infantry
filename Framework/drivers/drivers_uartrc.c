@@ -36,6 +36,7 @@
 #include "tasks_platemotor.h"
 #include "tasks_motor.h"
 #include "tasks_arm.h"
+#include "tasks_hero.h"
 
 NaiveIOPoolDefine(rcUartIOPool, {0});
 
@@ -83,6 +84,8 @@ InputMode_e inputmode = REMOTE_INPUT;
 Get_Bullet_e GetBulletState = NO_GETBULLET;
 //云台底盘锁定状态
 GMMode_e GMMode = LOCK;
+ //取弹任务状态
+ extern HERO_Order_t HERO_Order;
 
 
 unsigned int zyLeftPostion; //大符用左拨杆位置
@@ -480,23 +483,29 @@ void RemoteGetBulletControl(RemoteSwitch_t *sw, uint8_t val)
 	{
 		ARM_INIT();
 		SetGetBulletState(MANUL_GETBULLET);
+		HERO_Order=HERO_MANUL_FETCH;
 	}
 	else if(sw->switch_value_raw == 1)
 	{
 		SetGetBulletState(NO_GETBULLET);
+		HERO_Order=HERO_STANDBY;
 	}
 	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)
 	{
 		SetGetBulletState(AUTO_GETBULLET);
+	//	HERO_Order=HERO_MANUL_LOAD;使用遥控器调试用
 	}
 	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_2TO3)
 	{
 		SetGetBulletState(MANUL_GETBULLET);
+	//	HERO_Order=HERO_MANUL_DISCARD;
 	}
 	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)
 	{
 		SetGetBulletState(NO_GETBULLET);
+		HERO_Order=HERO_STANDBY;
 	}
+
 }
 
 Get_Bullet_e GetGetBulletState()
