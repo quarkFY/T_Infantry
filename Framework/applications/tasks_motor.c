@@ -528,7 +528,7 @@ void PMRotate()
 	}
 }
 
-//可能需要除抖
+//可能需要除抖，待调试
 void GetGMRealZero(void)
 {
 	This_GM_RST = HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_4);
