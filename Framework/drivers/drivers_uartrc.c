@@ -37,6 +37,7 @@
 #include "tasks_motor.h"
 #include "tasks_arm.h"
 #include "tasks_hero.h"
+#include "peripheral_sov.h"
 
 NaiveIOPoolDefine(rcUartIOPool, {0});
 
@@ -86,6 +87,8 @@ Get_Bullet_e GetBulletState = NO_GETBULLET;
 GMMode_e GMMode = LOCK;
  //取弹任务状态
  extern HERO_Order_t HERO_Order;
+ //底盘状态
+ Chassis_Mode_e FrontWheel_Mode = CHASSIS_NORMAL, Last_FrontWheel_Mode = CHASSIS_NORMAL,BehindWheel_Mode = CHASSIS_NORMAL, Last_BehindWheel_Mode = CHASSIS_NORMAL;
 
 
 unsigned int zyLeftPostion; //大符用左拨杆位置
@@ -229,6 +232,7 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 				frictionRamp.ResetCounter(&frictionRamp);
 				g_friction_wheel_state = FRICTION_WHEEL_START_TURNNING;	 
 				LASER_ON(); 
+				FRONT_SOV1_OFF();
 			}
 //			else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)		//收回取弹机械臂
 //			{
@@ -483,6 +487,11 @@ void RemoteGetBulletControl(RemoteSwitch_t *sw, uint8_t val)
 		SetGetBulletState(MANUL_GETBULLET);
 		HERO_Order=HERO_MANUL_FETCH;
 	}
+	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)
+	{
+		SetGetBulletState(NO_GETBULLET);
+		HERO_Order=HERO_STANDBY;
+	}
 	else if(sw->switch_value_raw == 1)
 	{
 		SetGetBulletState(NO_GETBULLET);
@@ -498,11 +507,7 @@ void RemoteGetBulletControl(RemoteSwitch_t *sw, uint8_t val)
 		SetGetBulletState(MANUL_GETBULLET);
 	//	HERO_Order=HERO_MANUL_DISCARD;
 	}
-	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)
-	{
-		SetGetBulletState(NO_GETBULLET);
-		HERO_Order=HERO_STANDBY;
-	}
+	
 
 }
 
@@ -511,7 +516,70 @@ Get_Bullet_e GetGetBulletState()
 	return GetBulletState;
 }
 
+
 void SetGetBulletState(Get_Bullet_e v)
 {
 	GetBulletState = v;
 }
+
+//底盘升降控制
+void RaiseControlProcess()
+{
+	//HIGH TO LOW|LOW TO HIGH可能需要一定延时
+	if(Last_FrontWheel_Mode == CHASSIS_NORMAL && FrontWheel_Mode == CHASSIS_HIGH)
+	{
+		FRONT_SOV1_ON();
+	}
+	else if(Last_FrontWheel_Mode == CHASSIS_NORMAL && FrontWheel_Mode == CHASSIS_LOW)
+	{
+		FRONT_SOV2_ON();
+	}
+	else if(Last_FrontWheel_Mode == CHASSIS_HIGH && FrontWheel_Mode == CHASSIS_NORMAL)
+	{
+		FRONT_SOV1_OFF();
+	}
+	else if(Last_FrontWheel_Mode == CHASSIS_HIGH && FrontWheel_Mode == CHASSIS_LOW)
+	{
+		FRONT_SOV1_OFF();
+		FRONT_SOV2_ON();
+	}
+	else if(Last_FrontWheel_Mode == CHASSIS_LOW && FrontWheel_Mode == CHASSIS_NORMAL)
+	{
+		FRONT_SOV2_OFF();
+	}
+	else if(Last_FrontWheel_Mode == CHASSIS_LOW && FrontWheel_Mode == CHASSIS_HIGH)
+	{
+		FRONT_SOV2_OFF();
+		FRONT_SOV1_ON();
+	}
+	Last_FrontWheel_Mode = FrontWheel_Mode;
+	
+	if(Last_BehindWheel_Mode == CHASSIS_NORMAL && BehindWheel_Mode == CHASSIS_HIGH)
+	{
+		BEHIND_SOV1_ON();
+	}
+	else if(Last_BehindWheel_Mode == CHASSIS_NORMAL && BehindWheel_Mode == CHASSIS_LOW)
+	{
+		BEHIND_SOV2_ON();
+	}
+	else if(Last_BehindWheel_Mode == CHASSIS_HIGH && BehindWheel_Mode == CHASSIS_NORMAL)
+	{
+		BEHIND_SOV1_OFF();
+	}
+	else if(Last_BehindWheel_Mode == CHASSIS_HIGH && BehindWheel_Mode == CHASSIS_LOW)
+	{
+		BEHIND_SOV1_OFF();
+		BEHIND_SOV2_ON();
+	}
+	else if(Last_BehindWheel_Mode == CHASSIS_LOW && BehindWheel_Mode == CHASSIS_NORMAL)
+	{
+		BEHIND_SOV2_OFF();
+	}
+	else if(Last_BehindWheel_Mode == CHASSIS_LOW && BehindWheel_Mode == CHASSIS_HIGH)
+	{
+		BEHIND_SOV2_OFF();
+		BEHIND_SOV1_ON();
+	}
+	Last_BehindWheel_Mode = BehindWheel_Mode;
+}
+

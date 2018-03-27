@@ -114,7 +114,7 @@ void HeroTask(void const * argument)
 	//				}break;
 					case HERO_STANDBY:
 					{
-						osDelay(10);
+						//osDelay(10);
 					}break;
 					
 				}

@@ -106,13 +106,14 @@ typedef enum
 	ANTICLOCKWISE,		    
 }RotateDirection_e;
 
-/*没用到
+
 typedef enum
 {
-	OPEN = 0,
-	CLOSE = 1,
-}Slab_Mode_e;
-*/
+	CHASSIS_NORMAL = 0,
+	CHASSIS_HIGH = 1,
+	CHASSIS_LOW = 2,
+}Chassis_Mode_e;
+
 
 //Shoot_State_e GetShootMode(void);
 //void SetShootMode(Shoot_Mode_e v);
@@ -130,6 +131,6 @@ FrictionWheelState_e GetFrictionState(void);
 Get_Bullet_e GetGetBulletState(void);
 void SetGetBulletState(Get_Bullet_e v);
 
-
+void RaiseControlProcess(void);
 
 #endif

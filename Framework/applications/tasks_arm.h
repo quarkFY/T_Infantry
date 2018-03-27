@@ -19,7 +19,7 @@
 #include "rtos_semaphore.h"
 
 #define AM1Reduction 189.0
-#define AM23Reduction 36.0
+#define AM23Reduction 96.0
 
 void Can2ControlTask(void const * argument);
 void ControlAM1L(void);

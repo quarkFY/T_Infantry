@@ -52,6 +52,7 @@ extern ArmSpeed_Ref_t ArmSpeedRef;
 extern Gimbal_Ref_t GimbalRef;
 extern FrictionWheelState_e g_friction_wheel_state ;
 extern GMMode_e GMMode;
+extern Chassis_Mode_e FrontWheel_Mode , Last_FrontWheel_Mode ,BehindWheel_Mode , Last_BehindWheel_Mode ;
 
 extern float AM1RAngleTarget,AM1LAngleTarget,AM2RAngleTarget,AM2LAngleTarget,AM3RAngleTarget;
 extern float AM1RRealAngle,AM1LRealAngle,AM2RRealAngle,AM2LRealAngle,AM3RRealAngle;
@@ -267,7 +268,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 			left_right_speed = LOW_LEFT_RIGHT_SPEED;
 			rotate_speed = LOW_ROTATE_SPEED;
 		}
-		else if(key->v == 32)//Ctrl
+		else if(key->v == 0x20)//Ctrl
 		{
 			forward_back_speed =  MIDDLE_FORWARD_BACK_SPEED;
 			left_right_speed = MIDDLE_LEFT_RIGHT_SPEED;
@@ -430,6 +431,37 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 			if(GetBulletState == NO_GETBULLET)
 			{
 				armReset();
+				//抬升底盘前轮
+				if(key->v & 0x0200)//f
+				{
+					FrontWheel_Mode = CHASSIS_HIGH;
+				}
+				//回复正常底盘
+				if(key->v & (0x0200|0x10))//f+shift
+				{
+					FrontWheel_Mode = CHASSIS_NORMAL;
+				}
+				//放低底盘
+				if(key->v & (0x0200|0x20))//f+ctrl
+				{
+					FrontWheel_Mode = CHASSIS_LOW;
+				}
+				//抬升底盘后轮
+				if(key->v & 0x8000)//b
+				{
+					BehindWheel_Mode = CHASSIS_HIGH;
+				}
+				//回复正常底盘
+				if(key->v & (0x8000|0x10))//b+shift
+				{
+					BehindWheel_Mode = CHASSIS_NORMAL;
+				}
+				//放低底盘
+				if(key->v & (0x8000|0x20))//b+ctrl
+				{
+					BehindWheel_Mode = CHASSIS_LOW;
+				}
+				RaiseControlProcess();
 			}
 			else if(GetBulletState == MANUL_GETBULLET)
 			{
@@ -438,11 +470,13 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 				ArmSpeedRef.up_down_ref = (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
 				//armStretch();
 				//手动取弹装弹,手动HERO
-				//抓取
+				
+				//放平
 				if(key->v & 0x0800)//z
 				{
 					HERO_Order=HERO_MANUL_READY;
 				}
+				//抓取
 				else if(key->v & 0x1000)//x
 				{
 					HERO_Order=HERO_MANUL_GRIP;
@@ -452,7 +486,7 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 					HERO_Order=HERO_MANUL_READY;
 				}
 				//装弹
-				else if((key->v & 0x2000)>>13)//c
+				else if(key->v & 0x2000)//c
 				{
 					HERO_Order=HERO_MANUL_LOAD;
 				}

@@ -2,6 +2,7 @@
 #define _SOV_H_
 #include "gpio.h"
 //前轮1电磁阀
+//控制方式，sov1 on、sov2 off最高；sov1 off 、sov2 off中间；sov1 off、sov2 on最低；both on冲突
 #define FRONT_SOV1_ON()  HAL_GPIO_WritePin(FRONT_SOV1_GPIO_Port, FRONT_SOV1_Pin,GPIO_PIN_SET);\
 										
 #define FRONT_SOV1_OFF()  HAL_GPIO_WritePin(FRONT_SOV1_GPIO_Port, FRONT_SOV1_Pin,GPIO_PIN_RESET);\
