@@ -234,6 +234,7 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 				LASER_ON(); 
 				FRONT_SOV1_OFF();
 			}
+			PMRotate();
 //			else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)		//收回取弹机械臂
 //			{
 //				armReset();
@@ -285,6 +286,7 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 			else if(sw->switch_value_raw == 2)	//左侧拨杆拨到中间便会开枪
 			{
 				SetShootState(MANUL_SHOOT_ONE);
+				//PMRotate();
 				if(remoteShootDelay!=0) 
 					--remoteShootDelay;
 				else
