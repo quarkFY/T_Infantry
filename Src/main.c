@@ -68,7 +68,7 @@
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-
+uint32_t ADC_Value[100];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -142,7 +142,7 @@ int main(void)
   MX_ADC1_Init();
 
   /* USER CODE BEGIN 2 */
-
+	HAL_ADC_Start_DMA(&hadc1,(uint32_t*)&ADC_Value,100);
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */

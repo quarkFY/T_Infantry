@@ -30,7 +30,8 @@ extern float LastAM2LAngleTarget;
 extern float LastAM2RAngleTarget;
 extern float LastAM3RAngleTarget;
 
-
+//ºìÍâADCÅäÖÃ
+extern uint32_t ADC_Value[60];
 //Engineering_Step_t Engineering_Step = ENGINEERING_STOP;
 //Engineering_Step_t Engineering_Last_Step = ENGINEERING_STOP;
 //×´Ì¬¼°ÃüÁîÃ¶¾Ù
