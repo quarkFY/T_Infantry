@@ -505,6 +505,11 @@ void shootOneGolf()
 	PM2AngleTarget = PM2AngleTarget + 160;
 }
 
+void shootOneGolfConpensation()
+{
+	PM2AngleTarget = PM2AngleTarget - 30;
+}
+
 RotateDirection_e PMRotateDirection = CLOCKWISE;
 
 void PMRotate()
