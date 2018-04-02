@@ -144,16 +144,16 @@ void HERO_Load(void)
 		{
 			AM2RAngleTarget = -100;
 			AM2LAngleTarget = 100;
-			AM3RAngleTarget = 120;
+			AM3RAngleTarget = 150;
 			osDelay(1);
 		if(gapOK(AM1RAngleTarget,AM1RRealAngle)&&gapOK(AM1LAngleTarget,AM1LRealAngle)&&gapOK(AM2LAngleTarget,AM2LRealAngle)&&gapOK(AM2RAngleTarget,AM2RRealAngle)&&gapOK(AM3RAngleTarget,AM3RRealAngle))
 			load_cnt = 3;
 		}break;
 		case 3:
 		{
-			AM2RAngleTarget = -160;
-			AM2LAngleTarget = 160;
-			AM3RAngleTarget = 30;
+			AM2RAngleTarget = -190;
+			AM2LAngleTarget = 190;
+			AM3RAngleTarget = 180;
 		if(gapOK(AM1RAngleTarget,AM1RRealAngle)&&gapOK(AM1LAngleTarget,AM1LRealAngle)&&gapOK(AM2LAngleTarget,AM2LRealAngle)&&gapOK(AM2RAngleTarget,AM2RRealAngle)&&gapOK(AM3RAngleTarget,AM3RRealAngle))
 		{load_cnt = 1;
 			HERO_Order=HERO_STANDBY;}

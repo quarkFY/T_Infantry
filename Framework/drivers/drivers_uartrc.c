@@ -286,14 +286,29 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 			else if(sw->switch_value_raw == 2)	//左侧拨杆拨到中间便会开枪
 			{
 				SetShootState(MANUL_SHOOT_ONE);
-				//PMRotate();
-				if(remoteShootDelay!=0) 
-					--remoteShootDelay;
-				else
+				
+				if (remoteShootDelay == 0)
 				{
 					shootOneGolf();
 					remoteShootDelay = 50;
 				}
+				else if (remoteShootDelay == 25)
+				{
+					shootOneGolfConpensation();
+					--remoteShootDelay;
+				}
+				else 
+				{
+					--remoteShootDelay;
+				}
+				
+//				if(remoteShootDelay!=0) 
+//					--remoteShootDelay;
+//				else
+//				{
+//					shootOneGolf();
+//					remoteShootDelay = 50;
+//				}
 			}
 			else
 			{
