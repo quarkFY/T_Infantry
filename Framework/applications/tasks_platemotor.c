@@ -40,7 +40,7 @@ PID_Regulator_t ShootMotorSpeedPID = SHOOT_MOTOR_SPEED_PID_DEFAULT;
 
 static int s_count_bullet = 0;
 int stuck = 0;	//卡弹标志位，未卡弹为false，卡弹为true
-LaunchMode_e launchMode = SINGLE_MULTI;
+//LaunchMode_e launchMode = SINGLE_MULTI;
 
 void PlateMotorTask(void const * argument)
 {
@@ -173,20 +173,20 @@ int32_t GetQuadEncoderDiff(void)
 	return cnt;
 }
 
-void setLaunchMode(LaunchMode_e lm)
-{
-	launchMode = lm;
-}
+//void setLaunchMode(LaunchMode_e lm)
+//{
+//	launchMode = lm;
+//}
 
-LaunchMode_e getLaunchMode()
-{
-	return launchMode;
-}
+//LaunchMode_e getLaunchMode()
+//{
+//	return launchMode;
+//}
 
-void toggleLaunchMode()
-{
-	if(getLaunchMode() == SINGLE_MULTI)
-		setLaunchMode(CONSTENT_4);
-	else
-		setLaunchMode(SINGLE_MULTI);
-}
+//void toggleLaunchMode()
+//{
+//	if(getLaunchMode() == SINGLE_MULTI)
+//		setLaunchMode(CONSTENT_4);
+//	else
+//		setLaunchMode(SINGLE_MULTI);
+//}

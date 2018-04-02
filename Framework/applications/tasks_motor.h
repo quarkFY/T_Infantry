@@ -29,6 +29,7 @@ void ControlPM1(void);
 void ControlPM2(void);
 
 void shootOneGolf(void);
+void PMRotate(void);
 
 void GetGMRealZero(void);
 	

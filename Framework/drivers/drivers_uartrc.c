@@ -234,6 +234,7 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 				LASER_ON(); 
 				FRONT_SOV1_OFF();
 			}
+			PMRotate();
 //			else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)		//收回取弹机械臂
 //			{
 //				armReset();
@@ -285,6 +286,7 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 			else if(sw->switch_value_raw == 2)	//左侧拨杆拨到中间便会开枪
 			{
 				SetShootState(MANUL_SHOOT_ONE);
+				//PMRotate();
 				if(remoteShootDelay!=0) 
 					--remoteShootDelay;
 				else
@@ -369,7 +371,8 @@ void MouseShootControl(Mouse *mouse)
 			else if(mouse->last_press_l == 0 && mouse->press_l== 1)  //检测鼠标左键单击动作
 			{
 				SetShootState(MANUL_SHOOT_ONE);
-				if(getLaunchMode() == SINGLE_MULTI && GetFrictionState()==FRICTION_WHEEL_ON)		//单发模式下，点一下打一发
+//				if(getLaunchMode() == SINGLE_MULTI && GetFrictionState()==FRICTION_WHEEL_ON)		//单发模式下，点一下打一发
+				if(GetFrictionState()==FRICTION_WHEEL_ON)
 				{
 					if(CNT_250ms>17)
 					{
@@ -378,25 +381,26 @@ void MouseShootControl(Mouse *mouse)
 						
 					}
 				}
-				else if(getLaunchMode() == CONSTENT_4 && GetFrictionState()==FRICTION_WHEEL_ON)	//四连发模式下，点一下打四发
-				{
-					
-					if(CNT_1s>75)
-					{
-						CNT_1s = 0;
-						shootOneGolf();
-						shootOneGolf();
-						shootOneGolf();
-						shootOneGolf();
-					}
-				}
+//				else if(getLaunchMode() == CONSTENT_4 && GetFrictionState()==FRICTION_WHEEL_ON)	//四连发模式下，点一下打四发
+//				{
+//					
+//					if(CNT_1s>75)
+//					{
+//						CNT_1s = 0;
+//						shootOneGolf();
+//						shootOneGolf();
+//						shootOneGolf();
+//						shootOneGolf();
+//					}
+//				}
 			}
 			else if(mouse->last_press_l == 0 && mouse->press_l== 0)	//松开鼠标左键的状态
 			{
 				SetShootState(NO_SHOOT);	
 				RotateCNT = 0;			
 			}			
-			else if(mouse->last_press_l == 1 && mouse->press_l== 1 && getLaunchMode() == SINGLE_MULTI)//单发模式下长按，便持续连发
+//			else if(mouse->last_press_l == 1 && mouse->press_l== 1 && getLaunchMode() == SINGLE_MULTI)//单发模式下长按，便持续连发
+		  else if(mouse->last_press_l == 1 && mouse->press_l== 1 )
 			{
 				RotateCNT+=50;
 				if(RotateCNT>=OneShoot)

@@ -6,7 +6,7 @@ void HeroTask(void const * argument);
 void HERO_Manul_Discard(void);
 void HERO_Load(void);
 uint8_t gapOK(float AngleTarget,float RealAngle);
-
+void HERO_Adjustdistance();
 
 
 typedef enum

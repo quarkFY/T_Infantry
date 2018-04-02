@@ -36,7 +36,7 @@
 NaiveIOPoolDefine(upperIOPool, {0});
 
 extern uint16_t yawAngle, pitchAngle;
-
+extern uint32_t ADC_Value[120];
 
 void getCtrlUartTask(void const * argument){
 	while(1){

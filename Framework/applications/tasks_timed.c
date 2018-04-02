@@ -44,6 +44,7 @@
 #include "tasks_arm.h"
 #include <stdbool.h>
 #include "visualscope.h"
+#include "tasks_hero.h"
 
 extern PID_Regulator_t CMRotatePID ; 
 extern PID_Regulator_t CM1SpeedPID;
@@ -93,6 +94,8 @@ static uint32_t s_time_tick_2ms = 0;
 uint16_t checkRecTime=300;
 uint16_t checkKeyTime=500;
 
+ int ad1,ad2,ad3,ad4,ad5;
+extern uint32_t ADC_Value[100];
 
 void Timer_2ms_lTask(void const * argument)
 {
@@ -146,7 +149,7 @@ void Timer_2ms_lTask(void const * argument)
 			s_countWhile++;
 		}
 		
-		if(PM1RotateCount <= 1000)
+		if(PM1RotateCount <= 350)
 		{
 			PM1RotateCount++;
 		}
@@ -156,6 +159,11 @@ void Timer_2ms_lTask(void const * argument)
 			PM1RotateFlag = 1;
 		}
 		
+		ad1=ADC_Value[1];
+		ad2=ADC_Value[2];
+		ad3=ADC_Value[3];
+		ad4=ADC_Value[4];
+		ad5=ADC_Value[5];
 		vTaskDelayUntil( &xLastWakeTime, ( 2 / portTICK_RATE_MS ) );//这里进入阻塞态等待2ms
 	}
 }

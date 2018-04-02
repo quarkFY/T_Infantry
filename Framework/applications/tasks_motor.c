@@ -57,8 +57,8 @@ int isGMYAWFirstEnter = 1;
 int isGMPITCHFirstEnter = 1;
 int isGMSet;
 
-fw_PID_Regulator_t pitchPositionPID = fw_PID_INIT(30, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
-fw_PID_Regulator_t yawPositionPID = fw_PID_INIT(30.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);//等幅振荡P37.3 I11.9 D3.75  原26.1 8.0 1.1
+fw_PID_Regulator_t pitchPositionPID = fw_PID_INIT(50, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
+fw_PID_Regulator_t yawPositionPID = fw_PID_INIT(50.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);//等幅振荡P37.3 I11.9 D3.75  原26.1 8.0 1.1
 fw_PID_Regulator_t pitchSpeedPID = fw_PID_INIT(5.0, 0.0, 5.0, 100.0, 10000.0, 10000.0, 5000);
 fw_PID_Regulator_t yawSpeedPID = fw_PID_INIT(5.0, 0.0, 5.0, 100.0, 10000.0, 10000.0, 5000.0);
 
@@ -500,8 +500,9 @@ void ControlPM2()
 
 void shootOneGolf()
 {
-	PM1AngleTarget = PM1AngleTarget - 80;
-	PM2AngleTarget = PM2AngleTarget - 80;
+	//PM1是下边电机
+	PM1AngleTarget = PM1AngleTarget - 160;
+	PM2AngleTarget = PM2AngleTarget + 160;
 }
 
 RotateDirection_e PMRotateDirection = CLOCKWISE;
@@ -514,12 +515,12 @@ void PMRotate()
 		{
 			case CLOCKWISE:
 			{
-				PM2AngleTarget = PM2AngleTarget - 150;
+				PM2AngleTarget = PM2AngleTarget - 270;
 				PMRotateDirection = ANTICLOCKWISE;
 			}break;
 			case ANTICLOCKWISE:
 			{
-				PM2AngleTarget = PM2AngleTarget + 150;
+				PM2AngleTarget = PM2AngleTarget + 270;
 				PMRotateDirection = CLOCKWISE;
 			}break;
 		}
