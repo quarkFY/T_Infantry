@@ -64,7 +64,7 @@ void HeroTask(void const * argument)
 					{
 						//机械臂正交运动，末端45°,由于机械问题，暂时转一点试试
 						armStretch();
-						AM3RAngleTarget = AM2LAngleTarget - AM1RAngleTarget + 60;//
+						AM3RAngleTarget = AM2LAngleTarget - AM1RAngleTarget - 150;//
 						GRIP_SOV_OFF();
 	//					if(!HERO_Grip_and_Load())
 	//					{
@@ -76,7 +76,7 @@ void HeroTask(void const * argument)
 					case HERO_MANUL_READY:
 					{
 						armStretch();
-						AM3RAngleTarget =  180-AM2RAngleTarget - AM1RAngleTarget + 90;
+						AM3RAngleTarget =  -(AM2LAngleTarget - AM1RAngleTarget - 150);
 						GRIP_SOV_OFF();
 					}break;
 					case HERO_MANUL_GRIP:
@@ -133,8 +133,8 @@ void HERO_Load(void)
 		{
 		AM1RAngleTarget = 100;
 		AM1LAngleTarget = -100;
-		AM2RAngleTarget = -100;
-		AM2LAngleTarget = 100;
+		AM2RAngleTarget = -10;
+		AM2LAngleTarget = 10;
 		AM3RAngleTarget = 90;
 		osDelay(1);
 		if(gapOK(AM1RAngleTarget,AM1RRealAngle)&&gapOK(AM1LAngleTarget,AM1LRealAngle)&&gapOK(AM2LAngleTarget,AM2LRealAngle)&&gapOK(AM2RAngleTarget,AM2RRealAngle)&&gapOK(AM3RAngleTarget,AM3RRealAngle))
@@ -142,8 +142,8 @@ void HERO_Load(void)
 		}break;
 		case 2:
 		{
-			AM2RAngleTarget = -190;
-			AM2LAngleTarget = 190;
+			AM2RAngleTarget = -100;
+			AM2LAngleTarget = 100;
 			AM3RAngleTarget = 120;
 			osDelay(1);
 		if(gapOK(AM1RAngleTarget,AM1RRealAngle)&&gapOK(AM1LAngleTarget,AM1LRealAngle)&&gapOK(AM2LAngleTarget,AM2LRealAngle)&&gapOK(AM2RAngleTarget,AM2RRealAngle)&&gapOK(AM3RAngleTarget,AM3RRealAngle))
@@ -151,8 +151,8 @@ void HERO_Load(void)
 		}break;
 		case 3:
 		{
-			AM2RAngleTarget = -250;
-			AM2LAngleTarget = 250;
+			AM2RAngleTarget = -160;
+			AM2LAngleTarget = 160;
 			AM3RAngleTarget = 30;
 		if(gapOK(AM1RAngleTarget,AM1RRealAngle)&&gapOK(AM1LAngleTarget,AM1LRealAngle)&&gapOK(AM2LAngleTarget,AM2LRealAngle)&&gapOK(AM2RAngleTarget,AM2RRealAngle)&&gapOK(AM3RAngleTarget,AM3RRealAngle))
 		{load_cnt = 1;
@@ -176,8 +176,8 @@ void HERO_Manul_Discard()
 	{
 		case 1:
 		{
-			AM2RAngleTarget = -190;
-			AM2LAngleTarget = 190;
+			AM2RAngleTarget = -100;
+			AM2LAngleTarget = 100;
 			AM3RAngleTarget = 120;
 			osDelay(1);
 		if(gapOK(AM1RAngleTarget,AM1RRealAngle)&&gapOK(AM1LAngleTarget,AM1LRealAngle)&&gapOK(AM2LAngleTarget,AM2LRealAngle)&&gapOK(AM2RAngleTarget,AM2RRealAngle)&&gapOK(AM3RAngleTarget,AM3RRealAngle))
@@ -187,8 +187,8 @@ void HERO_Manul_Discard()
 		{
 		AM1RAngleTarget = 100;
 		AM1LAngleTarget = -100;
-		AM2RAngleTarget = -100;
-		AM2LAngleTarget = 100;
+		AM2RAngleTarget = -10;
+		AM2LAngleTarget = 10;
 		AM3RAngleTarget = 90;
 		osDelay(1);
 		if(gapOK(AM1RAngleTarget,AM1RRealAngle)&&gapOK(AM1LAngleTarget,AM1LRealAngle)&&gapOK(AM2LAngleTarget,AM2LRealAngle)&&gapOK(AM2RAngleTarget,AM2RRealAngle)&&gapOK(AM3RAngleTarget,AM3RRealAngle))
@@ -213,27 +213,28 @@ void HERO_Manul_Discard()
 	}
 	  
 }
-/*
-//工程车调整距离任务
-void HERO_Adjustdistance()
-{
-		static int32_t closecnt=0;
-		//fw_printfln("1");
-		//fw_printf("engineering_adjusting!\r\n");
-		////////////注意！
-		////ad1 右边，ad2，中间，ad3，左边
-		int32_t ad1=0,ad2=0,ad3=0;
-		for(uint16_t i=0;i<100;i++)
-		{
-			if(i%5==0)ad1+=ADC_Value[i];
-			if(i%5==1)ad2+=ADC_Value[i];
-			if(i%5==2)ad3+=ADC_Value[i];
-		}
-		ad1/=20;
-		ad2/=20;
-		ad3/=20;
-		ad2-=ad2_bias;
-		ad3-=ad3_bias;
+//int32_t ad1=0,ad2=0,ad3=0;
+////工程车调整距离任务
+//void HERO_Adjustdistance()
+//{
+////		static int32_t closecnt=0;
+//		//fw_printfln("1");
+//		//fw_printf("engineering_adjusting!\r\n");
+//		////////////注意！
+//		////ad1 右边，ad2，中间，ad3，左边
+//		
+//		for(uint16_t i=0;i<100;i++)
+//		{
+//			if(i%5==0)ad1+=ADC_Value[i];
+//			if(i%5==1)ad2+=ADC_Value[i];
+//			if(i%5==2)ad3+=ADC_Value[i];
+//		}
+//		ad1/=20;
+//		ad2/=20;
+//		ad3/=20;
+//	}
+//		ad2-=ad2_bias;
+//		ad3-=ad3_bias;
 //		ad5/=20;
 //		if(ad5>1000)
 //		{
@@ -241,122 +242,123 @@ void HERO_Adjustdistance()
 //			Engineering_Order=ENGINEER_ADJUSTDISTANCE_AND_ROTATION;
 //			return;
 //		}
-		if(ad2<400&&ad1<400&&ad3<400)
-		{
-			osDelay(10);
-			HERO_Order=HERO_STANDBY;
-			return;
-		}
-		if(abs(ad2-targetValue2)<30 && abs(ad1-ad3)<40)
-		{
-			closecnt++;
-		}
-		else
-		{
-			closecnt--;
-		}
-		if(closecnt>60)
-			closecnt=60;
-		else if(closecnt<0)
-			closecnt=0;
-		if(closecnt>40)
-		{
-			fw_printf("close! cnt:%d\r\n",closecnt);
-			fw_printf("%d  %d  %d",ad1,ad2,ad3);
-			HERO_State=HERO_DISTANCE_OK;
-			HERO_Order=HERO;
-			closecnt=0;
-			osDelay(20);
-			return;
-		}
-		HERO_State=HERO_ADJUSTING;
-		//PID
-		HERO_ForwardBackPID.target=targetValue2;
-		HERO_ForwardBackPID.feedback=ad2;
-		HERO_ForwardBackPID.Calc(&HERO_ForwardBackPID);
-		
-		HERO_LeftRightPID.target=0;
-		HERO_LeftRightPID.feedback= ad3-ad1;
-		HERO_LeftRightPID.Calc(&HERO_LeftRightPID);
-		
-		ChassisSpeedRef.forward_back_ref=HERO_ForwardBackPID.output/66.0*3500;
-		ChassisSpeedRef.left_right_ref=HERO_LeftRightPID.output/66.0*3500;
-}
-//工程车调整角度
-uint32_t targetValue5=1200;
-void HERO_AdjustRotationAndDistance()
-{
-		static int32_t rotate_closecnt=0;
-		static int32_t left_right_closecnt=0;
-		//fw_printfln("2");
+//		if(ad2<400&&ad1<400&&ad3<400)
+//		{
+//			osDelay(10);
+//			HERO_Order=HERO_STANDBY;
+//			return;
+//		}
+//		if(abs(ad2-targetValue2)<30 && abs(ad1-ad3)<40)
+//		{
+//			closecnt++;
+//		}
+//		else
+//		{
+//			closecnt--;
+//		}
+//		if(closecnt>60)
+//			closecnt=60;
+//		else if(closecnt<0)
+//			closecnt=0;
+//		if(closecnt>40)
+//		{
+//			fw_printf("close! cnt:%d\r\n",closecnt);
+//			fw_printf("%d  %d  %d",ad1,ad2,ad3);
+//			HERO_State=HERO_DISTANCE_OK;
+//			HERO_Order=HERO;
+//			closecnt=0;
+//			osDelay(20);
+//			return;
+//		}
+//		HERO_State=HERO_ADJUSTING;
+//		//PID
+//		HERO_ForwardBackPID.target=targetValue2;
+//		HERO_ForwardBackPID.feedback=ad2;
+//		HERO_ForwardBackPID.Calc(&HERO_ForwardBackPID);
+//		
+//		HERO_LeftRightPID.target=0;
+//		HERO_LeftRightPID.feedback= ad3-ad1;
+//		HERO_LeftRightPID.Calc(&HERO_LeftRightPID);
+//		
+//		ChassisSpeedRef.forward_back_ref=HERO_ForwardBackPID.output/66.0*3500;
+//		ChassisSpeedRef.left_right_ref=HERO_LeftRightPID.output/66.0*3500;
+//}
+////工程车调整角度
+//uint32_t targetValue5=1200;
+//void HERO_AdjustRotationAndDistance()
+//{
+//		static int32_t rotate_closecnt=0;
+//		static int32_t left_right_closecnt=0;
+//		//fw_printfln("2");
 //		fw_printfln("en");
-		//ad4 右边，ad5，ad6中间，ad7，左边
-		int32_t ad1=0,ad2=0,ad3=0,ad4=0,ad5=0,ad6=0,ad7=0;
-		for(uint16_t i=0;i<100;)
-		{
-			ad1+=ADC_Value[i++];
-			ad2+=ADC_Value[i++];
-			ad3+=ADC_Value[i++];
-			ad4+=ADC_Value[i++];
-			ad5+=ADC_Value[i++];
-		}
-		ad1/=20;
-		ad2/=20;
-		ad3/=20;
-		ad4/=20;
-		ad5/=20;
-		ad3-=ad3_bias;
-		if(ad5<400&&ad6<400)
-		{
-			osDelay(10);
-			return;
-		}
-		if(abs(ad4-ad5)<30 && abs(ad5-targetValue5)<40 && abs(ad1-ad3)<40)
-		{
-			rotate_closecnt++;
-		}
-		else
-		{
-			rotate_closecnt--;
-		}
-		//fw_printfln("%d",rotate_closecnt);
-		if(rotate_closecnt>60)
-			rotate_closecnt=60;
-		else if(rotate_closecnt<0)
-			rotate_closecnt=0;
-		if(rotate_closecnt>40)
-		{
-			fw_printf("close! cnt:%d\r\n",rotate_closecnt);
-			fw_printf("%d  %d  %d  %d",ad4,ad5,ad6,ad7);
-			HERO_State=HERO_DISTANCE_AND_ROTATION_OK;
-			HERO_Order=HERO;
-			rotate_closecnt=0;
-			osDelay(20);
-			return;
-		}
+//		//ad4 右边，ad5，ad6中间，ad7，左边
+//		int32_t ad1=0,ad2=0,ad3=0,ad4=0,ad5=0,ad6=0,ad7=0;
+//		for(uint16_t i=0;i<100;)
+//		{
+//			ad1+=ADC_Value[i++];
+//			ad2+=ADC_Value[i++];
+//			ad3+=ADC_Value[i++];
+//			ad4+=ADC_Value[i++];
+//			ad5+=ADC_Value[i++];
+//		}
+//		ad1/=20;
+//		ad2/=20;
+//		ad3/=20;
+//		ad4/=20;
+//		ad5/=20;
+//		ad3-=ad3_bias;
+//		if(ad5<400&&ad6<400)
+//		{
+//			osDelay(10);
+//			return;
+//		}
+//		if(abs(ad4-ad5)<30 && abs(ad5-targetValue5)<40 && abs(ad1-ad3)<40)
+//		{
+//			rotate_closecnt++;
+//		}
+//		else
+//		{
+//			rotate_closecnt--;
+//		}
+//		//fw_printfln("%d",rotate_closecnt);
+//		if(rotate_closecnt>60)
+//			rotate_closecnt=60;
+//		else if(rotate_closecnt<0)
+//			rotate_closecnt=0;
+//		if(rotate_closecnt>40)
+//		{
+//			fw_printf("close! cnt:%d\r\n",rotate_closecnt);
+//			fw_printf("%d  %d  %d  %d",ad4,ad5,ad6,ad7);
+//			HERO_State=HERO_DISTANCE_AND_ROTATION_OK;
+//			HERO_Order=HERO;
+//			rotate_closecnt=0;
+//			osDelay(20);
+//			return;
+//		}
 
-		HERO_State=HERO_ADJUSTING;
-		//PID
-		HERO_RotatePID.target=0;
+//		HERO_State=HERO_ADJUSTING;
+//		//PID
+//		HERO_RotatePID.target=0;
 
-		HERO_RotatePID.feedback=ad5-ad4;
-		HERO_RotatePID.Calc(&HERO_RotatePID);
-		
-		HERO_ForwardBackPID.target=targetValue5;
-		HERO_ForwardBackPID.feedback=ad5;
-		HERO_ForwardBackPID.Calc(&HERO_ForwardBackPID);
-		
-		HERO_LeftRightPID.target=0;
-		HERO_LeftRightPID.feedback=ad3-ad1;
-		HERO_LeftRightPID.Calc(&HERO_LeftRightPID);
-		
-		ChassisSpeedRef.forward_back_ref=HERO_ForwardBackPID.output/66.0*3000;
-		ChassisSpeedRef.rotate_ref=HERO_RotatePID.output/66.0*2500;
-		ChassisSpeedRef.left_right_ref=HERO_LeftRightPID.output/66.0*3500;
-		
-}
+//		HERO_RotatePID.feedback=ad5-ad4;
+//		HERO_RotatePID.Calc(&HERO_RotatePID);
+//		
+//		HERO_ForwardBackPID.target=targetValue5;
+//		HERO_ForwardBackPID.feedback=ad5;
+//		HERO_ForwardBackPID.Calc(&HERO_ForwardBackPID);
+//		
+//		HERO_LeftRightPID.target=0;
+//		HERO_LeftRightPID.feedback=ad3-ad1;
+//		HERO_LeftRightPID.Calc(&HERO_LeftRightPID);
+//		
+//		ChassisSpeedRef.forward_back_ref=HERO_ForwardBackPID.output/66.0*3000;
+//		ChassisSpeedRef.rotate_ref=HERO_RotatePID.output/66.0*2500;
+//		ChassisSpeedRef.left_right_ref=HERO_LeftRightPID.output/66.0*3500;
+//		
+//}
 //英雄车抓取装弹任务
 //调用函数
+/*
 uint8_t HERO_Lift(float value, uint32_t time_milis);
 uint8_t HERO_Stretch(float value, uint32_t time_milis);
 uint8_t HERO_Grab(float value, uint32_t time_milis);

@@ -422,8 +422,8 @@ void armReset()
 void ARM_INIT()
 {
 	
-	Arm_Horizontal_Position = 250;
-	Arm_Vertical_Position = 30;
+	Arm_Horizontal_Position = 500;
+	Arm_Vertical_Position = 250;
 //	AM2RAngleTarget = 10;
 }
 
@@ -449,25 +449,25 @@ void armStretch()
 			{
 				AngleOfTarget = 180*atan(Arm_Vertical_Position/Arm_Horizontal_Position)/PI;
 				AM1RAngleTarget = AngleOfTarget - 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
-				AM2RAngleTarget = -180*acos((312500-SquareOfRadius)/250000)/PI;
+				AM2RAngleTarget = -(180*acos((312500-SquareOfRadius)/250000)/PI-90);
 				AM1LAngleTarget = -AngleOfTarget + 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
-				AM2LAngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI;
+				AM2LAngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI-90;
 			}
 			else if(Arm_Horizontal_Position == 0)
 			{
 				AngleOfTarget = 90.0;
 				AM1RAngleTarget = AngleOfTarget - 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
-				AM2RAngleTarget = -180*acos((312500-SquareOfRadius)/250000)/PI;
+				AM2RAngleTarget = -(180*acos((312500-SquareOfRadius)/250000)/PI-90);
 				AM1LAngleTarget = -AngleOfTarget + 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
-				AM2LAngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI;
+				AM2LAngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI-90;
 			}
 			else
 			{
 				AngleOfTarget = 180*atan(Arm_Vertical_Position/Arm_Horizontal_Position)/PI + 180.0;
 				AM1RAngleTarget = AngleOfTarget - 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
-				AM2RAngleTarget = -180*acos((312500-SquareOfRadius)/250000)/PI;
+				AM2RAngleTarget = -(180*acos((312500-SquareOfRadius)/250000)/PI-90);
 				AM1LAngleTarget = -AngleOfTarget + 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
-				AM2LAngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI;
+				AM2LAngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI-90;
 			}
 			
 		}
