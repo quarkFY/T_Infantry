@@ -131,29 +131,29 @@ void HERO_Load(void)
 	{
 		case 1:
 		{
-		AM1RAngleTarget = 100;
-		AM1LAngleTarget = -100;
+		AM1RAngleTarget = 80;
+		AM1LAngleTarget = -80;
 		AM2RAngleTarget = -10;
 		AM2LAngleTarget = 10;
-		AM3RAngleTarget = 90;
+		AM3RAngleTarget = 180;
 		osDelay(1);
 		if(gapOK(AM1RAngleTarget,AM1RRealAngle)&&gapOK(AM1LAngleTarget,AM1LRealAngle)&&gapOK(AM2LAngleTarget,AM2LRealAngle)&&gapOK(AM2RAngleTarget,AM2RRealAngle)&&gapOK(AM3RAngleTarget,AM3RRealAngle))
 			load_cnt = 2;
 		}break;
 		case 2:
 		{
-			AM2RAngleTarget = -100;
-			AM2LAngleTarget = 100;
-			AM3RAngleTarget = 150;
+			AM2RAngleTarget = -70;
+			AM2LAngleTarget = 70;
+			AM3RAngleTarget = 180;
 			osDelay(1);
 		if(gapOK(AM1RAngleTarget,AM1RRealAngle)&&gapOK(AM1LAngleTarget,AM1LRealAngle)&&gapOK(AM2LAngleTarget,AM2LRealAngle)&&gapOK(AM2RAngleTarget,AM2RRealAngle)&&gapOK(AM3RAngleTarget,AM3RRealAngle))
 			load_cnt = 3;
 		}break;
 		case 3:
 		{
-			AM2RAngleTarget = -190;
-			AM2LAngleTarget = 190;
-			AM3RAngleTarget = 180;
+			AM2RAngleTarget = -80;
+			AM2LAngleTarget = 80;
+			AM3RAngleTarget = 270;
 		if(gapOK(AM1RAngleTarget,AM1RRealAngle)&&gapOK(AM1LAngleTarget,AM1LRealAngle)&&gapOK(AM2LAngleTarget,AM2LRealAngle)&&gapOK(AM2RAngleTarget,AM2RRealAngle)&&gapOK(AM3RAngleTarget,AM3RRealAngle))
 		{load_cnt = 1;
 			HERO_Order=HERO_STANDBY;}
@@ -176,20 +176,20 @@ void HERO_Manul_Discard()
 	{
 		case 1:
 		{
-			AM2RAngleTarget = -100;
-			AM2LAngleTarget = 100;
-			AM3RAngleTarget = 120;
+			AM2RAngleTarget = -70;
+			AM2LAngleTarget = 70;
+			AM3RAngleTarget = 180;
 			osDelay(1);
 		if(gapOK(AM1RAngleTarget,AM1RRealAngle)&&gapOK(AM1LAngleTarget,AM1LRealAngle)&&gapOK(AM2LAngleTarget,AM2LRealAngle)&&gapOK(AM2RAngleTarget,AM2RRealAngle)&&gapOK(AM3RAngleTarget,AM3RRealAngle))
 			discard_cnt = 2;
 		}break;
 		case 2:
 		{
-		AM1RAngleTarget = 100;
-		AM1LAngleTarget = -100;
+		AM1RAngleTarget = 80;
+		AM1LAngleTarget = -80;
 		AM2RAngleTarget = -10;
 		AM2LAngleTarget = 10;
-		AM3RAngleTarget = 90;
+		AM3RAngleTarget = 180;
 		osDelay(1);
 		if(gapOK(AM1RAngleTarget,AM1RRealAngle)&&gapOK(AM1LAngleTarget,AM1LRealAngle)&&gapOK(AM2LAngleTarget,AM2LRealAngle)&&gapOK(AM2RAngleTarget,AM2RRealAngle)&&gapOK(AM3RAngleTarget,AM3RRealAngle))
 			discard_cnt = 3;
