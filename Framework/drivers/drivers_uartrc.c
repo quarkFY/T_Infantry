@@ -98,7 +98,7 @@ static uint16_t CNT_1s = 75;	//用于避免四连发模式下两秒内连射8发
 static uint16_t CNT_250ms = 18;	//用于点射模式下射频限制
 
 //左上拨杆用于调试云台，记得要注释掉
-//extern float yaw_zero, pitch_zero;
+extern float yaw_zero, pitch_zero;
 extern float yawEncoder, pitchEncoder;
 extern float yawAngleTarget, pitchAngleTarget;
 extern int isGMSet;
