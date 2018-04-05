@@ -388,7 +388,7 @@ void ControlCMBR()
 					
 			CM4SpeedPID.Calc(&CM4SpeedPID);
 			
-			setMotor(CMBR, -CHASSIS_SPEED_ATTENUATION * CM4SpeedPID.output);
+			setMotor(CMBR, CHASSIS_SPEED_ATTENUATION * CM4SpeedPID.output);
 			
 			s_CMBRCount = 0;
 		}
@@ -520,12 +520,12 @@ void PMRotate()
 		{
 			case CLOCKWISE:
 			{
-				PM2AngleTarget = PM2AngleTarget - 270;
+				PM2AngleTarget = PM2AngleTarget - 90;
 				PMRotateDirection = ANTICLOCKWISE;
 			}break;
 			case ANTICLOCKWISE:
 			{
-				PM2AngleTarget = PM2AngleTarget + 270;
+				PM2AngleTarget = PM2AngleTarget + 90;
 				PMRotateDirection = CLOCKWISE;
 			}break;
 		}
