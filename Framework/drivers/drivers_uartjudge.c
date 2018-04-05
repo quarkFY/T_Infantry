@@ -130,8 +130,9 @@ void InitJudgeUart(void){
 }
 uint8_t receiving = 0;
 uint8_t received = 0;
-uint8_t buffer[44] = {0}; 
+uint8_t buffer[80] = {0}; 
 uint8_t buffercnt = 0;
+uint16_t cmdID;
 
 void judgeUartRxCpltCallback(void)
 {
@@ -149,15 +150,24 @@ void judgeUartRxCpltCallback(void)
 				}
 			}
 			
-			if(buffercnt == 44)
+			if(buffercnt == 7) cmdID = (0x0000 | buffer[5]) | (buffer[6] << 8);
+			
+			if(buffercnt == 42 & cmdID == 0x0004)
 			{
-				if (myVerify_CRC16_Check_Sum(buffer, 44)) //接收到规定量的字节数，就进行数据处理
+				if (myVerify_CRC16_Check_Sum(buffer, 42)) 
 				{
-					Judge_Refresh();
+					Judge_Refresh(cmdID);
 				}
-				receiving = 0;
-				buffercnt = 0;
 			}
+//			if(buffercnt == 44)
+//			{
+//				if (myVerify_CRC16_Check_Sum(buffer, 44)) //接收到规定量的字节数，就进行数据处理
+//				{
+//					Judge_Refresh();
+//				}
+//				receiving = 0;
+//				buffercnt = 0;
+//			}
 		}
 		else 
 		{
@@ -179,38 +189,54 @@ tGameInfo mytGameInfo;
 uint8_t JUDGE_Received = 0;
 JudgeState_e JUDGE_State = OFFLINE;
 
-void Judge_Refresh(void)
+
+extGameRobotState_t RobotState;
+extPowerHeatData_t PowerHeatData;
+void Judge_Refresh(uint16_t cmdID)
 {
-	/*
-	//printf("verify OK\r\n");
-	
-//  mytGameInfo.remainTime = (0x00000000 | buffer[7]) | (buffer[8]<<8) | (buffer[9]<<16) | (buffer[10]<<24);
-//	
-//  mytGameInfo.remainLifeValue = (0x0000 | buffer[11]) | (buffer[12]<<8);
-//	
-//  unsigned char * b = (unsigned char*)&mytGameInfo.realChassisOutV;
-//  char c[4] = {buffer[13],buffer[14],buffer[15],buffer[16]};
-//  for(int i = 0; i<4; i++){
-//      b[i] = (unsigned char)c[i];
-//  }
-////  fw_printf("COutV: %f \r\n",mytGameInfo.realChassisOutV);
-//	
-//	b = (unsigned char*)&mytGameInfo.realChassisOutA;
-//  c[0] = buffer[17];c[1] = buffer[18];c[2] = buffer[19];c[3] = buffer[20];
-//  for(int i = 0; i<4; i++){
-//      b[i] = (unsigned char)c[i];
-//  }
-////  fw_printf("COutA: %f \r\n",mytGameInfo.realChassisOutA);
-	*/
-  //主控板从裁判系统中接收到的数据存在buffer中，本函数将buffer中表示剩余功率的部分放到mytGameInfo.remainPower中
-	char c[4];
-	unsigned char * b = (unsigned char*)&mytGameInfo.remainPower;
-  c[0] = buffer[38];c[1] = buffer[39];c[2] = buffer[40];c[3] = buffer[41];//38--41是剩余功率
-  for(int i = 0; i<4; i++){
-      b[i] = (unsigned char)c[i];
-  }
-//  fw_printf("remainPower: %f \r\n",mytGameInfo.remainPower);
-	
-	
+	if(cmdID==0X0004)
+	{
+		PowerHeatData.chassisVolt = (0x00000000 | buffer[22]) | (buffer[23]<<8) | (buffer[24]<<16) | (buffer[25]<<24);
+		PowerHeatData.chassisCurrent = (0x00000000 | buffer[26]) | (buffer[27]<<8) | (buffer[28]<<16) | (buffer[29]<<24);
+		PowerHeatData.chassisPower = (0x00000000 | buffer[30]) | (buffer[31]<<8) | (buffer[32]<<16) | (buffer[33]<<24);
+		PowerHeatData.chassisPowerBuffer = (0x00000000 | buffer[34]) | (buffer[35]<<8) | (buffer[36]<<16) | (buffer[37]<<24);
+		PowerHeatData.shooterHeat0 = (0x0000 | buffer[38]) | (buffer[39]<<8);
+		PowerHeatData.shooterHeat1 = (0x0000 | buffer[40]) | (buffer[41]<<8);
+	}
 	JUDGE_Received = 1;
 }
+//void Judge_Refresh(void)
+//{
+//	/*
+//	//printf("verify OK\r\n");
+//	
+////  mytGameInfo.remainTime = (0x00000000 | buffer[7]) | (buffer[8]<<8) | (buffer[9]<<16) | (buffer[10]<<24);
+////	
+////  mytGameInfo.remainLifeValue = (0x0000 | buffer[11]) | (buffer[12]<<8);
+////	
+////  unsigned char * b = (unsigned char*)&mytGameInfo.realChassisOutV;
+////  char c[4] = {buffer[13],buffer[14],buffer[15],buffer[16]};
+////  for(int i = 0; i<4; i++){
+////      b[i] = (unsigned char)c[i];
+////  }
+//////  fw_printf("COutV: %f \r\n",mytGameInfo.realChassisOutV);
+////	
+////	b = (unsigned char*)&mytGameInfo.realChassisOutA;
+////  c[0] = buffer[17];c[1] = buffer[18];c[2] = buffer[19];c[3] = buffer[20];
+////  for(int i = 0; i<4; i++){
+////      b[i] = (unsigned char)c[i];
+////  }
+//////  fw_printf("COutA: %f \r\n",mytGameInfo.realChassisOutA);
+//	*/
+//  //主控板从裁判系统中接收到的数据存在buffer中，本函数将buffer中表示剩余功率的部分放到mytGameInfo.remainPower中
+//	char c[4];
+//	unsigned char * b = (unsigned char*)&mytGameInfo.remainPower;
+//  c[0] = buffer[38];c[1] = buffer[39];c[2] = buffer[40];c[3] = buffer[41];//38--41是剩余功率
+//  for(int i = 0; i<4; i++){
+//      b[i] = (unsigned char)c[i];
+//  }
+////  fw_printf("remainPower: %f \r\n",mytGameInfo.remainPower);
+//	
+//	
+//	JUDGE_Received = 1;
+//}
