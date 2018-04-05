@@ -388,7 +388,7 @@ void ControlCMBR()
 					
 			CM4SpeedPID.Calc(&CM4SpeedPID);
 			
-			setMotor(CMBR, -CHASSIS_SPEED_ATTENUATION * CM4SpeedPID.output);
+			setMotor(CMBR, CHASSIS_SPEED_ATTENUATION * CM4SpeedPID.output);
 			
 			s_CMBRCount = 0;
 		}
