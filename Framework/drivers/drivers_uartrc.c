@@ -327,6 +327,7 @@ void MouseShootControl(Mouse *mouse)
 	{
 		case FRICTION_WHEEL_OFF:
 		{
+			PMRotate();
 			if(mouse->last_press_r == 0 && mouse->press_r == 1)   
 			{
 				SetShootState(NO_SHOOT);
@@ -389,6 +390,10 @@ void MouseShootControl(Mouse *mouse)
 //				if(getLaunchMode() == SINGLE_MULTI && GetFrictionState()==FRICTION_WHEEL_ON)		//单发模式下，点一下打一发
 				if(GetFrictionState()==FRICTION_WHEEL_ON)
 				{
+					if(CNT_250ms == 8)
+					{
+						shootOneGolfConpensation();
+					}
 					if(CNT_250ms>17)
 					{
 						CNT_250ms = 0;
@@ -422,6 +427,10 @@ void MouseShootControl(Mouse *mouse)
 				{
 					shootOneGolf();
 					RotateCNT = 0;
+				}
+				else if(RotateCNT == 400)
+				{
+					shootOneGolfConpensation();
 				}
 					
 			}

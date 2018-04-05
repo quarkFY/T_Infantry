@@ -149,7 +149,7 @@ void Timer_2ms_lTask(void const * argument)
 			s_countWhile++;
 		}
 		
-		if(PM1RotateCount <= 350)
+		if(PM1RotateCount <= 300)
 		{
 			PM1RotateCount++;
 		}
