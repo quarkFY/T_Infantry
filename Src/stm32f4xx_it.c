@@ -37,7 +37,7 @@
 #include "cmsis_os.h"
 
 /* USER CODE BEGIN 0 */
-#include "utilities_debug.h"
+
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/

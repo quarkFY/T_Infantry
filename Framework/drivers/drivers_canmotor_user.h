@@ -34,9 +34,10 @@
 #define GMPITCH_RXID 0x20Au
 //PM为推弹电机
 #define PM1_RXID 0x205u
-#define PM2_RXID 0x206u
+//PM2通信怪异冲突，故改到can2
+#define PM2_RXID 0x204u
 //SM为分弹电机
-#define SM_RXID 0x204u
+//#define SM_RXID 0x204u
 //GYRO为单轴陀螺仪
 //#define ZGYRO_RXID   0x401u
 
@@ -46,7 +47,8 @@
 #define GM_TXID 0x2FFu	//CAN1
 #define AM23_TXID 0x200u//CAN2
 #define PM_TXID 0x1FFu	//CAN1
-#define SM_TXID 0x200u //CAN2
+#define PM2_TXID 0x200u//CAN2
+//#define SM_TXID 0x200u //CAN2
 //#define ZGYRO_TXID   0x404u	//CAN2
 
 //RxIOPool
@@ -90,7 +92,8 @@ IOPoolDeclare(GMTxIOPool, CanTxMsgTypeDef);
 IOPoolDeclare(AM1TxIOPool, CanTxMsgTypeDef);
 IOPoolDeclare(AM23TxIOPool, CanTxMsgTypeDef);
 IOPoolDeclare(PMTxIOPool, CanTxMsgTypeDef);
-IOPoolDeclare(SMTxIOPool, CanTxMsgTypeDef);
+IOPoolDeclare(PM2TxIOPool, CanTxMsgTypeDef);
+//IOPoolDeclare(SMTxIOPool, CanTxMsgTypeDef);
 //IOPoolDeclare(ZGYROTxIOPool, CanTxMsgTypeDef);
 
 
