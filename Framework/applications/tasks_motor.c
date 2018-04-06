@@ -38,9 +38,9 @@
 
 //PID_INIT(Kp, Ki, Kd, KpMax, KiMax, KdMax, OutputMax)
 //云台
-int yaw_zero = 3600;
-int yaw_zero_revise =3600;
-int pitch_zero = 1300;
+int yaw_zero = 3940;
+int yaw_zero_revise =3940;
+int pitch_zero = 5930;
 float yawEncoder = 0;
 float GMYAWThisAngle, GMYAWLastAngle;
 float yawRealAngle = 0.0;
