@@ -106,8 +106,8 @@ void HERO_Load(void)
 		{
 		AM1RAngleTarget = 80;
 		AM1LAngleTarget = -80;
-		AM2RAngleTarget = -10;
-		AM2LAngleTarget = 10;
+		AM2RAngleTarget = 10;
+		AM2LAngleTarget = -10;
 		AM3RAngleTarget = 180;
 		osDelay(1);
 		if(gapOK(AM1RAngleTarget,AM1RRealAngle)&&gapOK(AM1LAngleTarget,AM1LRealAngle)&&gapOK(AM2LAngleTarget,AM2LRealAngle)&&gapOK(AM2RAngleTarget,AM2RRealAngle)&&gapOK(AM3RAngleTarget,AM3RRealAngle))
@@ -117,7 +117,7 @@ void HERO_Load(void)
 		{
 			AM2RAngleTarget = -70;
 			AM2LAngleTarget = 70;
-			AM3RAngleTarget = 180;
+			AM3RAngleTarget = 150;
 			osDelay(1);
 		if(gapOK(AM1RAngleTarget,AM1RRealAngle)&&gapOK(AM1LAngleTarget,AM1LRealAngle)&&gapOK(AM2LAngleTarget,AM2LRealAngle)&&gapOK(AM2RAngleTarget,AM2RRealAngle)&&gapOK(AM3RAngleTarget,AM3RRealAngle))
 			load_cnt = 3;
@@ -160,8 +160,8 @@ void HERO_Manul_Discard()
 		{
 		AM1RAngleTarget = 80;
 		AM1LAngleTarget = -80;
-		AM2RAngleTarget = -10;
-		AM2LAngleTarget = 10;
+		AM2RAngleTarget = 10;
+		AM2LAngleTarget = -10;
 		AM3RAngleTarget = 180;
 		osDelay(1);
 		if(gapOK(AM1RAngleTarget,AM1RRealAngle)&&gapOK(AM1LAngleTarget,AM1LRealAngle)&&gapOK(AM2LAngleTarget,AM2LRealAngle)&&gapOK(AM2RAngleTarget,AM2RRealAngle)&&gapOK(AM3RAngleTarget,AM3RRealAngle))
