@@ -432,7 +432,7 @@ void armStretch()
 	Arm_Horizontal_Position -= ArmSpeedRef.forward_back_ref;
 	Arm_Vertical_Position += ArmSpeedRef.up_down_ref;
 	SquareOfRadius = Arm_Horizontal_Position*Arm_Horizontal_Position + Arm_Vertical_Position*Arm_Vertical_Position;
-	if(SquareOfRadius <= 250*250 ||  Arm_Vertical_Position< 0 || SquareOfRadius >= 750*750 )
+	if(SquareOfRadius <= 250*250 ||  Arm_Vertical_Position< 0 || SquareOfRadius >= 750*750  || AM1LAngleTarget>=85)
 	{
 		Arm_Horizontal_Position = Last_Arm_Horizontal_Position;
 	  Arm_Vertical_Position = Last_Arm_Vertical_Position;
