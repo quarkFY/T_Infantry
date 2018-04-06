@@ -36,6 +36,7 @@ extern uint32_t ADC_Value[60];
 //Engineering_Step_t Engineering_Last_Step = ENGINEERING_STOP;
 //状态及命令枚举
 HERO_Order_t HERO_Order=HERO_STANDBY;
+HERO_Order_t Last_HERO_Order=HERO_STANDBY;
 //HERO_State_t HERO_State=HERO_NO_MOVE;
 
 //int32_t fetch_height=-11500;//-1000第二种
@@ -66,12 +67,6 @@ void HeroTask(void const * argument)
 						armStretch();
 						AM3RAngleTarget = AM2LAngleTarget - AM1RAngleTarget - 150;//
 						GRIP_SOV_OFF();
-	//					if(!HERO_Grip_and_Load())
-	//					{
-	//						//急停
-	//						HERO_Order=HERO_PAUSE;
-	//						fw_printfln("ENGINEER TASK END!");
-	//					}
 					}break;
 					case HERO_MANUL_READY:
 					{
@@ -91,35 +86,13 @@ void HeroTask(void const * argument)
 					{
 						HERO_Manul_Discard();
 					}break;
-	//				case HERO_REPLACE_STUFF:
-	//				{
-	//					fw_printfln("Now Replace!");
-	//					HERO_Replacing();
-	//				}break;
-	//				case HERO_PAUSE:
-	//				{
-	//					fw_printfln("pause!");
-	//					HERO_Recover();
-	//				}break;
-	//				case HERO_BELT_BACK:
-	//				{
-	//					fw_printfln("belt back");
-	//					if(!engineer_belt_back())
-	//						fw_printfln("belt not move");
-	//				}break;
-	//				case HERO_BELT_FORWARD:
-	//				{
-	//					fw_printfln("back forward");
-	//					if(!engineer_belt_forward())
-	//						fw_printfln("belt not move");
-	//				}break;
 					case HERO_STANDBY:
 					{
 						//osDelay(10);
 					}break;
 					
 				}
-				
+				Last_HERO_Order = HERO_Order;
 				osDelay(2);
 	
 		}

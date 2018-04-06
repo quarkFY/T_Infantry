@@ -412,17 +412,17 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 		//鼠标控制pitch&yaw
 		pitchAngleTarget -= mouse->y* MOUSE_TO_PITCH_ANGLE_INC_FACT; 
 		if(key->v & 0x0400) GMMode = UNLOCK;  //解锁云台  G
-		if(key->v & 0x0200) GMMode = LOCK;    //锁定云台  F		
+		if(key->v & (0x0400|0x10)) GMMode = LOCK;    //锁定云台  shift+g		
 		if(GMMode == LOCK)
 		{
-			GMReset();
+//			GMReset();
 			ChassisSpeedRef.rotate_ref += mouse->x/15.0*3000;
 			yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
 		}
 		if(GMMode == UNLOCK) 
 		{
 			yawAngleTarget    -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
-			GetGMRealZero();
+//			GetGMRealZero();
 		}
 		
 		if(inputmode==GETBULLET_INPUT)
@@ -432,36 +432,36 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 			{
 				armReset();
 				//抬升底盘前轮
-				if(key->v & 0x0200)//f
-				{
-					FrontWheel_Mode = CHASSIS_HIGH;
-				}
-				//回复正常底盘
-				if(key->v & (0x0200|0x10))//f+shift
-				{
-					FrontWheel_Mode = CHASSIS_NORMAL;
-				}
-				//放低底盘
-				if(key->v & (0x0200|0x20))//f+ctrl
-				{
-					FrontWheel_Mode = CHASSIS_LOW;
-				}
-				//抬升底盘后轮
-				if(key->v & 0x8000)//b
-				{
-					BehindWheel_Mode = CHASSIS_HIGH;
-				}
-				//回复正常底盘
-				if(key->v & (0x8000|0x10))//b+shift
-				{
-					BehindWheel_Mode = CHASSIS_NORMAL;
-				}
-				//放低底盘
-				if(key->v & (0x8000|0x20))//b+ctrl
-				{
-					BehindWheel_Mode = CHASSIS_LOW;
-				}
-				RaiseControlProcess();
+//				if(key->v & 0x0200)//f
+//				{
+//					FrontWheel_Mode = CHASSIS_HIGH;
+//				}
+//				//回复正常底盘
+//				if(key->v & (0x0200|0x10))//f+shift
+//				{
+//					FrontWheel_Mode = CHASSIS_NORMAL;
+//				}
+//				//放低底盘
+//				if(key->v & (0x0200|0x20))//f+ctrl
+//				{
+//					FrontWheel_Mode = CHASSIS_LOW;
+//				}
+//				//抬升底盘后轮
+//				if(key->v & 0x8000)//b
+//				{
+//					BehindWheel_Mode = CHASSIS_HIGH;
+//				}
+//				//回复正常底盘
+//				if(key->v & (0x8000|0x10))//b+shift
+//				{
+//					BehindWheel_Mode = CHASSIS_NORMAL;
+//				}
+//				//放低底盘
+//				if(key->v & (0x8000|0x20))//b+ctrl
+//				{
+//					BehindWheel_Mode = CHASSIS_LOW;
+//				}
+//				RaiseControlProcess();
 			}
 			else if(GetBulletState == MANUL_GETBULLET)
 			{
