@@ -142,7 +142,7 @@ void judgeUartRxCpltCallback(void)
 			buffer[buffercnt] = tmp_judge;
 			buffercnt++;
 			
-			if(buffercnt == 5)
+			if(buffercnt == 4)
 			{
 				if (myVerify_CRC8_Check_Sum(buffer, 5)==0) 
 				{
@@ -150,9 +150,9 @@ void judgeUartRxCpltCallback(void)
 				}
 			}
 			
-			if(buffercnt == 7) cmdID = (0x0000 | buffer[5]) | (buffer[6] << 8);
+			if(buffercnt == 6) cmdID = (0x0000 | buffer[5]) | (buffer[6] << 8);
 			
-			if(buffercnt == 42 & cmdID == 0x0004)
+			if(buffercnt == 41 & cmdID == 0x0004)
 			{
 				if (myVerify_CRC16_Check_Sum(buffer, 42)) 
 				{
