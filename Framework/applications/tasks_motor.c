@@ -38,9 +38,9 @@
 
 //PID_INIT(Kp, Ki, Kd, KpMax, KiMax, KdMax, OutputMax)
 //云台
-int yaw_zero = 3940;
-int yaw_zero_revise =3940;
-int pitch_zero = 5930;
+int yaw_zero = 2900;
+int yaw_zero_revise =2900;
+int pitch_zero = 6900;
 float yawEncoder = 0;
 float GMYAWThisAngle, GMYAWLastAngle;
 float yawRealAngle = 0.0;
@@ -57,10 +57,10 @@ int isGMYAWFirstEnter = 1;
 int isGMPITCHFirstEnter = 1;
 int isGMSet;
 
-fw_PID_Regulator_t pitchPositionPID = fw_PID_INIT(80, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
-fw_PID_Regulator_t yawPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);//等幅振荡P37.3 I11.9 D3.75  原26.1 8.0 1.1
-fw_PID_Regulator_t pitchSpeedPID = fw_PID_INIT(5.0, 0.0, 5.0, 100.0, 10000.0, 10000.0, 5000);
-fw_PID_Regulator_t yawSpeedPID = fw_PID_INIT(5.0, 0.0, 5.0, 100.0, 10000.0, 10000.0, 5000.0);
+fw_PID_Regulator_t pitchPositionPID = fw_PID_INIT(100, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
+fw_PID_Regulator_t yawPositionPID = fw_PID_INIT(100.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);//等幅振荡P37.3 I11.9 D3.75  原26.1 8.0 1.1
+fw_PID_Regulator_t pitchSpeedPID = fw_PID_INIT(5.0, 0.0, 5.0, 3000.0, 10000.0, 10000.0, 5000);
+fw_PID_Regulator_t yawSpeedPID = fw_PID_INIT(5.0, 0.0, 5.0, 3000.0, 10000.0, 10000.0, 5000.0);
 
 //底盘
 PID_Regulator_t CMRotatePID = CHASSIS_MOTOR_ROTATE_PID_DEFAULT; 
@@ -188,7 +188,7 @@ void ControlYaw(void)
 			
 //			if (isGMSet == 1)
 //			{
-//				setMotor(GMYAW, -yawIntensity);
+				setMotor(GMYAW, -yawIntensity);
 //			}
 
 
@@ -248,14 +248,14 @@ void ControlPitch(void)
 			
 			//NORMALIZE_ANGLE180(pitchRealAngle);
 			//限位
-			MINMAX(pitchAngleTarget, -10.0f, 30.0f);	
+			//MINMAX(pitchAngleTarget, -10.0f, 30.0f);	
 		  pitchMotorTarget = pitchAngleTarget - yawAngleTarget ; 
 			pitchIntensity = ProcessPitchPID(-pitchMotorTarget,pitchRealAngle,-gYroXs);
 			GMPITCHLastAngle = GMPITCHThisAngle;
 	
 //		  if (isGMSet == 1)
 //			{
-//				setMotor(GMPITCH, -pitchIntensity);
+				setMotor(GMPITCH, -pitchIntensity);
 //			}
 
 			s_pitchCount = 0;

@@ -45,6 +45,7 @@
 #include <stdbool.h>
 #include "visualscope.h"
 #include "tasks_hero.h"
+#include "peripheral_sov.h"
 
 extern PID_Regulator_t CMRotatePID ; 
 extern PID_Regulator_t CM1SpeedPID;
@@ -237,6 +238,7 @@ void WorkStateSwitchProcess(void)
 		SetFrictionWheelSpeed(800);
 		SetFrictionState(FRICTION_WHEEL_OFF);
 		frictionRamp.ResetCounter(&frictionRamp);
+		GRIP_SOV_OFF();
 	}
 	//如果从其他模式切换到prapare模式，要将一系列参数初始化
 	if((lastWorkState != g_workState) && (g_workState == PREPARE_STATE))  

@@ -259,6 +259,10 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 			yawAngleTarget    -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
 			GetGMRealZero();
 		}
+		if(key->v & (0x0200|0x10))//f+shift
+				{
+					osDelay(1000);
+				}
 		//yawAngleTarget    -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
 
 		//speed mode: normal speed/high speed 
@@ -407,8 +411,8 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 	//		ChassisSpeedRef.rotate_ref=  -(rc->ch2 - 1024) /66.0*1000;
 	//			//yawAngleTarget   -= (rc->ch2 - 1024)/6600.0 * (YAWUPLIMIT-YAWDOWNLIMIT); 
 		//取弹模式下，左侧摇杆控制底盘移动,慢速
-		ChassisSpeedRef.forward_back_ref = (RC_CtrlData.rc.ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_CHASSIS_SPEED_REF_FACT/10;
-		ChassisSpeedRef.left_right_ref   = (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_CHASSIS_SPEED_REF_FACT/10; 	
+		//ChassisSpeedRef.forward_back_ref = (RC_CtrlData.rc.ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_CHASSIS_SPEED_REF_FACT/10;
+		//ChassisSpeedRef.left_right_ref   = (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_CHASSIS_SPEED_REF_FACT/10; 	
 		//鼠标控制pitch&yaw
 		pitchAngleTarget -= mouse->y* MOUSE_TO_PITCH_ANGLE_INC_FACT; 
 		if(key->v & 0x0400) GMMode = UNLOCK;  //解锁云台  G
@@ -424,6 +428,10 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 			yawAngleTarget    -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
 //			GetGMRealZero();
 		}
+						if(key->v & (0x0200|0x10))//f+shift
+				{
+					osDelay(1000);
+				}
 		
 		if(inputmode==GETBULLET_INPUT)
 		{
@@ -470,7 +478,7 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 				ArmSpeedRef.up_down_ref = (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
 				//armStretch();
 				//手动取弹装弹,手动HERO
-				
+				AM3RAngleTarget +=  (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
 				//放平
 				if(key->v & 0x0800)//z
 				{

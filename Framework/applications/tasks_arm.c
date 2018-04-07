@@ -43,7 +43,7 @@ fw_PID_Regulator_t AM1LSpeedPID = fw_PID_INIT(2.0, 0.0, 0.0, 10000.0, 10000.0, 1
 fw_PID_Regulator_t AM1RSpeedPID = fw_PID_INIT(5.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 16384.0);
 fw_PID_Regulator_t AM2LSpeedPID = fw_PID_INIT(2.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 6000.0);
 fw_PID_Regulator_t AM2RSpeedPID = fw_PID_INIT(2.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 6000.0);
-fw_PID_Regulator_t AM3RSpeedPID = fw_PID_INIT(2.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 6000.0);
+fw_PID_Regulator_t AM3RSpeedPID = fw_PID_INIT(1.45, 0.0, 0.0, 3000.0, 10000.0, 10000.0, 6000.0);
 
 ////待标定
 //#define AM1L_zero 0
@@ -320,7 +320,7 @@ void ControlAM2R()
 		}
 	}
 }
-
+float AM3intensity;
 uint8_t isAM3RFirstEnter = 1;
 uint16_t AM3RThisAngle = 0;
 uint16_t AM3RLastAngle = 0;
@@ -359,6 +359,7 @@ void ControlAM3R()
 			AM3RSpeedPID.feedback = IOPool_pGetReadData(AM3RRxIOPool, 0)->RotateSpeed;
 			AM3RSpeedPID.Calc(&AM3RSpeedPID);
 			
+			AM3intensity = AM3RSpeedPID.output;
 			setMotor(AM3R, AM3RSpeedPID.output);
 			s_AM3RCount = 0;
 			AM3RLastAngle = AM3RThisAngle;
@@ -401,6 +402,9 @@ void ControlAM3R()
 
 void armReset()
 {
+	Arm_Horizontal_Position = 500;
+	Arm_Vertical_Position = 250;
+	AM3RAngleTarget = 0;
 	//待完善
 	//思路：
 	//取弹flag清零，回收flag置位，具体动作由2ms定时器任务完成，完成后flag清零
