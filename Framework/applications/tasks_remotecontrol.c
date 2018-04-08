@@ -478,7 +478,7 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 				ArmSpeedRef.up_down_ref = (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
 				//armStretch();
 				//手动取弹装弹,手动HERO
-				AM3RAngleTarget +=  (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
+				AM3RAngleTarget -=  (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
 				//放平
 				if(key->v & 0x0800)//z
 				{

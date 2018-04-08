@@ -502,8 +502,15 @@ void ControlPM2()
 void shootOneGolf()
 {
 	//PM1是下边电机
+	 if((PM1RealAngle-PM1AngleTarget)>400 || (PM2AngleTarget-PM2RealAngle)>400)
+		{
+			
+		}
+		else
+		{
 	PM1AngleTarget = PM1AngleTarget - 160;
 	PM2AngleTarget = PM2AngleTarget + 160;
+		}
 }
 
 void shootOneGolfConpensation()
