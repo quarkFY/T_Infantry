@@ -398,7 +398,7 @@ void MouseShootControl(Mouse *mouse)
 					{
 						CNT_250ms = 0;
 						shootOneGolf();
-						
+						shootOneGolf();
 					}
 				}
 //				else if(getLaunchMode() == CONSTENT_4 && GetFrictionState()==FRICTION_WHEEL_ON)	//四连发模式下，点一下打四发

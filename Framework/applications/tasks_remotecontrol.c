@@ -479,30 +479,30 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 				//armStretch();
 				//手动取弹装弹,手动HERO
 				AM3RAngleTarget -=  (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
-				//放平
-				if(key->v & 0x0800)//z
-				{
-					HERO_Order=HERO_MANUL_READY;
-				}
-				//抓取
-				else if(key->v & 0x1000)//x
-				{
-					HERO_Order=HERO_MANUL_GRIP;
-				}
-				if(key->v & (0x1000|0x10))//x+shift
-				{
-					HERO_Order=HERO_MANUL_READY;
-				}
-				//装弹
-				else if(key->v & 0x2000)//c
-				{
-					HERO_Order=HERO_MANUL_LOAD;
-				}
-				//
-				else if(key->v & 0x4000)//v
-				{
-					HERO_Order=HERO_MANUL_DISCARD;
-				}
+				//放平,热身赛，纯手动
+//				if(key->v & 0x0800)//z
+//				{
+//					HERO_Order=HERO_MANUL_READY;
+//				}
+//				//抓取
+//				else if(key->v & 0x1000)//x
+//				{
+//					HERO_Order=HERO_MANUL_GRIP;
+//				}
+//				if(key->v & (0x1000|0x10))//x+shift
+//				{
+//					HERO_Order=HERO_MANUL_READY;
+//				}
+//				//装弹
+//				else if(key->v & 0x2000)//c
+//				{
+//					HERO_Order=HERO_MANUL_LOAD;
+//				}
+//				//
+//				else if(key->v & 0x4000)//v
+//				{
+//					HERO_Order=HERO_MANUL_DISCARD;
+//				}
 //						
 //						else if(key->v & 0x8000)//b
 //						{
