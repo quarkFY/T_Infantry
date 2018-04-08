@@ -89,6 +89,15 @@ NaiveIOPoolDefine(AM23TxIOPool, DataPoolInit);
 NaiveIOPoolDefine(PMTxIOPool, DataPoolInit);
 #undef DataPoolInit 
 
+#define DataPoolInit \
+	{ \
+		{PM2_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}}, \
+		{PM2_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}}, \
+		{PM2_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}} \
+}
+NaiveIOPoolDefine(PM2TxIOPool, DataPoolInit);
+#undef DataPoolInit 
+
 //#define DataPoolInit \
 //	{ \
 //		{SM_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}}, \
@@ -184,11 +193,11 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan){
 				IOPool_pGetWriteData(PM1RxIOPool)->RotateSpeed = CanRxGetU16(Can1RxMsg, 1);
 				IOPool_getNextWrite(PM1RxIOPool);
 				break;
-			case PM2_RXID:
-				IOPool_pGetWriteData(PM2RxIOPool)->angle = CanRxGetU16(Can1RxMsg, 0);
-				IOPool_pGetWriteData(PM2RxIOPool)->RotateSpeed = CanRxGetU16(Can1RxMsg, 1);
-				IOPool_getNextWrite(PM2RxIOPool);
-				break;
+// 			case PM2_RXID:
+//				IOPool_pGetWriteData(PM2RxIOPool)->angle = CanRxGetU16(Can1RxMsg, 0);
+//				IOPool_pGetWriteData(PM2RxIOPool)->RotateSpeed = CanRxGetU16(Can1RxMsg, 1);
+//				IOPool_getNextWrite(PM2RxIOPool);
+//				break;
 			case GMYAW_RXID:
 				IOPool_pGetWriteData(GMYAWRxIOPool)->angle = CanRxGetU16(Can1RxMsg, 0);
 				IOPool_pGetWriteData(GMYAWRxIOPool)->realIntensity = CanRxGetU16(Can1RxMsg, 1);
@@ -244,6 +253,11 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan){
 				IOPool_pGetWriteData(AM3RRxIOPool)->angle = CanRxGetU16(Can2RxMsg, 0);
 				IOPool_pGetWriteData(AM3RRxIOPool)->RotateSpeed = CanRxGetU16(Can2RxMsg, 1);
 				IOPool_getNextWrite(AM3RRxIOPool);
+				break;
+ 			case PM2_RXID:
+				IOPool_pGetWriteData(PM2RxIOPool)->angle = CanRxGetU16(Can2RxMsg, 0);
+				IOPool_pGetWriteData(PM2RxIOPool)->RotateSpeed = CanRxGetU16(Can2RxMsg, 1);
+				IOPool_getNextWrite(PM2RxIOPool);
 				break;
 //			case SM_RXID:
 //				IOPool_pGetWriteData(SMRxIOPool)->angle = CanRxGetU16(Can1RxMsg, 0);
@@ -330,6 +344,8 @@ void TransmitCAN1(void)
 			}
 			taskEXIT_CRITICAL();
 		}
+		
+
 }
 
 void TransmitCAN2(void){
@@ -360,6 +376,19 @@ void TransmitCAN2(void){
 			}
 			taskEXIT_CRITICAL();
 	}
+			if(IOPool_hasNextRead(PM2TxIOPool, 0))
+		{
+			osSemaphoreWait(Can2TransmitSemaphoreHandle, osWaitForever);
+			
+			IOPool_getNextRead(PM2TxIOPool, 0);
+			hcan2.pTxMsg = IOPool_pGetReadData(PM2TxIOPool, 0);
+			
+			taskENTER_CRITICAL();
+			if(HAL_CAN_Transmit_IT(&hcan2) != HAL_OK){
+				fw_Warning();
+			}
+			taskEXIT_CRITICAL();
+		}
 //	if(IOPool_hasNextRead(SMTxIOPool, 0))
 //	{
 //			osSemaphoreWait(Can2TransmitSemaphoreHandle, osWaitForever);

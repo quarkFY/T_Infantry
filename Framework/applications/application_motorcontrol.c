@@ -41,6 +41,7 @@ void setMotor(MotorId motorId, int16_t Intensity){
 	
 	static int16_t PM1Intensity = 0, PM2Intensity = 0;
 	static int8_t PMReady = 0;
+	static int8_t PM2Ready = 0;
 	
 	static int16_t AM1LIntensity = 0;
 	static int16_t AM1RIntensity = 0;
@@ -72,10 +73,13 @@ void setMotor(MotorId motorId, int16_t Intensity){
 			GMPITCHIntensity = Intensity;break;
 		
 		case PM1:
-			if(PMReady & 0x1){PMReady = 0x3;}else{PMReady |= 0x1;}
-			PM1Intensity = Intensity;break;
+			if(PMReady & 0x1){PMReady = 0x1;}else{PMReady |= 0x1;}
+			PM1Intensity = Intensity;break;   
+//PM1Intensity = 1000;break;   			
 		case PM2:
-			if(PMReady & 0x2){PMReady = 0x3;}else{PMReady |= 0x12;}
+			if(PM2Ready & 0x1){PM2Ready = 0x1;}else{PM2Ready |= 0x1;}
+//			PM2Intensity = 1000;break;
+//			if(PMReady & 0x2){PMReady = 0x2;}else{PMReady |= 0x2;}
 			PM2Intensity = Intensity;break;
 		
 		case AM1L:
@@ -238,22 +242,40 @@ void setMotor(MotorId motorId, int16_t Intensity){
     TransmitCAN1();
 	}
 	
-	if(PMReady == 0x3)
+	if(PMReady == 0x1)
 	{
 		CanTxMsgTypeDef *pData = IOPool_pGetWriteData(PMTxIOPool);
 		pData->StdId = PM_TXID;
 		pData->Data[0] = (uint8_t)(PM1Intensity >> 8);
 		pData->Data[1] = (uint8_t)PM1Intensity;
-		pData->Data[2] = (uint8_t)(PM2Intensity >> 8);
-		pData->Data[3] = (uint8_t)PM2Intensity;
+		pData->Data[2] = 0;
+		pData->Data[3] = 0;
 		pData->Data[4] = 0;
 		pData->Data[5] = 0;
 		pData->Data[6] = 0;
 		pData->Data[7] = 0;
 		IOPool_getNextWrite(PMTxIOPool);
-		PMReady = 0;
 		
 		TransmitCAN1();
+		PMReady = 0;
+	}
+	
+		if(PM2Ready == 0x1)
+	{
+		CanTxMsgTypeDef *pData = IOPool_pGetWriteData(PM2TxIOPool);
+		pData->StdId = PM2_TXID;
+		pData->Data[0] = 0;
+		pData->Data[1] = 0;
+		pData->Data[2] = 0;
+		pData->Data[3] = 0;
+		pData->Data[4] = 0;
+		pData->Data[5] = 0;
+		pData->Data[6] = (uint8_t)(PM2Intensity >> 8);
+		pData->Data[7] = (uint8_t)PM2Intensity;
+		IOPool_getNextWrite(PM2TxIOPool);
+		
+		TransmitCAN2();
+		PM2Ready = 0;
 	}
 	
 	if(AMReady == 0x1F)
