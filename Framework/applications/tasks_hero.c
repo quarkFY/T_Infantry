@@ -186,6 +186,8 @@ void HERO_Manul_Discard()
 	}
 	  
 }
+
+/**********************************************************
 //int32_t ad1=0,ad2=0,ad3=0;
 ////工程车调整距离任务
 //void HERO_Adjustdistance()

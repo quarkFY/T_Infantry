@@ -526,6 +526,8 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 			}
 			else if(GetBulletState == AUTO_GETBULLET)
 			{
+				//暂用
+				//单独调试各机械臂电机
 				Arm1Target = (rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
 				Arm2Target = (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
 				
