@@ -63,16 +63,21 @@ void HeroTask(void const * argument)
 				{
 					case HERO_MANUL_FETCH:
 					{
+				//ArmSpeedRef.forward_back_ref = (rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
+				//ArmSpeedRef.up_down_ref = (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
+				armStretch();
+				AM3RAngleTarget = AM2LAngleTarget - AM1RAngleTarget - 60;
 						//机械臂正交运动，末端45°,由于机械问题，暂时转一点试试
-						armStretch();
-					//	AM3RAngleTarget = AM2LAngleTarget - AM1RAngleTarget - 110;//
-						GRIP_SOV_OFF();
+//						armStretch();
+//					
+//						AM3RAngleTarget = AM2LAngleTarget - AM1RAngleTarget - 60;//
+//						GRIP_SOV_OFF();
 					}break;
 					case HERO_MANUL_READY:
 					{
-						armStretch();
-						AM3RAngleTarget =  AM2LAngleTarget - AM1RAngleTarget - 85;
-						GRIP_SOV_OFF();
+//						armStretch();
+						//AM3RAngleTarget =  AM2LAngleTarget - AM1RAngleTarget - 85;
+//						GRIP_SOV_OFF();
 					}break;
 					case HERO_MANUL_GRIP:
 					{
@@ -179,7 +184,7 @@ void HERO_Manul_Discard()
 		}break;
 		case 4:
 		{
-			GRIP_SOV_OFF();
+//			GRIP_SOV_OFF();
 			discard_cnt = 1;
 			HERO_Order=HERO_MANUL_FETCH;
 		}break;

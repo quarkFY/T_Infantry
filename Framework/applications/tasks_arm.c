@@ -337,14 +337,14 @@ void ControlAM3R()
 			
 			if(AM3RThisAngle<=AM3RLastAngle)
 			{
-				if((AM3RLastAngle-AM3RThisAngle)>3000)//编码器上溢
+				if((AM3RLastAngle-AM3RThisAngle)>4000)//编码器上溢
 					AM3RRealAngle = AM3RRealAngle + (AM3RThisAngle+8192-AM3RLastAngle) * 360 / 8192.0 / AM23Reduction;
 				else//反转
 					AM3RRealAngle = AM3RRealAngle - (AM3RLastAngle - AM3RThisAngle) * 360 / 8192.0 / AM23Reduction;
 			}
 			else
 			{
-				if((AM3RThisAngle-AM3RLastAngle)>3000)//编码器下溢
+				if((AM3RThisAngle-AM3RLastAngle)>4000)//编码器下溢
 					AM3RRealAngle = AM3RRealAngle - (AM3RLastAngle+8192-AM3RThisAngle) *360 / 8192.0 / AM23Reduction;
 				else//正转
 					AM3RRealAngle = AM3RRealAngle + (AM3RThisAngle - AM3RLastAngle) * 360 / 8192.0 / AM23Reduction;
@@ -487,51 +487,3 @@ void armStretch()
       LastAM3RAngleTarget = AM3RAngleTarget;
 }
 
-//void GripLoadProcess()
-//{
-//  float final;
-//	final = AM2RAngleTarget - AM1RAngleTarget + 180;
-//	Hero_Angle_Track( final,AM3RRealAngle,&AM3RAngleTarget,&AM3Rtime_milis);
-//	if(Hero_Angle_Track( final,AM3RRealAngle,&AM3RAngleTarget,&AM3Rtime_milis))
-//	{
-//		GRIP_SOV_ON();
-//	}
-	
-//}
-
-//角度跟踪精确控制，分段，精确到1°
-//uint8_t Hero_Angle_Track(float final,float currentAngle,float *angleTarget,uint8_t *time_milis)
-//{
-//	uint8_t motorReady = 1;
-//	float tmp = (final - currentAngle)/(*time_milis);
-//	while(time_milis>0 && motorReady)
-//	{
-//		if(emergency_Flag==EMERGENCY)
-//		{	
-//			return 0;
-//		}
-//		if(-1<( *angleTarget - currentAngle ) < 1)
-//		{
-//		  *angleTarget += tmp;
-//		  time_milis--;
-//			motorReady = 1;
-//		}
-//		else motorReady = 0;
-//		osDelay(1);
-//	}
-//	if(-1< (final - currentAngle ) < 1) return 1;
-//	else return 0;
-//}
-
-//uint8_t taskDelay(uint32_t time_milis)
-//{
-//	for(int i=0;i<time_milis;i++)
-//	{
-//		if(emergency_Flag==EMERGENCY)
-//		{	
-//			return 0;
-//		}
-//		osDelay(1);
-//	}
-//	return 1;
-//}

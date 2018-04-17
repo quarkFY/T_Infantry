@@ -527,24 +527,24 @@ void RemoteGetBulletControl(RemoteSwitch_t *sw, uint8_t val)
 	}
 	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)
 	{
-		//SetGetBulletState(AUTO_GETBULLET);
+		SetGetBulletState(AUTO_GETBULLET);
 		//HERO_Order=HERO_MANUL_LOAD;
 		//使用遥控器调试用
 		GRIP_SOV_ON();
 	}
 	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_2TO3)
 	{
-		//SetGetBulletState(MANUL_GETBULLET);
+		SetGetBulletState(MANUL_GETBULLET);
 		//HERO_Order=HERO_MANUL_DISCARD;
 		GRIP_SOV_OFF();
 	}
 	else if(sw->switch_value_raw == 2)
 	{
-		GRIP_SOV_ON();
+	//	GRIP_SOV_ON();
 	}
 	else if(sw->switch_value_raw == 3)
 	{
-		GRIP_SOV_OFF();
+	//	GRIP_SOV_OFF();
 	}
 
 }

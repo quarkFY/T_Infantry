@@ -438,7 +438,15 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 			//HeroTask();
 			if(GetBulletState == NO_GETBULLET)
 			{
-				armReset();
+				
+//				armReset();
+				
+				AM1RAngleTarget +=(rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
+				AM1LAngleTarget =-AM1RAngleTarget;
+				AM2RAngleTarget  += (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
+				AM2LAngleTarget =-AM2RAngleTarget;
+				AM3RAngleTarget -=  (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
+				
 				//抬升底盘前轮
 //				if(key->v & 0x0200)//f
 //				{
@@ -476,12 +484,18 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 				//取弹模式下，右侧摇杆控制取弹机械臂运动
 				ArmSpeedRef.forward_back_ref = (rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
 				ArmSpeedRef.up_down_ref = (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
-				//armStretch();
+//				armStretch();
+//				AM3RAngleTarget = AM2LAngleTarget - AM1RAngleTarget - 60;
 				//手动取弹装弹,手动HERO
-				AM3RAngleTarget -=  (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
+				//AM3RAngleTarget -=  (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
 				//放平,热身赛，纯手动
+				
+				
+				
+				
 //				if(key->v & 0x0800)//z
-//				{
+//				
+//			{
 //					HERO_Order=HERO_MANUL_READY;
 //				}
 //				//抓取
@@ -522,6 +536,14 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 			}
 			else if(GetBulletState == AUTO_GETBULLET)
 			{
+				//AM3RAngleTarget = 60;
+				
+				
+				AM1RAngleTarget +=(rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
+				AM1LAngleTarget =-AM1RAngleTarget;
+				AM2RAngleTarget  += (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
+				AM2LAngleTarget =-AM2RAngleTarget;
+				AM3RAngleTarget -=  (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
 				
 				
 				/*

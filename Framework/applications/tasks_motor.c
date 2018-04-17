@@ -502,7 +502,7 @@ void ControlPM2()
 void shootOneGolf()
 {
 	//PM1是下边电机
-	 if((PM1RealAngle-PM1AngleTarget)>400 || (PM2AngleTarget-PM2RealAngle)>400)
+	 if((PM1RealAngle-PM1AngleTarget)>300 || (PM2AngleTarget-PM2RealAngle)>300)
 		{
 			
 		}
@@ -515,7 +515,14 @@ void shootOneGolf()
 
 void shootOneGolfConpensation()
 {
+	if((PM1RealAngle-PM1AngleTarget)>300 || (PM2AngleTarget-PM2RealAngle)>300)
+		{
+			
+		}
+		else
+		{
 	PM2AngleTarget = PM2AngleTarget - 30;
+		}
 }
 
 RotateDirection_e PMRotateDirection = CLOCKWISE;
