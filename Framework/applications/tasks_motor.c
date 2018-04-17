@@ -186,9 +186,10 @@ void ControlYaw(void)
 			yawIntensityForDebug = yawIntensity;
 			GMYAWLastAngle = GMYAWThisAngle ;
 			
-
+//			if (isGMSet == 1)
+//			{
 				setMotor(GMYAW, -yawIntensity);
-
+//			}
 
 
 			s_yawCount = 0;
@@ -252,9 +253,10 @@ void ControlPitch(void)
 			pitchIntensity = ProcessPitchPID(-pitchMotorTarget,pitchRealAngle,-gYroXs);
 			GMPITCHLastAngle = GMPITCHThisAngle;
 	
-
+//		  if (isGMSet == 1)
+//			{
 				setMotor(GMPITCH, -pitchIntensity);
-
+//			}
 
 			s_pitchCount = 0;
 		}

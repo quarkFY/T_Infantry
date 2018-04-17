@@ -252,7 +252,16 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 				frictionRamp.ResetCounter(&frictionRamp);
 			}
 			
-
+	//		else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)	
+	//		{
+//				LASER_OFF();
+//				SetShootState(NO_SHOOT);
+//				SetFrictionWheelSpeed(1000);
+//				g_friction_wheel_state = FRICTION_WHEEL_OFF;
+//				frictionRamp.ResetCounter(&frictionRamp);
+				
+	//		}
+			
 			else
 			{
 				/*斜坡函数必须有，避免电流过大烧坏主控板*/
@@ -292,6 +301,14 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 				{
 					--remoteShootDelay;
 				}
+				
+//				if(remoteShootDelay!=0) 
+//					--remoteShootDelay;
+//				else
+//				{
+//					shootOneGolf();
+//					remoteShootDelay = 50;
+//				}
 			}
 			else
 			{

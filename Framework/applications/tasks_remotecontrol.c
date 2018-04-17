@@ -401,9 +401,6 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 }
 
 /////////////////////////取弹模式/////////////////////////////
-
-float Arm1Target, Arm2Target; //单独测试arm电机用
-
 void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 {
 	if(GetWorkState() == NORMAL_STATE)
@@ -530,7 +527,6 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 				
 //						if(key->v & 0x0100)  //R
 //						{
-
 //							GripLoadProcess();
 //						}
 //						if(key->v == 272)  // key: r+Shift松开机械爪
@@ -540,7 +536,6 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 			}
 			else if(GetBulletState == AUTO_GETBULLET)
 			{
-<<<<<<< HEAD
 				//AM3RAngleTarget = 60;
 				
 				
@@ -549,20 +544,39 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 				AM2RAngleTarget  += (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
 				AM2LAngleTarget =-AM2RAngleTarget;
 				AM3RAngleTarget -=  (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
-=======
-				//暂用
-				//单独调试各机械臂电机
-				Arm1Target = (rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
-				Arm2Target = (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
->>>>>>> 6706d798d8cf8d3be20cb31d8dabc4a38815eab2
 				
-				AM3RAngleTarget -=  (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
 				
-				AM1RAngleTarget = Arm1Target;
-				AM1LAngleTarget = -Arm1Target;
-				AM2LAngleTarget = Arm2Target;
-				AM2RAngleTarget = -Arm2Target;
-
+				/*
+						AM1RAngleTarget = 100;
+		AM1LAngleTarget = -100;
+		AM2RAngleTarget = -100;
+		AM2LAngleTarget = 100;
+		AM3RAngleTarget = 90;
+		osDelay(1);
+		if((-1<(AM1RAngleTarget -AM1RRealAngle)<1)&&(-1<(AM1LAngleTarget -AM1LRealAngle)<1)&&(-1<(AM2RAngleTarget -AM2RRealAngle)<1)&&(-1<(AM2LAngleTarget -AM2LRealAngle)<1)&&(-1<(AM3RAngleTarget -AM3RRealAngle)<1))
+		{	
+		load_cnt = 2;
+		}
+		
+		if(load_cnt == 2)
+		{
+		AM2RAngleTarget = -190;
+			AM2LAngleTarget = 190;
+			AM3RAngleTarget = 120;
+			osDelay(1);
+			if((-1<(AM1RAngleTarget -AM1RRealAngle)<1)&&(-1<(AM1LAngleTarget -AM1LRealAngle)<1)&&(-1<(AM2RAngleTarget -AM2RRealAngle)<1)&&(-1<(AM2LAngleTarget -AM2LRealAngle)<1)&&(-1<(AM3RAngleTarget -AM3RRealAngle)<1))
+			{	
+			load_cnt = 3;
+			}
+		}
+		if(load_cnt ==3)
+		{
+			AM2RAngleTarget = -250;
+			AM2LAngleTarget = 250;
+			AM3RAngleTarget = 30;
+		}
+			
+				*/
 			}
 		}
 		else
