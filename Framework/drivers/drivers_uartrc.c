@@ -39,7 +39,6 @@
 #include "tasks_hero.h"
 #include "peripheral_sov.h"
 
-int swDebug = 0;//用于遥控器左侧拨杆debug
 
 NaiveIOPoolDefine(rcUartIOPool, {0});
 
@@ -233,8 +232,7 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 				frictionRamp.ResetCounter(&frictionRamp);
 				g_friction_wheel_state = FRICTION_WHEEL_START_TURNNING;	 
 				LASER_ON(); 
-				FRONT_SOV1_OFF();
-				swDebug = 13;			}
+				FRONT_SOV1_OFF();		}
 			PMRotate();
 //			else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)		//收回取弹机械臂
 //			{
@@ -283,15 +281,14 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 				SetFrictionWheelSpeed(800); 
 				frictionRamp.ResetCounter(&frictionRamp);
 				SetShootState(NO_SHOOT);
-				swDebug = 31;
 			}
 			else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_2TO3)   
 			{
-				swDebug = 23;
+				
 			}
 			else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)   
 			{
-				swDebug = 32;
+				
 			}
 
 			else if(sw->switch_value_raw == 2)	//左侧拨杆拨到中间便会开枪
@@ -517,7 +514,6 @@ void SetSlabState(Slab_Mode_e v)
 {
 	slabmode = v;
 }*/
-int swfordebug;
 
 void RemoteGetBulletControl(RemoteSwitch_t *sw, uint8_t val)
 {
@@ -525,31 +521,27 @@ void RemoteGetBulletControl(RemoteSwitch_t *sw, uint8_t val)
 	if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_1TO3)   
 	{
 		//ARM_INIT();
-		SetGetBulletState(STAND_BY);
+		SetGetBulletState(GEBULLET_PREPARE);
 		//HERO_Order=HERO_MANUL_FETCH;
-		swDebug = 13;
 	}
 	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)
 	{
 		SetGetBulletState(NO_GETBULLET);
 		GRIP_SOV_OFF();
-		swDebug = 31;
 	}
 	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)
 	{
 		SetGetBulletState(MANUAL_GETBULLET);
 		GRIP_SOV_ON();
-		swDebug = 32;
 	}
 	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_2TO3)
 	{
 		SetGetBulletState(MANUAL_GETBULLET);
 		GRIP_SOV_OFF();
-		swDebug = 23;
 	}
 	else if(sw->switch_value_raw == 3)
 	{
-
+		SetGetBulletState(MANUAL_GETBULLET);
 	}
 	else if(sw->switch_value_raw == 1)
 	{
@@ -560,7 +552,6 @@ void RemoteGetBulletControl(RemoteSwitch_t *sw, uint8_t val)
 	{
 
 	}
-swfordebug = sw->switch_value1;
 
 
 }

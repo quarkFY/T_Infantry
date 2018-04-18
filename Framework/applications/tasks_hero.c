@@ -55,55 +55,65 @@ HERO_Order_t Last_HERO_Order=HERO_STANDBY;
 //fw_PID_Regulator_t HERO_RotatePID = fw_PID_INIT(0.5, 0.0, 0.0, 150, 150, 150, 50);
 
 void HeroTask(void const * argument)
+{
+	while(1)
 	{
-		while(1)
-		{
-		
-			switch(HERO_Order)
-				{
-					case HERO_MANUL_FETCH:
-					{
-				//ArmSpeedRef.forward_back_ref = (rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
-				//ArmSpeedRef.up_down_ref = (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
-						
-				armStretch();
-				AM3RAngleTarget = AM2LAngleTarget - AM1RAngleTarget - 60;
-						
-						//机械臂正交运动，末端45°,由于机械问题，暂时转一点试试
-//						armStretch();
-//					
-//						AM3RAngleTarget = AM2LAngleTarget - AM1RAngleTarget - 60;//
-//						GRIP_SOV_OFF();
-					}break;
-					case HERO_MANUL_READY:
-					{
-//						armStretch();
-						//AM3RAngleTarget =  AM2LAngleTarget - AM1RAngleTarget - 85;
-//						GRIP_SOV_OFF();
-					}break;
-					case HERO_MANUL_GRIP:
-					{
-//						GRIP_SOV_ON();
-					}break;
-					case HERO_MANUL_LOAD:
-					{
-						HERO_Load();
-					}break;
-					case HERO_MANUL_DISCARD:
-					{
-						HERO_Manul_Discard();
-					}break;
-					case HERO_STANDBY:
-					{
-						//osDelay(10);
-					}break;
-					
-				}
-				Last_HERO_Order = HERO_Order;
-				osDelay(2);
 	
-		}
+		switch(HERO_Order)
+			{
+				case HERO_MANUL_PREPARE:
+				{
+					HERO_prepare();
+				}break;
+				case HERO_MANUL_FETCH:
+				{
+			
+				}break;
+				case HERO_MANUL_READY:
+				{
+
+				}break;
+				case HERO_MANUL_GRIP:
+				{
+
+				}break;
+				case HERO_MANUL_LOAD:
+				{
+
+				}break;
+				case HERO_MANUL_DISCARD:
+				{
+			
+				}break;
+				case HERO_STANDBY:
+				{
+			
+				}break;
+				
+			}
+			Last_HERO_Order = HERO_Order;
+			osDelay(2);
+
+	}
 }
+	
+void HERO_prepare(void)
+{
+	for(uint32_t i=0;i<60;i++)
+	{
+		AM1RAngleTarget = AM1RAngleTarget+1;
+		AM1LAngleTarget = AM1LAngleTarget-1;
+//		if(HERO_Order==HERO_STOP)
+//		{	
+//			fw_printfln("stop called when strech!");
+//			return 0;
+//		}
+		//fw_printfln("%f",aux_motor2_position_target);
+		osDelay(200);
+	}
+	HERO_Order = HERO_MANUL_FETCH;
+}
+
 uint16_t load_cnt = 1;
 void HERO_Load(void)
 {

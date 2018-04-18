@@ -70,7 +70,7 @@ typedef enum
 	NO_GETBULLET = 1,
 	AUTO_GETBULLET = 2,
 	MANUAL_GETBULLET = 3,
-	STAND_BY =4,
+	GEBULLET_PREPARE =4,
 }Get_Bullet_e;
 
 typedef enum

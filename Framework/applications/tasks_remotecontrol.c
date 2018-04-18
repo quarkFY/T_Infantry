@@ -484,13 +484,15 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 //				}
 //				RaiseControlProcess();
 			}
-			else if(GetBulletState == STAND_BY)
+			else if(GetBulletState == GEBULLET_PREPARE)
 			{
-				AM1RAngleTarget = 30;
-				AM1LAngleTarget = -30;
-				AM2RAngleTarget = -10;
-				AM2LAngleTarget = 10;
-				AM3RAngleTarget = 20;
+//				AM1RAngleTarget = 30;
+//				AM1LAngleTarget = -30;
+//				AM2RAngleTarget = -10;
+//				AM2LAngleTarget = 10;
+//				AM3RAngleTarget = 20;
+				HERO_Order = HERO_MANUL_PREPARE;
+				
 			}
 			
 			else if(GetBulletState == MANUAL_GETBULLET)

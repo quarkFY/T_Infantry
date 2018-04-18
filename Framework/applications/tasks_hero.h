@@ -4,6 +4,7 @@
 #include "stdint.h"
 void HeroTask(void const * argument);
 void HERO_Manul_Discard(void);
+void HERO_prepare(void);
 void HERO_Load(void);
 uint8_t gapOK(float AngleTarget,float RealAngle);
 void HERO_Adjustdistance();
@@ -11,17 +12,8 @@ void HERO_Adjustdistance();
 
 typedef enum
 {
-	//STOP只允许外部置位(rc)，库内部不会对其置位,
-//	HERO_STOP = 0,
-//	HERO_ADJUSTDISTANCE=2,
-//	HERO_ADJUSTDISTANCE_AND_ROTATION=3,
-//	HERO=4,
-//	HERO_DISCARD_STUFF=5,
-//	HERO_REPLACE_STUFF=6,
-//	//发生错误，内部可以用pause，置位
-//	HERO_PAUSE=7,
-	
 	//手动操作命令
+	HERO_MANUL_PREPARE = 0,
 	HERO_MANUL_LOAD= 1,
 	HERO_MANUL_FETCH= 2,
 	HERO_MANUL_READY = 3,
@@ -30,10 +22,6 @@ typedef enum
 	//空命令,除底盘云台外不存在其他功能
 	HERO_STANDBY = 6,
 	
-
-	//手动皮带轮向后
-//	ENGINEER_BELT_BACK=11,
-//	ENGINEER_BELT_FORWARD=12,
 	
 }HERO_Order_t;
 
