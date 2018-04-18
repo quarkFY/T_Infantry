@@ -39,6 +39,8 @@
 #include "tasks_hero.h"
 #include "peripheral_sov.h"
 
+int swDebug = 0;//用于遥控器左侧拨杆debug
+
 NaiveIOPoolDefine(rcUartIOPool, {0});
 
 //遥控器串口初始化，操作系统初始化的时候调用
@@ -156,8 +158,7 @@ void GetRemoteSwitchAction(RemoteSwitch_t *sw, uint8_t val)
 
 	//value1 value2的值其实是一样的
 	//value1高4位始终为0
-	sw->switch_value1 = (sw->switch_value_buf[sw->buf_last_index] << 2)|
-	(sw->switch_value_buf[sw->buf_index]);
+	sw->switch_value1 = (sw->switch_value_buf[sw->buf_last_index] << 2)|(sw->switch_value_buf[sw->buf_index]);
 
 	sw->buf_end_index = (sw->buf_index + 1)%REMOTE_SWITCH_VALUE_BUF_DEEP;
 
@@ -233,7 +234,7 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 				g_friction_wheel_state = FRICTION_WHEEL_START_TURNNING;	 
 				LASER_ON(); 
 				FRONT_SOV1_OFF();
-			}
+				swDebug = 13;			}
 			PMRotate();
 //			else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)		//收回取弹机械臂
 //			{
@@ -282,7 +283,17 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 				SetFrictionWheelSpeed(800); 
 				frictionRamp.ResetCounter(&frictionRamp);
 				SetShootState(NO_SHOOT);
+				swDebug = 31;
 			}
+			else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_2TO3)   
+			{
+				swDebug = 23;
+			}
+			else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)   
+			{
+				swDebug = 32;
+			}
+
 			else if(sw->switch_value_raw == 2)	//左侧拨杆拨到中间便会开枪
 			{
 				SetShootState(MANUL_SHOOT_ONE);
@@ -506,46 +517,55 @@ void SetSlabState(Slab_Mode_e v)
 {
 	slabmode = v;
 }*/
+int swfordebug;
 
 void RemoteGetBulletControl(RemoteSwitch_t *sw, uint8_t val)
 {
+	
 	if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_1TO3)   
 	{
-		ARM_INIT();
-		SetGetBulletState(MANUL_GETBULLET);
-		HERO_Order=HERO_MANUL_FETCH;
+		//ARM_INIT();
+		SetGetBulletState(STAND_BY);
+		//HERO_Order=HERO_MANUL_FETCH;
+		swDebug = 13;
 	}
 	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)
 	{
 		SetGetBulletState(NO_GETBULLET);
-		HERO_Order=HERO_STANDBY;
+		//HERO_Order=HERO_STANDBY;
+		GRIP_SOV_OFF();
+		swDebug = 31;
+	}
+	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)
+	{
+		SetGetBulletState(NO_GETBULLET);
+		GRIP_SOV_ON();
+		//HERO_Order=HERO_MANUL_LOAD;
+		swDebug = 32;
+	}
+	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_2TO3)
+	{
+		SetGetBulletState(MANUAL_GETBULLET);
+		GRIP_SOV_OFF();
+		swDebug = 23;
+	}
+	else if(sw->switch_value_raw == 3)
+	{
+		//SetGetBulletState(MANUAL_GETBULLET);
+		//GRIP_SOV_OFF();
 	}
 	else if(sw->switch_value_raw == 1)
 	{
 		SetGetBulletState(NO_GETBULLET);
-		HERO_Order=HERO_STANDBY;
-	}
-	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)
-	{
-		SetGetBulletState(AUTO_GETBULLET);
-		//HERO_Order=HERO_MANUL_LOAD;
-		//使用遥控器调试用
-		GRIP_SOV_ON();
-	}
-	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_2TO3)
-	{
-		SetGetBulletState(MANUL_GETBULLET);
-		//HERO_Order=HERO_MANUL_DISCARD;
-		GRIP_SOV_OFF();
+		//HERO_Order=HERO_STANDBY;
 	}
 	else if(sw->switch_value_raw == 2)
 	{
-	//	GRIP_SOV_ON();
+		//SetGetBulletState(MANUAL_GETBULLET);
+		//GRIP_SOV_ON();
 	}
-	else if(sw->switch_value_raw == 3)
-	{
-	//	GRIP_SOV_OFF();
-	}
+swfordebug = sw->switch_value1;
+
 
 }
 

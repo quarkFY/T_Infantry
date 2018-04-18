@@ -441,11 +441,16 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 				
 //				armReset();
 				
-				AM1RAngleTarget +=(rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
-				AM1LAngleTarget =-AM1RAngleTarget;
-				AM2RAngleTarget  += (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
-				AM2LAngleTarget =-AM2RAngleTarget;
-				AM3RAngleTarget -=  (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
+//				AM1RAngleTarget +=(rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
+//				AM1LAngleTarget =-AM1RAngleTarget;
+//				AM2RAngleTarget  += (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
+//				AM2LAngleTarget =-AM2RAngleTarget;
+//				AM3RAngleTarget -=  (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
+				AM1RAngleTarget = 0;
+				AM1LAngleTarget = 0;
+				AM2RAngleTarget = 0;
+				AM2LAngleTarget = 0;
+				AM3RAngleTarget = 10;
 				
 				//抬升底盘前轮
 //				if(key->v & 0x0200)//f
@@ -479,11 +484,27 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 //				}
 //				RaiseControlProcess();
 			}
-			else if(GetBulletState == MANUL_GETBULLET)
+			else if(GetBulletState == STAND_BY)
 			{
+				AM1RAngleTarget = 30;
+				AM1LAngleTarget = -30;
+				AM2RAngleTarget = -10;
+				AM2LAngleTarget = 10;
+				AM3RAngleTarget = 20;
+			}
+			
+			else if(GetBulletState == MANUAL_GETBULLET)
+			{
+				
+				AM1RAngleTarget +=(rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
+				AM1LAngleTarget =-AM1RAngleTarget;
+				AM2RAngleTarget  += (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
+				AM2LAngleTarget =-AM2RAngleTarget;
+				AM3RAngleTarget -=  (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
+				
 				//取弹模式下，右侧摇杆控制取弹机械臂运动
-				ArmSpeedRef.forward_back_ref = (rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
-				ArmSpeedRef.up_down_ref = (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
+//				ArmSpeedRef.forward_back_ref = (rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
+//				ArmSpeedRef.up_down_ref = (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
 //				armStretch();
 //				AM3RAngleTarget = AM2LAngleTarget - AM1RAngleTarget - 60;
 				//手动取弹装弹,手动HERO

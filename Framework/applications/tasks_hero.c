@@ -65,8 +65,10 @@ void HeroTask(void const * argument)
 					{
 				//ArmSpeedRef.forward_back_ref = (rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
 				//ArmSpeedRef.up_down_ref = (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
+						
 				armStretch();
 				AM3RAngleTarget = AM2LAngleTarget - AM1RAngleTarget - 60;
+						
 						//机械臂正交运动，末端45°,由于机械问题，暂时转一点试试
 //						armStretch();
 //					
@@ -81,7 +83,7 @@ void HeroTask(void const * argument)
 					}break;
 					case HERO_MANUL_GRIP:
 					{
-						GRIP_SOV_ON();
+//						GRIP_SOV_ON();
 					}break;
 					case HERO_MANUL_LOAD:
 					{
@@ -346,7 +348,7 @@ uint8_t Hero_Grip_and_Load()
 //		ChassisSpeedRef.forward_back_ref=0;
 //		ChassisSpeedRef.left_right_ref=0;
 //		ChassisSpeedRef.rotate_ref=0;
-		if(GetBulletState == MANUL_GETBULLET)
+		if(GetBulletState == MANUAL_GETBULLET)
 		{
 			HERO_Order=HERO_STANDBY;
 			osDelay(2);
