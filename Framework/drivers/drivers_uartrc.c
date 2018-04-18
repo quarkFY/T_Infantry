@@ -532,15 +532,13 @@ void RemoteGetBulletControl(RemoteSwitch_t *sw, uint8_t val)
 	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)
 	{
 		SetGetBulletState(NO_GETBULLET);
-		//HERO_Order=HERO_STANDBY;
 		GRIP_SOV_OFF();
 		swDebug = 31;
 	}
 	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)
 	{
-		SetGetBulletState(NO_GETBULLET);
+		SetGetBulletState(MANUAL_GETBULLET);
 		GRIP_SOV_ON();
-		//HERO_Order=HERO_MANUL_LOAD;
 		swDebug = 32;
 	}
 	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_2TO3)
@@ -551,8 +549,7 @@ void RemoteGetBulletControl(RemoteSwitch_t *sw, uint8_t val)
 	}
 	else if(sw->switch_value_raw == 3)
 	{
-		//SetGetBulletState(MANUAL_GETBULLET);
-		//GRIP_SOV_OFF();
+
 	}
 	else if(sw->switch_value_raw == 1)
 	{
@@ -561,8 +558,7 @@ void RemoteGetBulletControl(RemoteSwitch_t *sw, uint8_t val)
 	}
 	else if(sw->switch_value_raw == 2)
 	{
-		//SetGetBulletState(MANUAL_GETBULLET);
-		//GRIP_SOV_ON();
+
 	}
 swfordebug = sw->switch_value1;
 
