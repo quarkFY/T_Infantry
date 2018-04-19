@@ -527,6 +527,7 @@ void RemoteGetBulletControl(RemoteSwitch_t *sw, uint8_t val)
 	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)
 	{
 		SetGetBulletState(NO_GETBULLET);
+		HERO_Order = HERO_MANUL_RECOVER;
 		GRIP_SOV_OFF();
 	}
 	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)

@@ -439,18 +439,11 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 			if(GetBulletState == NO_GETBULLET)
 			{
 				
-//				armReset();
-				
-//				AM1RAngleTarget +=(rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
-//				AM1LAngleTarget =-AM1RAngleTarget;
-//				AM2RAngleTarget  += (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
-//				AM2LAngleTarget =-AM2RAngleTarget;
-//				AM3RAngleTarget -=  (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
 				AM1RAngleTarget = 0;
 				AM1LAngleTarget = 0;
 				AM2RAngleTarget = 0;
 				AM2LAngleTarget = 0;
-				AM3RAngleTarget = 10;
+				AM3RAngleTarget = 0;
 				
 				//抬升底盘前轮
 //				if(key->v & 0x0200)//f
@@ -559,7 +552,6 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 			}
 			else if(GetBulletState == AUTO_GETBULLET)
 			{
-				//AM3RAngleTarget = 60;
 				
 				
 				AM1RAngleTarget +=(rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
@@ -569,37 +561,6 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 				AM3RAngleTarget -=  (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
 				
 				
-				/*
-						AM1RAngleTarget = 100;
-		AM1LAngleTarget = -100;
-		AM2RAngleTarget = -100;
-		AM2LAngleTarget = 100;
-		AM3RAngleTarget = 90;
-		osDelay(1);
-		if((-1<(AM1RAngleTarget -AM1RRealAngle)<1)&&(-1<(AM1LAngleTarget -AM1LRealAngle)<1)&&(-1<(AM2RAngleTarget -AM2RRealAngle)<1)&&(-1<(AM2LAngleTarget -AM2LRealAngle)<1)&&(-1<(AM3RAngleTarget -AM3RRealAngle)<1))
-		{	
-		load_cnt = 2;
-		}
-		
-		if(load_cnt == 2)
-		{
-		AM2RAngleTarget = -190;
-			AM2LAngleTarget = 190;
-			AM3RAngleTarget = 120;
-			osDelay(1);
-			if((-1<(AM1RAngleTarget -AM1RRealAngle)<1)&&(-1<(AM1LAngleTarget -AM1LRealAngle)<1)&&(-1<(AM2RAngleTarget -AM2RRealAngle)<1)&&(-1<(AM2LAngleTarget -AM2LRealAngle)<1)&&(-1<(AM3RAngleTarget -AM3RRealAngle)<1))
-			{	
-			load_cnt = 3;
-			}
-		}
-		if(load_cnt ==3)
-		{
-			AM2RAngleTarget = -250;
-			AM2LAngleTarget = 250;
-			AM3RAngleTarget = 30;
-		}
-			
-				*/
 			}
 		}
 		else

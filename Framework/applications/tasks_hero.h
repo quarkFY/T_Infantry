@@ -5,6 +5,7 @@
 void HeroTask(void const * argument);
 void HERO_Manul_Discard(void);
 void HERO_prepare(void);
+void HERO_recover(void);
 void HERO_Load(void);
 uint8_t gapOK(float AngleTarget,float RealAngle);
 void HERO_Adjustdistance();
@@ -21,6 +22,7 @@ typedef enum
 	HERO_MANUL_DISCARD = 5,
 	//空命令,除底盘云台外不存在其他功能
 	HERO_STANDBY = 6,
+	HERO_MANUL_RECOVER = 7,
 	
 	
 }HERO_Order_t;

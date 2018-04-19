@@ -85,6 +85,10 @@ void HeroTask(void const * argument)
 				{
 			
 				}break;
+				case HERO_MANUL_RECOVER:
+				{
+					HERO_recover();
+				}break;
 				case HERO_STANDBY:
 				{
 			
@@ -99,19 +103,69 @@ void HeroTask(void const * argument)
 	
 void HERO_prepare(void)
 {
-	for(uint32_t i=0;i<60;i++)
+	for(uint32_t i=0;i<70;i++)
 	{
 		AM1RAngleTarget = AM1RAngleTarget+1;
 		AM1LAngleTarget = AM1LAngleTarget-1;
+		if(AM3RAngleTarget>=-140)
+		{
+		  AM3RAngleTarget = AM3RAngleTarget -4;
+		}
+		if(AM2RAngleTarget>=-30)
+		{
+			AM2RAngleTarget = AM2RAngleTarget-1;
+		  AM2LAngleTarget = AM2LAngleTarget+1;
+		}
 //		if(HERO_Order==HERO_STOP)
 //		{	
 //			fw_printfln("stop called when strech!");
 //			return 0;
 //		}
 		//fw_printfln("%f",aux_motor2_position_target);
-		osDelay(200);
+		osDelay(30);
 	}
 	HERO_Order = HERO_MANUL_FETCH;
+}
+
+
+void HERO_recover()
+{
+//	float time_milis;
+//	if(AM1RAngleTarget>=(-AM3RAngleTarget/4))
+//	{time_milis = AM1RAngleTarget;}
+//	else 
+//	{time_milis = -AM3RAngleTarget/4;}
+//	if(AM2LAngleTarget>=time_milis)
+//	{time_milis = AM2LAngleTarget;}
+//	
+//	for(uint32_t i=0;i<time_milis;i++)
+//	{
+//		if(AM1RAngleTarget>0)
+//		AM1RAngleTarget = AM1RAngleTarget-1;
+//		AM1LAngleTarget = AM1LAngleTarget+1;
+//		if(AM3RAngleTarget<0)
+//		{
+//		  AM3RAngleTarget = AM3RAngleTarget +4;
+//		}
+//		if(AM2RAngleTarget<0)
+//		{
+//			AM2RAngleTarget = AM2RAngleTarget+1;
+//		  AM2LAngleTarget = AM2LAngleTarget-1;
+//		}
+////		if(HERO_Order==HERO_STOP)
+////		{	
+////			fw_printfln("stop called when strech!");
+////			return 0;
+////		}
+//		//fw_printfln("%f",aux_motor2_position_target);
+//		osDelay(30);
+//	}
+//			  AM1RAngleTarget = 0;
+//				AM1LAngleTarget = 0;
+//				AM2RAngleTarget = 0;
+//				AM2LAngleTarget = 0;
+//				AM3RAngleTarget = 0;
+//	HERO_Order = HERO_STANDBY;
 }
 
 uint16_t load_cnt = 1;
