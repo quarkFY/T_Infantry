@@ -130,7 +130,7 @@ void InitJudgeUart(void){
 }
 uint8_t receiving = 0;
 uint8_t received = 0;
-uint8_t buffer[80] = {0}; 
+uint8_t buffer[29] = {0}; 
 uint8_t buffercnt = 0;
 uint16_t cmdID;
 
@@ -142,7 +142,7 @@ void judgeUartRxCpltCallback(void)
 			buffer[buffercnt] = tmp_judge;
 			buffercnt++;
 			
-			if(buffercnt == 4)
+			if(buffercnt == 5)
 			{
 				if (myVerify_CRC8_Check_Sum(buffer, 5)==0) 
 				{
@@ -150,15 +150,53 @@ void judgeUartRxCpltCallback(void)
 				}
 			}
 			
-			if(buffercnt == 6) cmdID = (0x0000 | buffer[5]) | (buffer[6] << 8);
+			if(buffercnt == 7) cmdID = (0x0000 | buffer[5]) | (buffer[6] << 8);
 			
-			if(buffercnt == 41 & cmdID == 0x0004)
+			if(buffercnt == 29 && cmdID == 0x0004)
 			{
-				if (myVerify_CRC16_Check_Sum(buffer, 42)) 
+				if (myVerify_CRC16_Check_Sum(buffer, 29)) 
 				{
-					Judge_Refresh(cmdID);
+					Judge_Refresh_Power();
 				}
+				receiving = 0;
+				buffercnt = 0;
 			}
+			if(buffercnt == 17 && cmdID == 0x0001)
+			{
+				if (myVerify_CRC16_Check_Sum(buffer, 17)) 
+				{
+					Judge_Refresh_State();
+				}
+				receiving = 0;
+				buffercnt = 0;
+			}
+//			if(buffercnt == 44)
+//			{
+//				if (myVerify_CRC16_Check_Sum(buffer, 44)) 
+//				{
+//					Judge_Refresh();
+//				}
+//				receiving = 0;
+//				buffercnt = 0;
+//			}
+				if(buffercnt == 25 && cmdID == 0x0008)
+				{
+					if (myVerify_CRC16_Check_Sum(buffer, 17)) 
+					{
+						Judge_Refresh_Position();
+					}
+					receiving = 0;
+					buffercnt = 0;
+				}
+//			if(buffercnt == 29 & cmdID == 0x0004)
+//			{
+//				if (myVerify_CRC16_Check_Sum(buffer, 29)) 
+//				{
+//					Judge_Refresh();
+//				}
+//				receiving = 0;
+//				buffercnt = 0;
+//			}
 //			if(buffercnt == 44)
 //			{
 //				if (myVerify_CRC16_Check_Sum(buffer, 44)) //接收到规定量的字节数，就进行数据处理
@@ -192,19 +230,86 @@ JudgeState_e JUDGE_State = OFFLINE;
 
 extGameRobotState_t RobotState;
 extPowerHeatData_t PowerHeatData;
-void Judge_Refresh(uint16_t cmdID)
+float realPower;
+float realPowerBuffer;
+float realHeat;
+uint8_t realLevel;
+uint16_t maxHP;
+uint16_t remainHP;
+void Judge_Refresh_Power()
 {
-	if(cmdID==0X0004)
-	{
-		PowerHeatData.chassisVolt = (0x00000000 | buffer[22]) | (buffer[23]<<8) | (buffer[24]<<16) | (buffer[25]<<24);
-		PowerHeatData.chassisCurrent = (0x00000000 | buffer[26]) | (buffer[27]<<8) | (buffer[28]<<16) | (buffer[29]<<24);
-		PowerHeatData.chassisPower = (0x00000000 | buffer[30]) | (buffer[31]<<8) | (buffer[32]<<16) | (buffer[33]<<24);
-		PowerHeatData.chassisPowerBuffer = (0x00000000 | buffer[34]) | (buffer[35]<<8) | (buffer[36]<<16) | (buffer[37]<<24);
-		PowerHeatData.shooterHeat0 = (0x0000 | buffer[38]) | (buffer[39]<<8);
-		PowerHeatData.shooterHeat1 = (0x0000 | buffer[40]) | (buffer[41]<<8);
+	printf("verify OK\r\n");
+//	if(cmdID==0X0004)
+//	{
+//		PowerHeatData.chassisVolt = (0x00000000 | buffer[7]) | (buffer[8]<<8) | (buffer[9]<<16) | (buffer[10]<<24);
+//		PowerHeatData.chassisCurrent = (0x00000000 | buffer[11]) | (buffer[12]<<8) | (buffer[13]<<16) | (buffer[14]<<24);
+//		PowerHeatData.chassisPower = (0x00000000 | buffer[15]) | (buffer[16]<<8) | (buffer[17]<<16) | (buffer[18]<<24);
+//		PowerHeatData.chassisPowerBuffer = (0x00000000 | buffer[19]) | (buffer[20]<<8) | (buffer[21]<<16) | (buffer[22]<<24);
+//		PowerHeatData.shooterHeat0 = (0x0000 | buffer[23]) | (buffer[24]<<8);
+//		PowerHeatData.shooterHeat1 = (0x0000 | buffer[25]) | (buffer[26]<<8);
+//	}
+	unsigned char * bs2 = (unsigned char*)&PowerHeatData.chassisPower;
+	char c2[4] = {buffer[15],buffer[16],buffer[17],buffer[18]};
+	for(int i = 0; i<4; i++){
+		bs2[i] = (unsigned char)c2[i];
 	}
+	realPower = PowerHeatData.chassisPower;
+	unsigned char * bs = (unsigned char*)&PowerHeatData.chassisPowerBuffer;
+	char c[4] = {buffer[19],buffer[20],buffer[21],buffer[22]};
+	for(int i = 0; i<4; i++){
+		bs[i] = (unsigned char)c[i];
+	}
+	realPowerBuffer = PowerHeatData.chassisPowerBuffer;
+	unsigned char * bs1 = (unsigned char*)&PowerHeatData.shooterHeat0;
+	char c1[2] = {buffer[23],buffer[24]};
+	for(int i = 0; i<2; i++){
+		bs1[i] = (unsigned char)c1[i];
+	}
+	realHeat = PowerHeatData.shooterHeat0;
+	
 	JUDGE_Received = 1;
 }
+
+void Judge_Refresh_State()
+{
+	unsigned char * bss = (unsigned char*)&RobotState.robotLevel;
+	char cs[1] = {buffer[10]};
+	bss[0] = (unsigned char)cs[0];
+	realLevel = RobotState.robotLevel;
+	unsigned char * bss1 = (unsigned char*)&RobotState.maxHP;
+	char cs1[2] = {buffer[13],buffer[14]};
+	for(int i = 0; i<2; i++){
+		bss1[i] = (unsigned char)cs1[i];
+	}
+	maxHP = RobotState.maxHP;
+	unsigned char * bss2 = (unsigned char*)&RobotState.remainHP;
+	char cs2[2] = {buffer[11],buffer[12]};
+	for(int i = 0; i<2; i++){
+		bss2[i] = (unsigned char)cs2[i];
+	}
+	remainHP = RobotState.remainHP;
+	JUDGE_Received = 1;
+}
+
+void Judge_Refresh_Position()
+{
+	JUDGE_Received = 1;
+}
+//void Judge_Refresh(void)
+//{
+//	PowerHeatData.chassisVolt
+//	printf("verify OK\r\n");
+////	if(cmdID==0X0004)
+////	{
+//		PowerHeatData.chassisVolt = (0x00000000 | buffer[7]) | (buffer[8]<<8) | (buffer[9]<<16) | (buffer[10]<<24);
+//		PowerHeatData.chassisCurrent = (0x00000000 | buffer[11]) | (buffer[12]<<8) | (buffer[13]<<16) | (buffer[14]<<24);
+//		PowerHeatData.chassisPower = (0x00000000 | buffer[15]) | (buffer[16]<<8) | (buffer[17]<<16) | (buffer[18]<<24);
+//		PowerHeatData.chassisPowerBuffer = (0x00000000 | buffer[19]) | (buffer[20]<<8) | (buffer[21]<<16) | (buffer[22]<<24);
+//		PowerHeatData.shooterHeat0 = (0x0000 | buffer[23]) | (buffer[24]<<8);
+//		PowerHeatData.shooterHeat1 = (0x0000 | buffer[25]) | (buffer[26]<<8);
+////	}
+//	JUDGE_Received = 1;
+//}
 //void Judge_Refresh(void)
 //{
 //	/*

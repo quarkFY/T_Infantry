@@ -189,7 +189,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>ST-LINKIII-KEIL_SWO</Key>
-          <Name>-U49FF71065186485755330787 -O10446 -S0 -C0 -A0 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO18 -TC10000000 -TP21 -TDS8004 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -FO15 -FD20000000 -FC800 -FN1 -FF0STM32F4xx_2048 -FS08000000 -FL0200000 -FP0($$Device:STM32F427IIHx$CMSIS\Flash\STM32F4xx_2048.FLM)</Name>
+          <Name>-U49FF71065186485755330787 -O10446 -S0 -C0 -A0 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO18 -TC10000000 -TP21 -TDS8004 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -FO15 -FD20000000 -FC800 -FN1 -FF0STM32F4xx_2048.FLM -FS08000000 -FL0200000 -FP0($$Device:STM32F427IIHx$CMSIS\Flash\STM32F4xx_2048.FLM)</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
       <Breakpoint/>
@@ -197,102 +197,92 @@
         <Ww>
           <count>0</count>
           <WinNumber>1</WinNumber>
-          <ItemText>__HAL_UART_GET_IT_SOURCE</ItemText>
+          <ItemText>AM1RAngleTarget</ItemText>
         </Ww>
         <Ww>
           <count>1</count>
           <WinNumber>1</WinNumber>
-          <ItemText>TickType_t</ItemText>
+          <ItemText>AM3RAngleTarget</ItemText>
         </Ww>
         <Ww>
           <count>2</count>
           <WinNumber>1</WinNumber>
-          <ItemText>sw-&gt;switch_value1</ItemText>
+          <ItemText>AM2RAngleTarget</ItemText>
         </Ww>
         <Ww>
           <count>3</count>
           <WinNumber>1</WinNumber>
-          <ItemText>pitchIntensity</ItemText>
+          <ItemText>AM3RThisAngle,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>4</count>
           <WinNumber>1</WinNumber>
-          <ItemText>intensitypitch</ItemText>
+          <ItemText>AM3RRealAngle</ItemText>
         </Ww>
         <Ww>
           <count>5</count>
           <WinNumber>1</WinNumber>
-          <ItemText>sw-&gt;switch_value1</ItemText>
+          <ItemText>swfordebug</ItemText>
         </Ww>
         <Ww>
           <count>6</count>
           <WinNumber>1</WinNumber>
-          <ItemText>PM2Intensity</ItemText>
+          <ItemText>(uint8_t)((0x02u &lt;&lt; 2) | 0x03u)</ItemText>
         </Ww>
         <Ww>
           <count>7</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Intensity</ItemText>
+          <ItemText>(uint8_t)((0x01u &lt;&lt; 2) | 0x03u)</ItemText>
         </Ww>
         <Ww>
           <count>8</count>
           <WinNumber>1</WinNumber>
-          <ItemText>PM2Ready</ItemText>
+          <ItemText>GetBulletState</ItemText>
         </Ww>
         <Ww>
           <count>9</count>
           <WinNumber>1</WinNumber>
-          <ItemText>PM2Intensity,0x0A</ItemText>
+          <ItemText>swDebug,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>10</count>
           <WinNumber>1</WinNumber>
-          <ItemText>AM1RAngleTarget</ItemText>
+          <ItemText>tmp_judge</ItemText>
         </Ww>
         <Ww>
           <count>11</count>
           <WinNumber>1</WinNumber>
-          <ItemText>AM3RAngleTarget</ItemText>
+          <ItemText>cmdID</ItemText>
         </Ww>
         <Ww>
           <count>12</count>
           <WinNumber>1</WinNumber>
-          <ItemText>AM2RAngleTarget</ItemText>
+          <ItemText>PowerHeatData.chassisVolt,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>13</count>
           <WinNumber>1</WinNumber>
-          <ItemText>AM3RThisAngle,0x0A</ItemText>
+          <ItemText>PowerHeatData.chassisPowerBuffer,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>14</count>
           <WinNumber>1</WinNumber>
-          <ItemText>AM3RRealAngle</ItemText>
+          <ItemText>PowerHeatData.shooterHeat0,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>15</count>
           <WinNumber>1</WinNumber>
-          <ItemText>swfordebug</ItemText>
+          <ItemText>PowerHeatData.shooterHeat1,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>16</count>
           <WinNumber>1</WinNumber>
-          <ItemText>(uint8_t)((0x02u &lt;&lt; 2) | 0x03u)</ItemText>
+          <ItemText>PowerHeatData.chassisPower,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>17</count>
           <WinNumber>1</WinNumber>
-          <ItemText>(uint8_t)((0x01u &lt;&lt; 2) | 0x03u)</ItemText>
-        </Ww>
-        <Ww>
-          <count>18</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>GetBulletState</ItemText>
-        </Ww>
-        <Ww>
-          <count>19</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>swDebug,0x0A</ItemText>
+          <ItemText>realPower</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>

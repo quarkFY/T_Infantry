@@ -90,6 +90,8 @@ typedef enum
 
 void judgeUartRxCpltCallback(void);
 void InitJudgeUart(void);
-void Judge_Refresh(uint16_t cmdID);
+void Judge_Refresh_Power(void);
+void Judge_Refresh_State(void);
+void Judge_Refresh_Position(void);
 
 #endif
