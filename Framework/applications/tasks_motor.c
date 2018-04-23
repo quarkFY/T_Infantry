@@ -82,10 +82,10 @@ uint8_t isPM1FirstEnter = 1;
 uint16_t PM2ThisAngle = 0;
 uint16_t PM2LastAngle = 0;
 uint8_t isPM2FirstEnter = 1;
-fw_PID_Regulator_t PM1PositionPID = fw_PID_INIT(80, 0.0, 200.0, 10000.0, 10000.0, 10000.0, 16384.0);
-fw_PID_Regulator_t PM2PositionPID = fw_PID_INIT(100.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
-fw_PID_Regulator_t PM1SpeedPID = fw_PID_INIT(2, 0.0, 40.0, 10000.0, 10000.0, 10000.0, 4000.0);
-fw_PID_Regulator_t PM2SpeedPID = fw_PID_INIT(2, 0.0, 40.0, 10000.0, 10000.0, 10000.0, 4000.0);
+fw_PID_Regulator_t PM1PositionPID = fw_PID_INIT(100, 0.0, 200.0, 10000.0, 10000.0, 10000.0, 10000.0);
+fw_PID_Regulator_t PM2PositionPID = fw_PID_INIT(100.0, 0.0, 200.0, 10000.0, 10000.0, 10000.0, 10000.0);
+fw_PID_Regulator_t PM1SpeedPID = fw_PID_INIT(15, 0.0, 40.0, 10000.0, 10000.0, 10000.0, 8000.0);
+fw_PID_Regulator_t PM2SpeedPID = fw_PID_INIT(15, 0.0, 40.0, 10000.0, 10000.0, 10000.0, 8000.0);
 
 uint16_t PM1RotateCount = 0;
 uint8_t PM1RotateFlag = 0;
