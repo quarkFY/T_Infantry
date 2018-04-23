@@ -131,9 +131,9 @@ void HERO_prepare(void)
 
 void HERO_recover()
 {
-	HERO_step_slow(70,30,-140);
+	HERO_step(70,30,-140);
 	//osDelay(1000);
-	HERO_step_slow(0,0,0);
+	HERO_step(0,0,0);
 //	float time_milis;
 //	if(AM1RAngleTarget>=(-AM3RAngleTarget/4))
 //	{time_milis = AM1RAngleTarget;}
@@ -161,7 +161,6 @@ void HERO_recover()
 ////			fw_printfln("stop called when strech!");
 ////			return 0;
 ////		}
-//		//fw_printfln("%f",aux_motor2_position_target);
 //		osDelay(30);
 //	}
 //			  AM1RAngleTarget = 0;
@@ -192,7 +191,6 @@ void HERO_step(float angle1,float angle2,float angle3)
 			//			fw_printfln("stop called when strech!");
 			//			return 0;
 			//		}
-					//fw_printfln("%f",aux_motor2_position_target);
 					osDelay(30);
 				}
 				AM1RAngleTarget = angle1;
@@ -222,7 +220,6 @@ void HERO_step_slow(float angle1,float angle2,float angle3)
 			//			fw_printfln("stop called when strech!");
 			//			return 0;
 			//		}
-					//fw_printfln("%f",aux_motor2_position_target);
 					osDelay(50);
 				}
 				AM1RAngleTarget = angle1;
@@ -233,43 +230,6 @@ void HERO_step_slow(float angle1,float angle2,float angle3)
 			
 }
 
-//uint16_t load_cnt = 1;
-//void HERO_Load(void)
-//{
-//	switch (load_cnt)
-//	{
-//		case 1:
-//		{
-//		AM1RAngleTarget = 80;
-//		AM1LAngleTarget = -80;
-//		AM2RAngleTarget = -10;
-//		AM2LAngleTarget = 10;
-//		AM3RAngleTarget = -180;
-//		osDelay(1);
-//		if(gapOK(AM1RAngleTarget,AM1RRealAngle)&&gapOK(AM1LAngleTarget,AM1LRealAngle)&&gapOK(AM2LAngleTarget,AM2LRealAngle)&&gapOK(AM2RAngleTarget,AM2RRealAngle)&&gapOK(AM3RAngleTarget,AM3RRealAngle))
-//			load_cnt = 2;
-//		}break;
-//		case 2:
-//		{
-//			AM2RAngleTarget = -70;
-//			AM2LAngleTarget = 70;
-//			AM3RAngleTarget = -200;
-//			osDelay(1);
-//		if(gapOK(AM1RAngleTarget,AM1RRealAngle)&&gapOK(AM1LAngleTarget,AM1LRealAngle)&&gapOK(AM2LAngleTarget,AM2LRealAngle)&&gapOK(AM2RAngleTarget,AM2RRealAngle)&&gapOK(AM3RAngleTarget,AM3RRealAngle))
-//			load_cnt = 3;
-//		}break;
-//		case 3:
-//		{
-//			AM2RAngleTarget = -80;
-//			AM2LAngleTarget = 80;
-//			AM3RAngleTarget = -220;
-//		if(gapOK(AM1RAngleTarget,AM1RRealAngle)&&gapOK(AM1LAngleTarget,AM1LRealAngle)&&gapOK(AM2LAngleTarget,AM2LRealAngle)&&gapOK(AM2RAngleTarget,AM2RRealAngle)&&gapOK(AM3RAngleTarget,AM3RRealAngle))
-//		{load_cnt = 1;
-//			HERO_Order=HERO_STANDBY;}
-//		}break;
-//	}
-//}
-
 //uint8_t gapOK(float AngleTarget,float RealAngle)
 //{
 //	if((AngleTarget - RealAngle)> -7 && (AngleTarget - RealAngle)< 7)
@@ -278,50 +238,6 @@ void HERO_step_slow(float angle1,float angle2,float angle3)
 //		return 0;
 //}
 
-//uint16_t discard_cnt = 1;
-//void HERO_Manul_Discard()
-//{
-//	switch (discard_cnt)
-//	{
-//		case 1:
-//		{
-//			AM2RAngleTarget = -70;
-//			AM2LAngleTarget = 70;
-//			AM3RAngleTarget = -200;
-//			osDelay(1);
-//		if(gapOK(AM1RAngleTarget,AM1RRealAngle)&&gapOK(AM1LAngleTarget,AM1LRealAngle)&&gapOK(AM2LAngleTarget,AM2LRealAngle)&&gapOK(AM2RAngleTarget,AM2RRealAngle)&&gapOK(AM3RAngleTarget,AM3RRealAngle))
-//			discard_cnt = 2;
-//		}break;
-//		case 2:
-//		{
-//		AM1RAngleTarget = 80;
-//		AM1LAngleTarget = -80;
-//		AM2RAngleTarget = -10;
-//		AM2LAngleTarget = 10;
-//		AM3RAngleTarget = -180;
-//		osDelay(1);
-//		if(gapOK(AM1RAngleTarget,AM1RRealAngle)&&gapOK(AM1LAngleTarget,AM1LRealAngle)&&gapOK(AM2LAngleTarget,AM2LRealAngle)&&gapOK(AM2RAngleTarget,AM2RRealAngle)&&gapOK(AM3RAngleTarget,AM3RRealAngle))
-//			discard_cnt = 3;
-//		}break;
-//		case 3:
-//		{
-//			AM1RAngleTarget = LastAM1RAngleTarget;
-//		  AM1LAngleTarget = LastAM1LAngleTarget;
-//		  AM2RAngleTarget = LastAM2RAngleTarget;
-//		  AM2LAngleTarget = LastAM2LAngleTarget;
-//		  AM3RAngleTarget = LastAM3RAngleTarget;
-//		if(gapOK(AM1RAngleTarget,AM1RRealAngle)&&gapOK(AM1LAngleTarget,AM1LRealAngle)&&gapOK(AM2LAngleTarget,AM2LRealAngle)&&gapOK(AM2RAngleTarget,AM2RRealAngle)&&gapOK(AM3RAngleTarget,AM3RRealAngle))
-//			discard_cnt = 4;
-//		}break;
-//		case 4:
-//		{
-////			GRIP_SOV_OFF();
-//			discard_cnt = 1;
-//			HERO_Order=HERO_MANUL_FETCH;
-//		}break;
-//	}
-//	  
-//}
 //int32_t ad1=0,ad2=0,ad3=0;
 ////工程车调整距离任务
 //void HERO_Adjustdistance()

@@ -17,6 +17,8 @@
 #define PM1Reduction 36.0
 #define PM2Reduction 36.0
 
+#define AngleOfOneGolf 160.0
+
 void Can1ControlTask(void const * argument);
 void ControlYaw(void);
 void ControlPitch(void);

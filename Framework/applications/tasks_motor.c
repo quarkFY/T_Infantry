@@ -499,18 +499,36 @@ void ControlPM2()
 	}
 }
 
+uint8_t DirOfRotate = 1;
 void shootOneGolf()
 {
 	//PM1是下边电机
+	if(DirOfRotate)
+	{
 	 if((PM1RealAngle-PM1AngleTarget)>300 || (PM2AngleTarget-PM2RealAngle)>300)
 		{
-			
+			DirOfRotate = !DirOfRotate;
+			PM1AngleTarget = PM1RealAngle;
+			PM2AngleTarget = PM2RealAngle;
 		}
 		else
 		{
-	PM1AngleTarget = PM1AngleTarget - 160;
-	PM2AngleTarget = PM2AngleTarget + 160;
+	    PM1AngleTarget = PM1AngleTarget - 160;
+	    PM2AngleTarget = PM2AngleTarget + 160;
 		}
+	}
+	else
+	{
+		PM2AngleTarget = PM2AngleTarget - 360;
+//	  PM2AngleTarget = PM2AngleTarget - 160;
+		if((PM1AngleTarget-PM1RealAngle)<60)
+		{
+	    DirOfRotate = !DirOfRotate;
+			PM1AngleTarget = PM1RealAngle;
+		}
+	}
+	
+	
 }
 
 void shootOneGolfConpensation()
