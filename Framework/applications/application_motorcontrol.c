@@ -27,8 +27,9 @@
 #include "drivers_cmpower.h"
 #include <stdbool.h>
 
-extern tGameInfo mytGameInfo;
+extern extPowerHeatData_t PowerHeatData;
 extern uint8_t JUDGE_State;
+//extern uint8_t going;
 
 extern bool g_bInited;
 
@@ -110,7 +111,7 @@ void setMotor(MotorId motorId, int16_t Intensity){
 	float CMBLIntensity_max = CMBLIntensity_MAX;
 	float CMBRIntensity_max = CMBRIntensity_MAX;
 
-	if (mytGameInfo.remainPower > 10 & mytGameInfo.remainPower < 40){
+	if (PowerHeatData.chassisPowerBuffer > 10 & PowerHeatData.chassisPowerBuffer < 40){
 			
 		 CM_current_max = CM_current_lower;
 		 CMFLIntensity_max = CMFLIntensity_lower;
@@ -119,22 +120,22 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		 CMBRIntensity_max = CMBRIntensity_lower;
 	}
 	
-	if (mytGameInfo.remainPower < 10 ){
-			
-		 CM_current_max = CM_current_bottom;
-		 CMFLIntensity_max = CMFLIntensity_bottom;
-		 CMFRIntensity_max = CMFRIntensity_bottom;
-		 CMBLIntensity_max = CMBLIntensity_bottom;
-		 CMBRIntensity_max = CMBRIntensity_bottom;
-	}
-
-	if (mytGameInfo.remainPower < 10 ){
+	if (PowerHeatData.chassisPowerBuffer < 10 ){
 			
 		 CM_current_max = 0;
 		 CMFLIntensity_max = 0;
 		 CMFRIntensity_max = 0;
 		 CMBLIntensity_max = 0;
 		 CMBRIntensity_max = 0;
+	}
+
+	if (PowerHeatData.chassisPowerBuffer < 10 ){
+			
+		 CM_current_max = CM_current_bottom;
+		 CMFLIntensity_max = CMFLIntensity_bottom;
+		 CMFRIntensity_max = CMFRIntensity_bottom;
+		 CMBLIntensity_max = CMBLIntensity_bottom;
+		 CMBRIntensity_max = CMBRIntensity_bottom;
 	}
 
 	if (JUDGE_State == OFFLINE)

@@ -46,7 +46,7 @@ else if(val>=max)\
 	val = max;\
 }\
 
-
+//uint8_t going = 0;
 extern ChassisSpeed_Ref_t ChassisSpeedRef;
 extern ArmSpeed_Ref_t ArmSpeedRef;
 extern Gimbal_Ref_t GimbalRef;
