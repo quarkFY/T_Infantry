@@ -243,7 +243,7 @@ extShootData_t ShootData2;
 float shoot2Freq,shoot2Speed;
 float realPower;
 float realPowerBuffer;
-float realHeat;
+float realHeat17,realHeat42;
 uint8_t realLevel;
 uint16_t maxHP;
 uint16_t remainHP;
@@ -310,7 +310,13 @@ void Judge_Refresh_Power()
 	for(int i = 0; i<2; i++){
 		bs1[i] = (unsigned char)c1[i];
 	}
-	realHeat = PowerHeatData.shooterHeat0;
+	realHeat17 = PowerHeatData.shooterHeat0;
+	unsigned char * bs3 = (unsigned char*)&PowerHeatData.shooterHeat1;
+	char c3[2] = {buffer[25],buffer[26]};
+	for(int i = 0; i<2; i++){
+		bs3[i] = (unsigned char)c3[i];
+	}
+	realHeat42 = PowerHeatData.shooterHeat1;
 	
 	JUDGE_Received = 1;
 }

@@ -499,9 +499,27 @@ void ControlPM2()
 	}
 }
 
+uint8_t heatFlag = 0;
+float heatUpperLimit = 80;
+extern uint8_t realLevel;
+extern float realHeat42;
+void heatJudge()
+{
+	heatUpperLimit = 80*(pow(2,realLevel -1));
+	if ((heatUpperLimit - realHeat42) >= 40)
+	{
+		heatFlag = 1;
+	}
+	else
+	{
+		heatFlag = 0;
+	}
+}
+	
 uint8_t DirOfRotate = 1;
 void shootOneGolf()
 {
+	heatJudge();
 	//PM1是下边电机
 	if(DirOfRotate)
 	{
@@ -513,8 +531,11 @@ void shootOneGolf()
 		}
 		else
 		{
-	    PM1AngleTarget = PM1AngleTarget - 160;
-	    PM2AngleTarget = PM2AngleTarget + 160;
+			if (heatFlag == 1)
+			{
+				PM1AngleTarget = PM1AngleTarget - 160;
+				PM2AngleTarget = PM2AngleTarget + 160;
+			}
 		}
 	}
 	else
