@@ -151,7 +151,15 @@ void judgeUartRxCpltCallback(void)
 			}
 			
 			if(buffercnt == 7) cmdID = (0x0000 | buffer[5]) | (buffer[6] << 8);
-			
+			if(buffercnt == 15 && cmdID == 0x0003)
+			{
+				if (myVerify_CRC16_Check_Sum(buffer, 15)) 
+				{
+					Judge_Refresh_ShootData();
+				}
+				receiving = 0;
+				buffercnt = 0;
+			}
 			if(buffercnt == 29 && cmdID == 0x0004)
 			{
 				if (myVerify_CRC16_Check_Sum(buffer, 29)) 
@@ -230,12 +238,49 @@ JudgeState_e JUDGE_State = OFFLINE;
 
 extGameRobotState_t RobotState;
 extPowerHeatData_t PowerHeatData;
+extShootData_t ShootData2;
+
+float shoot2Freq,shoot2Speed;
 float realPower;
 float realPowerBuffer;
 float realHeat;
 uint8_t realLevel;
 uint16_t maxHP;
 uint16_t remainHP;
+void Judge_Refresh_ShootData()
+{
+	printf("verify OK\r\n");
+//	if(cmdID==0X0004)
+//	{
+//		PowerHeatData.chassisVolt = (0x00000000 | buffer[7]) | (buffer[8]<<8) | (buffer[9]<<16) | (buffer[10]<<24);
+//		PowerHeatData.chassisCurrent = (0x00000000 | buffer[11]) | (buffer[12]<<8) | (buffer[13]<<16) | (buffer[14]<<24);
+//		PowerHeatData.chassisPower = (0x00000000 | buffer[15]) | (buffer[16]<<8) | (buffer[17]<<16) | (buffer[18]<<24);
+//		PowerHeatData.chassisPowerBuffer = (0x00000000 | buffer[19]) | (buffer[20]<<8) | (buffer[21]<<16) | (buffer[22]<<24);
+//		PowerHeatData.shooterHeat0 = (0x0000 | buffer[23]) | (buffer[24]<<8);
+//		PowerHeatData.shooterHeat1 = (0x0000 | buffer[25]) | (buffer[26]<<8);
+//	}
+	unsigned char * bs2 = (unsigned char*)&ShootData2.bulletFreq;
+	char c2[1] = {buffer[8]};
+	for(int i = 0; i<1; i++){
+		bs2[i] = (unsigned char)c2[i];
+	}
+	shoot2Freq = ShootData2.bulletFreq;
+	unsigned char * bs = (unsigned char*)&ShootData2.bulletSpeed;
+	char c[4] = {buffer[9],buffer[10],buffer[11],buffer[12]};
+	for(int i = 0; i<4; i++){
+		bs[i] = (unsigned char)c[i];
+	}
+	shoot2Speed = ShootData2.bulletSpeed;
+//	unsigned char * bs1 = (unsigned char*)&PowerHeatData.shooterHeat0;
+//	char c1[2] = {buffer[23],buffer[24]};
+//	for(int i = 0; i<2; i++){
+//		bs1[i] = (unsigned char)c1[i];
+//	}
+//	realHeat = PowerHeatData.shooterHeat0;
+	
+	JUDGE_Received = 1;
+}
+
 void Judge_Refresh_Power()
 {
 	printf("verify OK\r\n");

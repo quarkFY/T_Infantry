@@ -90,6 +90,7 @@ typedef enum
 
 void judgeUartRxCpltCallback(void);
 void InitJudgeUart(void);
+void Judge_Refresh_ShootData(void);
 void Judge_Refresh_Power(void);
 void Judge_Refresh_State(void);
 void Judge_Refresh_Position(void);
