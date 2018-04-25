@@ -37,6 +37,8 @@ extern uint32_t ADC_Value[60];
 //状态及命令枚举
 HERO_Order_t HERO_Order=HERO_STANDBY;
 HERO_Order_t Last_HERO_Order=HERO_STANDBY;
+
+ Chassis_Mode_e FrontWheel_Mode = CHASSIS_NORMAL, Last_FrontWheel_Mode = CHASSIS_NORMAL,BehindWheel_Mode = CHASSIS_NORMAL, Last_BehindWheel_Mode = CHASSIS_NORMAL;
 //HERO_State_t HERO_State=HERO_NO_MOVE;
 
 //int32_t fetch_height=-11500;//-1000第二种
@@ -229,6 +231,73 @@ void HERO_step_slow(float angle1,float angle2,float angle3)
 				AM3RAngleTarget = angle3;
 			
 }
+
+
+//
+void RaiseControlProcess()
+{
+	//HIGH TO LOW|LOW TO HIGH????????
+	if(Last_FrontWheel_Mode == CHASSIS_NORMAL && FrontWheel_Mode == CHASSIS_HIGH)
+	{
+		FRONT_SOV1_ON();
+	}
+	else if(Last_FrontWheel_Mode == CHASSIS_NORMAL && FrontWheel_Mode == CHASSIS_LOW)
+	{
+		FRONT_SOV2_ON();
+	}
+	else if(Last_FrontWheel_Mode == CHASSIS_HIGH && FrontWheel_Mode == CHASSIS_NORMAL)
+	{
+		FRONT_SOV1_OFF();
+	}
+	else if(Last_FrontWheel_Mode == CHASSIS_HIGH && FrontWheel_Mode == CHASSIS_LOW)
+	{
+		FRONT_SOV1_OFF();
+		osDelay(500);
+		FRONT_SOV2_ON();
+	}
+	else if(Last_FrontWheel_Mode == CHASSIS_LOW && FrontWheel_Mode == CHASSIS_NORMAL)
+	{
+		FRONT_SOV2_OFF();
+	}
+	else if(Last_FrontWheel_Mode == CHASSIS_LOW && FrontWheel_Mode == CHASSIS_HIGH)
+	{
+		FRONT_SOV2_OFF();
+		osDelay(500);
+		FRONT_SOV1_ON();
+	}
+	Last_FrontWheel_Mode = FrontWheel_Mode;
+	
+	if(Last_BehindWheel_Mode == CHASSIS_NORMAL && BehindWheel_Mode == CHASSIS_HIGH)
+	{
+		BEHIND_SOV1_ON();
+	}
+	else if(Last_BehindWheel_Mode == CHASSIS_NORMAL && BehindWheel_Mode == CHASSIS_LOW)
+	{
+		BEHIND_SOV2_ON();
+	}
+	else if(Last_BehindWheel_Mode == CHASSIS_HIGH && BehindWheel_Mode == CHASSIS_NORMAL)
+	{
+		BEHIND_SOV1_OFF();
+	}
+	else if(Last_BehindWheel_Mode == CHASSIS_HIGH && BehindWheel_Mode == CHASSIS_LOW)
+	{
+		BEHIND_SOV1_OFF();
+		osDelay(500);
+		BEHIND_SOV2_ON();
+	}
+	else if(Last_BehindWheel_Mode == CHASSIS_LOW && BehindWheel_Mode == CHASSIS_NORMAL)
+	{
+		BEHIND_SOV2_OFF();
+	}
+	else if(Last_BehindWheel_Mode == CHASSIS_LOW && BehindWheel_Mode == CHASSIS_HIGH)
+	{
+		BEHIND_SOV2_OFF();
+		osDelay(500);
+		BEHIND_SOV1_ON();
+	}
+	Last_BehindWheel_Mode = BehindWheel_Mode;
+}
+
 
 //uint8_t gapOK(float AngleTarget,float RealAngle)
 //{
