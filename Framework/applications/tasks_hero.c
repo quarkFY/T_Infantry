@@ -81,7 +81,7 @@ void HeroTask(void const * argument)
 				}break;
 				case HERO_MANUL_LOAD:
 				{
-
+           HERO_load();
 				}break;
 				case HERO_MANUL_DISCARD:
 				{
@@ -95,7 +95,9 @@ void HeroTask(void const * argument)
 				{
 			
 				}break;
-				
+				default:
+				  fw_Error_Handler();
+					
 			}
 			Last_HERO_Order = HERO_Order;
 			osDelay(2);
@@ -106,27 +108,14 @@ void HeroTask(void const * argument)
 void HERO_prepare(void)
 {
 	HERO_step(70,30,-120);
-//	for(uint32_t i=0;i<70;i++)
-//	{
-//		AM1RAngleTarget = AM1RAngleTarget+1;
-//		AM1LAngleTarget = AM1LAngleTarget-1;
-//		if(AM3RAngleTarget>=-140)
-//		{
-//		  AM3RAngleTarget = AM3RAngleTarget -4;
-//		}
-//		if(AM2RAngleTarget>=-30)
-//		{
-//			AM2RAngleTarget = AM2RAngleTarget-1;
-//		  AM2LAngleTarget = AM2LAngleTarget+1;
-//		}
-////		if(HERO_Order==HERO_STOP)
-////		{	
-////			fw_printfln("stop called when strech!");
-////			return 0;
-////		}
-//		//fw_printfln("%f",aux_motor2_position_target);
-//		osDelay(30);
-//	}
+	HERO_Order = HERO_MANUL_FETCH;
+}
+
+void HERO_load(void)
+{
+	HERO_step(70,70,-120);
+	osDelay(1000);
+	HERO_step(70,30,-120);
 	HERO_Order = HERO_MANUL_FETCH;
 }
 
@@ -134,42 +123,7 @@ void HERO_prepare(void)
 void HERO_recover()
 {
 	HERO_step(70,30,-140);
-	//osDelay(1000);
 	HERO_step(0,0,0);
-//	float time_milis;
-//	if(AM1RAngleTarget>=(-AM3RAngleTarget/4))
-//	{time_milis = AM1RAngleTarget;}
-//	else 
-//	{time_milis = -AM3RAngleTarget/4;}
-//	if(AM2LAngleTarget>=time_milis)
-//	{time_milis = AM2LAngleTarget;}
-//	
-//	for(uint32_t i=0;i<time_milis;i++)
-//	{
-//		if(AM1RAngleTarget>0)
-//		AM1RAngleTarget = AM1RAngleTarget-1;
-//		AM1LAngleTarget = AM1LAngleTarget+1;
-//		if(AM3RAngleTarget<0)
-//		{
-//		  AM3RAngleTarget = AM3RAngleTarget +4;
-//		}
-//		if(AM2RAngleTarget<0)
-//		{
-//			AM2RAngleTarget = AM2RAngleTarget+1;
-//		  AM2LAngleTarget = AM2LAngleTarget-1;
-//		}
-////		if(HERO_Order==HERO_STOP)
-////		{	
-////			fw_printfln("stop called when strech!");
-////			return 0;
-////		}
-//		osDelay(30);
-//	}
-//			  AM1RAngleTarget = 0;
-//				AM1LAngleTarget = 0;
-//				AM2RAngleTarget = 0;
-//				AM2LAngleTarget = 0;
-//				AM3RAngleTarget = 0;
 	HERO_Order = HERO_STANDBY;
 }
 
@@ -252,7 +206,7 @@ void RaiseControlProcess()
 	else if(Last_FrontWheel_Mode == CHASSIS_HIGH && FrontWheel_Mode == CHASSIS_LOW)
 	{
 		FRONT_SOV1_OFF();
-		osDelay(500);
+		osDelay(1000);
 		FRONT_SOV2_ON();
 	}
 	else if(Last_FrontWheel_Mode == CHASSIS_LOW && FrontWheel_Mode == CHASSIS_NORMAL)
@@ -262,7 +216,7 @@ void RaiseControlProcess()
 	else if(Last_FrontWheel_Mode == CHASSIS_LOW && FrontWheel_Mode == CHASSIS_HIGH)
 	{
 		FRONT_SOV2_OFF();
-		osDelay(500);
+		osDelay(1000);
 		FRONT_SOV1_ON();
 	}
 	Last_FrontWheel_Mode = FrontWheel_Mode;
@@ -282,7 +236,7 @@ void RaiseControlProcess()
 	else if(Last_BehindWheel_Mode == CHASSIS_HIGH && BehindWheel_Mode == CHASSIS_LOW)
 	{
 		BEHIND_SOV1_OFF();
-		osDelay(500);
+		osDelay(1000);
 		BEHIND_SOV2_ON();
 	}
 	else if(Last_BehindWheel_Mode == CHASSIS_LOW && BehindWheel_Mode == CHASSIS_NORMAL)
@@ -292,7 +246,7 @@ void RaiseControlProcess()
 	else if(Last_BehindWheel_Mode == CHASSIS_LOW && BehindWheel_Mode == CHASSIS_HIGH)
 	{
 		BEHIND_SOV2_OFF();
-		osDelay(500);
+		osDelay(1000);
 		BEHIND_SOV1_ON();
 	}
 	Last_BehindWheel_Mode = BehindWheel_Mode;

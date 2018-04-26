@@ -503,11 +503,11 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 //				{
 //					HERO_Order=HERO_MANUL_READY;
 //				}
-//				//装弹
-//				else if(key->v & 0x2000)//c
-//				{
-//					HERO_Order=HERO_MANUL_LOAD;
-//				}
+				//装弹
+			  if(key->v & 0x2000)//c
+				{
+					HERO_Order=HERO_MANUL_LOAD;
+				}
 //				//
 //				else if(key->v & 0x4000)//v
 //				{
