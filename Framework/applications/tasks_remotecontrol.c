@@ -259,10 +259,6 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 			yawAngleTarget    -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
 			GetGMRealZero();
 		}
-		if(key->v & (0x0200|0x10))//f+shift
-				{
-					osDelay(1000);
-				}
 		//yawAngleTarget    -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
 
 		//speed mode: normal speed/high speed 
