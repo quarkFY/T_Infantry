@@ -243,7 +243,7 @@ uint16_t rotate_speed=0;
 #define MOUSE_TO_PITCH_ANGLE_INC_FACT 		0.025f * 2
 #define MOUSE_TO_YAW_ANGLE_INC_FACT 		0.025f * 2
 
-
+int keyDebug;
 //遥控器模式下机器人无级变速  键鼠模式下机器人速度为固定档位
 void MouseKeyControlProcess(Mouse *mouse, Key *key)
 {
@@ -321,6 +321,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 			ChassisSpeedRef.rotate_ref=-rotate_speed*RotSpeedRamp.Calc(&RotSpeedRamp);
 			//setLaunchMode(CONSTENT_4);
 		}
+
 		else 
 		{
 			ChassisSpeedRef.rotate_ref = 0;
@@ -333,7 +334,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 			ChassisSpeedRef.rotate_ref += mouse->x/15.0*3000;
 			yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
 		}
-		if(key->v & (0x0400|0x20)) GMMode = UNLOCK;  //解锁云台  G + Shift
+		if(key->v == (0x0400|0x20)) GMMode = UNLOCK;  //解锁云台  G + Shift
 		if(key->v & 0x0400) GMMode = LOCK;    //锁定云台  G
 		/*裁判系统离线时的功率限制方式*/
 		if(JUDGE_State == OFFLINE)
@@ -397,6 +398,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 }
 
 /////////////////////////取弹模式/////////////////////////////
+
 void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 {
 	if(GetWorkState() == NORMAL_STATE)
@@ -408,8 +410,8 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 		
 		//鼠标控制pitch&yaw
 		pitchAngleTarget -= mouse->y* MOUSE_TO_PITCH_ANGLE_INC_FACT; 
-		if(key->v & 0x0400) GMMode = UNLOCK;  //解锁云台  G
-		if(key->v & (0x0400|0x10)) GMMode = LOCK;    //锁定云台  shift+g		
+		//if(key->v & (0x0400|0x10)) GMMode = UNLOCK;  //解锁云台  G + Shift
+		if(key->v & 0x0400) GMMode = LOCK;    //锁定云台  G		
 		if(GMMode == LOCK)
 		{
 //			GMReset();
@@ -421,10 +423,10 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 			yawAngleTarget    -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
 //			GetGMRealZero();
 		}
-						if(key->v & (0x0200|0x10))//f+shift
-				{
-					osDelay(1000);
-				}
+//		if(key->v & (0x0400|0x10))// G+shift
+//		{
+//			osDelay(1000);
+//		}
 		
 		if(inputmode==GETBULLET_INPUT)
 		{
@@ -438,36 +440,36 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 //				AM3RAngleTarget = 0;
 			
 //抬升底盘前轮
-				if(key->v & 0x0200)//f
+				keyDebug = key->v;
+				if(key->v == 0x0200)//f
 				{
 					FrontWheel_Mode = CHASSIS_HIGH;
 				}
 				//回复正常底盘
-				if(key->v & (0x0200|0x10))//f+shift
+				if(key->v == (0x0200|0x10))//f+shift
 				{
 					FrontWheel_Mode = CHASSIS_NORMAL;
 				}
 				//放低底盘前轮
-				if(key->v & (0x0200|0x20))//f+ctrl
+				if(key->v == (0x0200|0x20))//f+ctrl
 				{
 					FrontWheel_Mode = CHASSIS_LOW;
 				}
 				//抬升底盘后轮
-				if(key->v & 0x8000)//b
+				if(key->v == 0x8000)//b
 				{
 					BehindWheel_Mode = CHASSIS_HIGH;
 				}
 				//回复正常底盘
-				if(key->v & (0x8000|0x10))//b+shift
+				if(key->v == (0x8000|0x10))//b+shift
 				{
 					BehindWheel_Mode = CHASSIS_NORMAL;
 				}
 				//放低底盘后轮
-				if(key->v & (0x8000|0x20))//b+ctrl
+				if(key->v == (0x8000|0x20))//b+ctrl
 				{
 					BehindWheel_Mode = CHASSIS_LOW;
 				}
-				RaiseControlProcess();
 		}
 		else if(GetBulletState == GEBULLET_PREPARE)
 		{

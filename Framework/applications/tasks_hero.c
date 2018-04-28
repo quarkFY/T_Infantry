@@ -93,7 +93,7 @@ void HeroTask(void const * argument)
 				}break;
 				case HERO_STANDBY:
 				{
-			
+					RaiseControlProcess();
 				}break;
 				default:
 				  fw_Error_Handler();
