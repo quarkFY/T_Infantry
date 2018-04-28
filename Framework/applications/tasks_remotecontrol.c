@@ -333,8 +333,8 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 			ChassisSpeedRef.rotate_ref += mouse->x/15.0*3000;
 			yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
 		}
-		if(key->v & 0x0400) GMMode = UNLOCK;  //解锁云台  G
-		if(key->v & 0x0200) GMMode = LOCK;    //锁定云台  F
+		if(key->v & (0x0400|0x20)) GMMode = UNLOCK;  //解锁云台  G + Shift
+		if(key->v & 0x0400) GMMode = LOCK;    //锁定云台  G
 		/*裁判系统离线时的功率限制方式*/
 		if(JUDGE_State == OFFLINE)
 		{
