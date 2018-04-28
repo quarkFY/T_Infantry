@@ -515,6 +515,7 @@ void SetSlabState(Slab_Mode_e v)
 	slabmode = v;
 }*/
 
+extern uint16_t forward_back_speed, left_right_speed , rotate_speed;
 void RemoteGetBulletControl(RemoteSwitch_t *sw, uint8_t val)
 {
 	
@@ -522,6 +523,10 @@ void RemoteGetBulletControl(RemoteSwitch_t *sw, uint8_t val)
 	{
 		//ARM_INIT();
 		SetGetBulletState(GEBULLET_PREPARE);
+		//取弹过程中底盘速度设置为LOW
+		forward_back_speed =  LOW_FORWARD_BACK_SPEED;
+		left_right_speed = LOW_LEFT_RIGHT_SPEED;
+		rotate_speed = LOW_ROTATE_SPEED;
 		//HERO_Order=HERO_MANUL_FETCH;
 	}
 	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)
@@ -529,6 +534,10 @@ void RemoteGetBulletControl(RemoteSwitch_t *sw, uint8_t val)
 		SetGetBulletState(NO_GETBULLET);
 		HERO_Order = HERO_MANUL_RECOVER;
 		GRIP_SOV_OFF();
+		//底盘速度恢复为NORMAL
+		forward_back_speed =  NORMAL_FORWARD_BACK_SPEED;
+		left_right_speed = NORMAL_LEFT_RIGHT_SPEED;
+		rotate_speed = NORMAL_ROTATE_SPEED;
 	}
 	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)
 	{

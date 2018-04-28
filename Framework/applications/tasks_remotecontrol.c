@@ -235,9 +235,9 @@ void RemoteControlProcess(Remote *rc)
 
 
 extern uint8_t JUDGE_State;
-static uint16_t forward_back_speed = 0;
-static uint16_t left_right_speed = 0;
-static uint16_t rotate_speed=0;
+uint16_t forward_back_speed = 0;
+uint16_t left_right_speed = 0;
+uint16_t rotate_speed=0;
 ///////////////////////////键鼠模式//////////////////////////
 //调整鼠标灵敏度
 #define MOUSE_TO_PITCH_ANGLE_INC_FACT 		0.025f * 2
