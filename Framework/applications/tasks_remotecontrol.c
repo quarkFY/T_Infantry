@@ -398,7 +398,8 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 }
 
 /////////////////////////取弹模式/////////////////////////////
-
+uint8_t CMF = 0 , CMB =0;
+uint16_t lastKey;
 void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 {
 	if(GetWorkState() == NORMAL_STATE)
@@ -439,37 +440,67 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 //				AM2LAngleTarget = 0;
 //				AM3RAngleTarget = 0;
 			
-//抬升底盘前轮
-				keyDebug = key->v;
-				if(key->v == 0x0200)//f
+
+			//1:up, 2:down
+				if(lastKey == 0x0200 && key ->v == 0x0210) // F -> F + Shift 
 				{
-					FrontWheel_Mode = CHASSIS_HIGH;
+					CMF =1;
 				}
-				//回复正常底盘
-				if(key->v == (0x0200|0x10))//f+shift
+				if(lastKey == 0x0200 && key ->v == 0x0220) // F -> F + Ctrl
 				{
-					FrontWheel_Mode = CHASSIS_NORMAL;
+					CMF =2;
 				}
-				//放低底盘前轮
-				if(key->v == (0x0200|0x20))//f+ctrl
+				if(lastKey == 0x8000 && key ->v == 0x8010) // B -> B + Shift
 				{
-					FrontWheel_Mode = CHASSIS_LOW;
+					CMB =1;
 				}
-				//抬升底盘后轮
-				if(key->v == 0x8000)//b
+				if(lastKey == 0x8000 && key ->v == 0x8020) // B -> B + Ctrl
 				{
-					BehindWheel_Mode = CHASSIS_HIGH;
+					CMB =2;
 				}
-				//回复正常底盘
-				if(key->v == (0x8000|0x10))//b+shift
+				if(lastKey == 0x8200 && key ->v == 0x8210) // F + B -> F + B + Shift
 				{
-					BehindWheel_Mode = CHASSIS_NORMAL;
+					CMF =1;
+					CMB =1;
 				}
-				//放低底盘后轮
-				if(key->v == (0x8000|0x20))//b+ctrl
+				if(lastKey == 0x8200 && key ->v == 0x8220) // F + B -> F + B + Ctrl
 				{
-					BehindWheel_Mode = CHASSIS_LOW;
+					CMF =2;
+					CMB =2;
 				}
+				
+				//抬升底盘前轮	
+//				if(key->v == 0x0200)//f
+//				{
+//					FrontWheel_Mode = CHASSIS_HIGH;
+//				}
+//				//回复正常底盘
+//				if(key->v == (0x0200|0x10))//f+shift
+//				{
+//					FrontWheel_Mode = CHASSIS_NORMAL;
+//				}
+//				//放低底盘前轮
+//				if(key->v == (0x0200|0x20))//f+ctrl
+//				{
+//					FrontWheel_Mode = CHASSIS_LOW;
+//				}
+//				//抬升底盘后轮
+//				if(key->v == 0x8000)//b
+//				{
+//					BehindWheel_Mode = CHASSIS_HIGH;
+//				}
+//				//回复正常底盘
+//				if(key->v == (0x8000|0x10))//b+shift
+//				{
+//					BehindWheel_Mode = CHASSIS_NORMAL;
+//				}
+//				//放低底盘后轮
+//				if(key->v == (0x8000|0x20))//b+ctrl
+//				{
+//					BehindWheel_Mode = CHASSIS_LOW;
+//				}
+				lastKey = key ->v;
+				
 		}
 		else if(GetBulletState == GEBULLET_PREPARE)
 		{

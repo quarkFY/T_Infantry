@@ -188,68 +188,122 @@ void HERO_step_slow(float angle1,float angle2,float angle3)
 
 
 //
+extern uint8_t CMF,CMB;
 void RaiseControlProcess()
 {
+	if (CMF == 1)
+	{
+		if (FrontWheel_Mode == CHASSIS_LOW)
+		{
+			FRONT_SOV2_OFF();
+			FrontWheel_Mode = CHASSIS_NORMAL;
+		}
+		else if(FrontWheel_Mode == CHASSIS_NORMAL)
+		{
+			FRONT_SOV1_ON();
+			FrontWheel_Mode = CHASSIS_HIGH;
+		}
+	}
+	if (CMF == 2)
+	{
+		if (FrontWheel_Mode == CHASSIS_HIGH)
+		{
+			FRONT_SOV1_OFF();
+			FrontWheel_Mode = CHASSIS_NORMAL;
+		}
+		else if(FrontWheel_Mode == CHASSIS_NORMAL)
+		{
+			FRONT_SOV2_ON();
+			FrontWheel_Mode = CHASSIS_LOW;
+		}
+	}
+	if (CMB == 1)
+	{
+		if (BehindWheel_Mode == CHASSIS_LOW)
+		{
+			BEHIND_SOV2_OFF();
+			BehindWheel_Mode = CHASSIS_NORMAL;
+		}
+		else if(FrontWheel_Mode == CHASSIS_NORMAL)
+		{
+			BEHIND_SOV1_ON();
+			BehindWheel_Mode = CHASSIS_HIGH;
+		}
+	}
+	if (CMB == 2)
+	{
+		if (BehindWheel_Mode == CHASSIS_HIGH)
+		{
+			BEHIND_SOV1_OFF();
+			BehindWheel_Mode = CHASSIS_NORMAL;
+		}
+		else if(BehindWheel_Mode == CHASSIS_NORMAL)
+		{
+			BEHIND_SOV2_ON();
+			BehindWheel_Mode = CHASSIS_LOW;
+		}
+	}
+	CMF = 0;
 	//HIGH TO LOW|LOW TO HIGH????????
-	if(Last_FrontWheel_Mode == CHASSIS_NORMAL && FrontWheel_Mode == CHASSIS_HIGH)
-	{
-		FRONT_SOV1_ON();
-	}
-	else if(Last_FrontWheel_Mode == CHASSIS_NORMAL && FrontWheel_Mode == CHASSIS_LOW)
-	{
-		FRONT_SOV2_ON();
-	}
-	else if(Last_FrontWheel_Mode == CHASSIS_HIGH && FrontWheel_Mode == CHASSIS_NORMAL)
-	{
-		FRONT_SOV1_OFF();
-	}
-	else if(Last_FrontWheel_Mode == CHASSIS_HIGH && FrontWheel_Mode == CHASSIS_LOW)
-	{
-		FRONT_SOV1_OFF();
-		osDelay(1000);
-		FRONT_SOV2_ON();
-	}
-	else if(Last_FrontWheel_Mode == CHASSIS_LOW && FrontWheel_Mode == CHASSIS_NORMAL)
-	{
-		FRONT_SOV2_OFF();
-	}
-	else if(Last_FrontWheel_Mode == CHASSIS_LOW && FrontWheel_Mode == CHASSIS_HIGH)
-	{
-		FRONT_SOV2_OFF();
-		osDelay(1000);
-		FRONT_SOV1_ON();
-	}
-	Last_FrontWheel_Mode = FrontWheel_Mode;
-	
-	if(Last_BehindWheel_Mode == CHASSIS_NORMAL && BehindWheel_Mode == CHASSIS_HIGH)
-	{
-		BEHIND_SOV1_ON();
-	}
-	else if(Last_BehindWheel_Mode == CHASSIS_NORMAL && BehindWheel_Mode == CHASSIS_LOW)
-	{
-		BEHIND_SOV2_ON();
-	}
-	else if(Last_BehindWheel_Mode == CHASSIS_HIGH && BehindWheel_Mode == CHASSIS_NORMAL)
-	{
-		BEHIND_SOV1_OFF();
-	}
-	else if(Last_BehindWheel_Mode == CHASSIS_HIGH && BehindWheel_Mode == CHASSIS_LOW)
-	{
-		BEHIND_SOV1_OFF();
-		osDelay(1000);
-		BEHIND_SOV2_ON();
-	}
-	else if(Last_BehindWheel_Mode == CHASSIS_LOW && BehindWheel_Mode == CHASSIS_NORMAL)
-	{
-		BEHIND_SOV2_OFF();
-	}
-	else if(Last_BehindWheel_Mode == CHASSIS_LOW && BehindWheel_Mode == CHASSIS_HIGH)
-	{
-		BEHIND_SOV2_OFF();
-		osDelay(1000);
-		BEHIND_SOV1_ON();
-	}
-	Last_BehindWheel_Mode = BehindWheel_Mode;
+//	if(Last_FrontWheel_Mode == CHASSIS_NORMAL && FrontWheel_Mode == CHASSIS_HIGH)
+//	{
+//		FRONT_SOV1_ON();
+//	}
+//	else if(Last_FrontWheel_Mode == CHASSIS_NORMAL && FrontWheel_Mode == CHASSIS_LOW)
+//	{
+//		FRONT_SOV2_ON();
+//	}
+//	else if(Last_FrontWheel_Mode == CHASSIS_HIGH && FrontWheel_Mode == CHASSIS_NORMAL)
+//	{
+//		FRONT_SOV1_OFF();
+//	}
+//	else if(Last_FrontWheel_Mode == CHASSIS_HIGH && FrontWheel_Mode == CHASSIS_LOW)
+//	{
+//		FRONT_SOV1_OFF();
+//		osDelay(1000);
+//		FRONT_SOV2_ON();
+//	}
+//	else if(Last_FrontWheel_Mode == CHASSIS_LOW && FrontWheel_Mode == CHASSIS_NORMAL)
+//	{
+//		FRONT_SOV2_OFF();
+//	}
+//	else if(Last_FrontWheel_Mode == CHASSIS_LOW && FrontWheel_Mode == CHASSIS_HIGH)
+//	{
+//		FRONT_SOV2_OFF();
+//		osDelay(1000);
+//		FRONT_SOV1_ON();
+//	}
+//	Last_FrontWheel_Mode = FrontWheel_Mode;
+//	
+//	if(Last_BehindWheel_Mode == CHASSIS_NORMAL && BehindWheel_Mode == CHASSIS_HIGH)
+//	{
+//		BEHIND_SOV1_ON();
+//	}
+//	else if(Last_BehindWheel_Mode == CHASSIS_NORMAL && BehindWheel_Mode == CHASSIS_LOW)
+//	{
+//		BEHIND_SOV2_ON();
+//	}
+//	else if(Last_BehindWheel_Mode == CHASSIS_HIGH && BehindWheel_Mode == CHASSIS_NORMAL)
+//	{
+//		BEHIND_SOV1_OFF();
+//	}
+//	else if(Last_BehindWheel_Mode == CHASSIS_HIGH && BehindWheel_Mode == CHASSIS_LOW)
+//	{
+//		BEHIND_SOV1_OFF();
+//		osDelay(1000);
+//		BEHIND_SOV2_ON();
+//	}
+//	else if(Last_BehindWheel_Mode == CHASSIS_LOW && BehindWheel_Mode == CHASSIS_NORMAL)
+//	{
+//		BEHIND_SOV2_OFF();
+//	}
+//	else if(Last_BehindWheel_Mode == CHASSIS_LOW && BehindWheel_Mode == CHASSIS_HIGH)
+//	{
+//		BEHIND_SOV2_OFF();
+//		osDelay(1000);
+//		BEHIND_SOV1_ON();
+//	}
+//	Last_BehindWheel_Mode = BehindWheel_Mode;
 }
 
 
