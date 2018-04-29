@@ -72,20 +72,28 @@ PID_Regulator_t CM4SpeedPID = CHASSIS_MOTOR_SPEED_PID_DEFAULT;
 //推弹电机
 #define PM1ZeroAngle 0
 #define PM2ZeroAngle 0
+#define PM3ZeroAngle 0
 float PM1RealAngle = 0.0;
 float PM2RealAngle = 0.0;
+float PM3RealAngle = 0.0;
 float PM1AngleTarget = 0.0;
 float PM2AngleTarget = 0.0;
+float PM3AngleTarget = 0.0;
 uint16_t PM1ThisAngle = 0;
 uint16_t PM1LastAngle = 0;
 uint8_t isPM1FirstEnter = 1;
 uint16_t PM2ThisAngle = 0;
 uint16_t PM2LastAngle = 0;
+uint16_t PM3ThisAngle = 0;
+uint16_t PM3LastAngle = 0;
 uint8_t isPM2FirstEnter = 1;
+uint8_t isPM3FirstEnter = 1;
 fw_PID_Regulator_t PM1PositionPID = fw_PID_INIT(100, 0.0, 200.0, 10000.0, 10000.0, 10000.0, 10000.0);
 fw_PID_Regulator_t PM2PositionPID = fw_PID_INIT(100.0, 0.0, 200.0, 10000.0, 10000.0, 10000.0, 10000.0);
 fw_PID_Regulator_t PM1SpeedPID = fw_PID_INIT(15, 0.0, 40.0, 10000.0, 10000.0, 10000.0, 8000.0);
 fw_PID_Regulator_t PM2SpeedPID = fw_PID_INIT(15, 0.0, 40.0, 10000.0, 10000.0, 10000.0, 8000.0);
+fw_PID_Regulator_t PM3PositionPID = fw_PID_INIT(100.0, 0.0, 200.0, 10000.0, 10000.0, 10000.0, 10000.0);
+fw_PID_Regulator_t PM3SpeedPID = fw_PID_INIT(15, 0.0, 40.0, 10000.0, 10000.0, 10000.0, 8000.0);
 
 uint16_t PM1RotateCount = 0;
 uint8_t PM1RotateFlag = 0;
@@ -109,6 +117,7 @@ static uint8_t s_CMBLCount = 0;
 static uint8_t s_CMBRCount = 0;
 static uint8_t s_PM1Count = 0;
 static uint8_t s_PM2Count = 0;
+static uint8_t s_PM3Count = 0;
 
 
 
@@ -132,6 +141,8 @@ void Can1ControlTask(void const * argument)
 		
 		ControlPM1();
 		ControlPM2();
+		
+		ControlPM3();
 		
 	  }//end of while
 }
@@ -188,7 +199,7 @@ void ControlYaw(void)
 			
 //			if (isGMSet == 1)
 //			{
-				setMotor(GMYAW, -yawIntensity);
+//				setMotor(GMYAW, -yawIntensity);
 //			}
 
 
@@ -255,7 +266,7 @@ void ControlPitch(void)
 	
 //		  if (isGMSet == 1)
 //			{
-				setMotor(GMPITCH, -pitchIntensity);
+//				setMotor(GMPITCH, -pitchIntensity);
 //			}
 
 			s_pitchCount = 0;
@@ -499,6 +510,54 @@ void ControlPM2()
 	}
 }
 
+void ControlPM3()
+{
+	if(IOPool_hasNextRead(PM3RxIOPool, 0))
+	{
+		if(s_PM3Count == 1)
+		{
+			IOPool_getNextRead(PM3RxIOPool, 0);
+			Motor820RRxMsg_t *pData = IOPool_pGetReadData(PM3RxIOPool, 0);
+			
+			PM3ThisAngle = pData->angle;
+			if(isPM3FirstEnter) {PM3LastAngle = PM3ThisAngle;isPM3FirstEnter = 0;}
+			
+			if(PM3ThisAngle<=PM3LastAngle)
+			{
+				if((PM3LastAngle-PM3ThisAngle)>3000)//编码器上溢
+					PM3RealAngle = PM3RealAngle + (PM3ThisAngle+8192-PM3LastAngle) * 360 / 8192.0 / PM3Reduction;
+				else//反转
+					PM3RealAngle = PM3RealAngle - (PM3LastAngle - PM3ThisAngle) * 360 / 8192.0 / PM3Reduction;
+			}
+			else
+			{
+				if((PM3ThisAngle-PM3LastAngle)>3000)//编码器下溢
+					PM3RealAngle = PM3RealAngle - (PM3LastAngle+8192-PM3ThisAngle) *360 / 8192.0 / PM3Reduction;
+				else//正转
+					PM3RealAngle = PM3RealAngle + (PM3ThisAngle - PM3LastAngle) * 360 / 8192.0 / PM3Reduction;
+			}
+			
+			PM3PositionPID.feedback = PM3RealAngle;
+			PM3PositionPID.target = PM3AngleTarget;
+			PM3PositionPID.Calc(&PM3PositionPID);
+			
+			PM3SpeedPID.target = PM3PositionPID.output;
+			PM3SpeedPID.feedback = pData->RotateSpeed;
+			PM3SpeedPID.Calc(&PM3SpeedPID);
+
+			PM3LastAngle = PM3ThisAngle;
+	
+			setMotor(PM3, PM3SpeedPID.output);
+			
+			s_PM3Count = 0;
+		}
+		else
+		{
+			s_PM3Count++;
+		}
+	}
+}
+
 uint8_t heatFlag = 0;
 float heatUpperLimit = 80;
 extern uint8_t realLevel;
@@ -586,6 +645,11 @@ void PMRotate()
 		
 		PM1RotateFlag = 0;
 	}
+}
+
+void spitOneBullet()
+{
+	PM3AngleTarget+=30;
 }
 
 //可能需要除抖，待调试

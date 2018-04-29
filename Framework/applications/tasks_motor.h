@@ -16,6 +16,7 @@
 
 #define PM1Reduction 36.0
 #define PM2Reduction 36.0
+#define PM3Reduction 36.0
 
 #define AngleOfOneGolf 160.0
 
@@ -29,10 +30,12 @@ void ControlCMBL(void);
 void ControlCMBR(void);
 void ControlPM1(void);
 void ControlPM2(void);
+void ControlPM3(void);
 
 void shootOneGolf(void);
 void shootOneGolfConpensation(void);
 void PMRotate(void);
+void spitOneBullet(void);
 
 void GetGMRealZero(void);
 	

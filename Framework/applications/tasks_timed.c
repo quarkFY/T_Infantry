@@ -156,6 +156,7 @@ void Timer_2ms_lTask(void const * argument)
 		}
 		else
 		{
+//			spitOneBullet();
 			PM1RotateCount = 0;
 			PM1RotateFlag = 1;
 		}

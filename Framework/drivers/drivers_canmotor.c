@@ -38,6 +38,7 @@ NaiveIOPoolDefine(AM3RRxIOPool, {0});
 
 NaiveIOPoolDefine(PM1RxIOPool, {0});
 NaiveIOPoolDefine(PM2RxIOPool, {0});
+NaiveIOPoolDefine(PM3RxIOPool, {0});
 
 NaiveIOPoolDefine(GMPITCHRxIOPool, {0});
 NaiveIOPoolDefine(GMYAWRxIOPool, {0});
@@ -96,6 +97,15 @@ NaiveIOPoolDefine(PMTxIOPool, DataPoolInit);
 		{PM2_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}} \
 }
 NaiveIOPoolDefine(PM2TxIOPool, DataPoolInit);
+#undef DataPoolInit 
+
+#define DataPoolInit \
+	{ \
+		{PM3_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}}, \
+		{PM3_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}}, \
+		{PM3_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}} \
+}
+NaiveIOPoolDefine(PM3TxIOPool, DataPoolInit);
 #undef DataPoolInit 
 
 //#define DataPoolInit \
@@ -259,6 +269,11 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan){
 				IOPool_pGetWriteData(PM2RxIOPool)->RotateSpeed = CanRxGetU16(Can2RxMsg, 1);
 				IOPool_getNextWrite(PM2RxIOPool);
 				break;
+			case PM3_RXID:
+				IOPool_pGetWriteData(PM3RxIOPool)->angle = CanRxGetU16(Can2RxMsg, 0);
+				IOPool_pGetWriteData(PM3RxIOPool)->RotateSpeed = CanRxGetU16(Can2RxMsg, 1);
+				IOPool_getNextWrite(PM3RxIOPool);
+				break;
 //			case SM_RXID:
 //				IOPool_pGetWriteData(SMRxIOPool)->angle = CanRxGetU16(Can1RxMsg, 0);
 //				IOPool_pGetWriteData(SMRxIOPool)->RotateSpeed = CanRxGetU16(Can1RxMsg, 1);
@@ -382,6 +397,19 @@ void TransmitCAN2(void){
 			
 			IOPool_getNextRead(PM2TxIOPool, 0);
 			hcan2.pTxMsg = IOPool_pGetReadData(PM2TxIOPool, 0);
+			
+			taskENTER_CRITICAL();
+			if(HAL_CAN_Transmit_IT(&hcan2) != HAL_OK){
+				fw_Warning();
+			}
+			taskEXIT_CRITICAL();
+		}
+			if(IOPool_hasNextRead(PM3TxIOPool, 0))
+		{
+			osSemaphoreWait(Can2TransmitSemaphoreHandle, osWaitForever);
+			
+			IOPool_getNextRead(PM3TxIOPool, 0);
+			hcan2.pTxMsg = IOPool_pGetReadData(PM3TxIOPool, 0);
 			
 			taskENTER_CRITICAL();
 			if(HAL_CAN_Transmit_IT(&hcan2) != HAL_OK){
