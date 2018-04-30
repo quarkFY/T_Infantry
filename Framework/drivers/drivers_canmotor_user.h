@@ -30,8 +30,8 @@
 #define AM2R_RXID 0x202u
 #define AM3R_RXID 0x203u
 //GM为云台电机
-#define GMYAW_RXID 0x209u
-#define GMPITCH_RXID 0x20Au
+#define GMYAW_RXID 0x20Au
+#define GMPITCH_RXID 0x209u
 //PM为推弹电机
 #define PM1_RXID 0x205u
 #define PM2_RXID 0x204u//改到can2

@@ -234,15 +234,19 @@ void setMotor(MotorId motorId, int16_t Intensity){
 	{
 		CanTxMsgTypeDef *pData = IOPool_pGetWriteData(GMTxIOPool);
 		pData->StdId = GM_TXID;
-		pData->Data[0] = (uint8_t)(GMYAWIntensity >> 8);
-		pData->Data[1] = (uint8_t)GMYAWIntensity;
-		pData->Data[2] = (uint8_t)(GMPITCHIntensity >> 8);
-		pData->Data[3] = (uint8_t)GMPITCHIntensity;
+//		pData->Data[0] = (uint8_t)(GMYAWIntensity >> 8);
+//		pData->Data[1] = (uint8_t)GMYAWIntensity;
+//		pData->Data[2] = (uint8_t)(GMPITCHIntensity >> 8);
+//		pData->Data[3] = (uint8_t)GMPITCHIntensity;
+		pData->Data[0] = (uint8_t)(GMPITCHIntensity >> 8);
+		pData->Data[1] = (uint8_t)GMPITCHIntensity;
+		pData->Data[2] = (uint8_t)(GMYAWIntensity >> 8);
+		pData->Data[3] = (uint8_t)GMYAWIntensity;
 		pData->Data[4] = 0;
 		pData->Data[5] = 0;
 		pData->Data[6] = 0;
 		pData->Data[7] = 0;
-		IOPool_getNextWrite(GMTxIOPool);
+		IOPool_getNextWrite(GMTxIOPool);	
 		GMReady = 0;
 
     TransmitCAN1();
