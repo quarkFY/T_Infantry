@@ -85,7 +85,7 @@ InputMode_e inputmode = REMOTE_INPUT;
 //取弹状态
 Get_Bullet_e GetBulletState = NO_GETBULLET;
 //云台底盘锁定状态
-GMMode_e GMMode = LOCK;
+GMMode_e GMMode = UNLOCK;
  //取弹任务状态
  extern HERO_Order_t HERO_Order;
  //底盘状态

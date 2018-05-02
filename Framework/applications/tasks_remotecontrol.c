@@ -219,7 +219,7 @@ void RemoteControlProcess(Remote *rc)
 		ChassisSpeedRef.left_right_ref   = (rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_CHASSIS_SPEED_REF_FACT; 
 		
  		pitchAngleTarget -= (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_PITCH_ANGLE_INC_FACT;
-	//	yawAngleTarget   -= (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT; 
+		yawAngleTarget   -= (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT; 
 		
 		ChassisSpeedRef.rotate_ref   = (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) *STICK_TO_CHASSIS_SPEED_REF_FACT ;
   	//yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
@@ -247,17 +247,19 @@ int keyDebug;
 //遥控器模式下机器人无级变速  键鼠模式下机器人速度为固定档位
 void MouseKeyControlProcess(Mouse *mouse, Key *key)
 {
-	
+	keyDebug = key ->v;
 	if(GetWorkState() == NORMAL_STATE)
 	{
 		VAL_LIMIT(mouse->x, -150, 150); 
 		VAL_LIMIT(mouse->y, -150, 150); 
 	
-		pitchAngleTarget -= mouse->y* MOUSE_TO_PITCH_ANGLE_INC_FACT;  
+		pitchAngleTarget += mouse->y* MOUSE_TO_PITCH_ANGLE_INC_FACT; 
+		if(key->v == 0x0400) GMMode = LOCK;    //锁定云台  G
+		if(key->v == 0x0420) GMMode = UNLOCK;  //解锁云台  G + Ctrl				
 		if(GMMode == UNLOCK) 
 		{
 			yawAngleTarget    -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
-			GetGMRealZero();
+			//GetGMRealZero();
 		}
 		//yawAngleTarget    -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
 
@@ -269,7 +271,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 			rotate_speed = LOW_ROTATE_SPEED;
 		}
 		else if(key->v == 0x20)//Ctrl
-		{
+		{	
 			forward_back_speed =  MIDDLE_FORWARD_BACK_SPEED;
 			left_right_speed = MIDDLE_LEFT_RIGHT_SPEED;
 			rotate_speed = MIDDLE_ROTATE_SPEED;
@@ -316,12 +318,11 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 			ChassisSpeedRef.rotate_ref=rotate_speed*RotSpeedRamp.Calc(&RotSpeedRamp);
 			//setLaunchMode(SINGLE_MULTI);
 		}
-		if(key->v & 0x40)	//key:q  
+		else if(key->v & 0x40)	//key:q  
 		{
 			ChassisSpeedRef.rotate_ref=-rotate_speed*RotSpeedRamp.Calc(&RotSpeedRamp);
 			//setLaunchMode(CONSTENT_4);
 		}
-
 		else 
 		{
 			ChassisSpeedRef.rotate_ref = 0;
@@ -330,12 +331,12 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		//mouse x y control
 		if(GMMode == LOCK)
 		{
-			GMReset();
+			//GMReset();
 			ChassisSpeedRef.rotate_ref += mouse->x/15.0*3000;
 			yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
 		}
-		if(key->v == (0x0400|0x20)) GMMode = UNLOCK;  //解锁云台  G + Shift
-		if(key->v & 0x0400) GMMode = LOCK;    //锁定云台  G
+//		if(key->v == 0x0420) GMMode = UNLOCK;  //解锁云台  G + Ctrl
+//		if(key->v & 0x0400) GMMode = LOCK;    //锁定云台  G
 		/*裁判系统离线时的功率限制方式*/
 		if(JUDGE_State == OFFLINE)
 		{
@@ -410,14 +411,18 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 	//		yawAngleTarget   -= (rc->ch2 - 1024)/6600.0 * (YAWUPLIMIT-YAWDOWNLIMIT); 
 		
 		//鼠标控制pitch&yaw
-		pitchAngleTarget -= mouse->y* MOUSE_TO_PITCH_ANGLE_INC_FACT; 
-		//if(key->v & (0x0400|0x10)) GMMode = UNLOCK;  //解锁云台  G + Shift
-		if(key->v & 0x0400) GMMode = LOCK;    //锁定云台  G		
+		pitchAngleTarget += mouse->y* MOUSE_TO_PITCH_ANGLE_INC_FACT; 
+		if(key->v == 0x0400) GMMode = LOCK;    //锁定云台  G
+		if(key->v == 0x0420) GMMode = UNLOCK;  //解锁云台  G + Ctrl			
 		if(GMMode == LOCK)
 		{
-//			GMReset();
+			//GMReset();
 			ChassisSpeedRef.rotate_ref += mouse->x/15.0*3000;
 			yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
+			
+//			GMReset();
+//			ChassisSpeedRef.rotate_ref += mouse->x/15.0*3000;
+//			yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
 		}
 		if(GMMode == UNLOCK) 
 		{
@@ -428,6 +433,51 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 //		{
 //			osDelay(1000);
 //		}
+		if(key->v & 0x01)  // key: w
+		{
+			ChassisSpeedRef.forward_back_ref = forward_back_speed* FBSpeedRamp.Calc(&FBSpeedRamp);
+			
+		}
+		else if(key->v & 0x02) //key: s
+		{
+			ChassisSpeedRef.forward_back_ref = -forward_back_speed* FBSpeedRamp.Calc(&FBSpeedRamp);
+			
+		}
+		else
+		{
+			ChassisSpeedRef.forward_back_ref = 0;
+			FBSpeedRamp.ResetCounter(&FBSpeedRamp);
+		}
+		if(key->v & 0x04)  // key: d
+		{
+			ChassisSpeedRef.left_right_ref = -left_right_speed* LRSpeedRamp.Calc(&LRSpeedRamp);
+			
+		}
+		else if(key->v & 0x08) //key: a
+		{
+			ChassisSpeedRef.left_right_ref = left_right_speed* LRSpeedRamp.Calc(&LRSpeedRamp);
+			
+		}
+		else
+		{
+			ChassisSpeedRef.left_right_ref = 0;
+			LRSpeedRamp.ResetCounter(&LRSpeedRamp);
+		}
+		if(key->v & 0x80)	//key:e  检测第8位是不是1
+		{
+			ChassisSpeedRef.rotate_ref=rotate_speed*RotSpeedRamp.Calc(&RotSpeedRamp);
+			//setLaunchMode(SINGLE_MULTI);
+		}
+		else if(key->v & 0x40)	//key:q  
+		{
+			ChassisSpeedRef.rotate_ref=-rotate_speed*RotSpeedRamp.Calc(&RotSpeedRamp);
+			//setLaunchMode(CONSTENT_4);
+		}
+		else 
+		{
+			ChassisSpeedRef.rotate_ref = 0;
+			RotSpeedRamp.ResetCounter(&RotSpeedRamp);
+		}
 		
 		if(inputmode==GETBULLET_INPUT)
 		{
@@ -441,7 +491,10 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 //				AM3RAngleTarget = 0;
 			
 
-			//1:up, 2:down
+			//1:up, 2:down\
+				
+			
+		
 				if(lastKey == 0x0200 && key ->v == 0x0210) // F -> F + Shift 
 				{
 					CMF =1;
