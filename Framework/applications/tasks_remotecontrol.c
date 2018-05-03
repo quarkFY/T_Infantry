@@ -253,7 +253,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		VAL_LIMIT(mouse->x, -150, 150); 
 		VAL_LIMIT(mouse->y, -150, 150); 
 	
-		pitchAngleTarget += mouse->y* MOUSE_TO_PITCH_ANGLE_INC_FACT; 
+		pitchAngleTarget -= mouse->y* MOUSE_TO_PITCH_ANGLE_INC_FACT; 
 		if(key->v == 0x0400) GMMode = LOCK;    //锁定云台  G
 		if(key->v == 0x0420) GMMode = UNLOCK;  //解锁云台  G + Ctrl				
 		if(GMMode == UNLOCK) 
@@ -411,7 +411,7 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 	//		yawAngleTarget   -= (rc->ch2 - 1024)/6600.0 * (YAWUPLIMIT-YAWDOWNLIMIT); 
 		
 		//鼠标控制pitch&yaw
-		pitchAngleTarget += mouse->y* MOUSE_TO_PITCH_ANGLE_INC_FACT; 
+		pitchAngleTarget -= mouse->y* MOUSE_TO_PITCH_ANGLE_INC_FACT; 
 		if(key->v == 0x0400) GMMode = LOCK;    //锁定云台  G
 		if(key->v == 0x0420) GMMode = UNLOCK;  //解锁云台  G + Ctrl			
 		if(GMMode == LOCK)
