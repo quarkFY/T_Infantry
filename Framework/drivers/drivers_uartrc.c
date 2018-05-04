@@ -191,19 +191,23 @@ uint8_t IsRemoteBeingAction(void)
 	return (abs(ChassisSpeedRef.forward_back_ref)>=10 || abs(ChassisSpeedRef.left_right_ref)>=10 || fabs(GimbalRef.yaw_speed_ref)>=10 || fabs(GimbalRef.pitch_speed_ref)>=10);
 }
 /*取得右上角拨杆数据*/
+uint8_t Can2Switch = 0;
 void SetInputMode(Remote *rc)
 {
 	if(rc->s2 == 1)
 	{
 		inputmode = REMOTE_INPUT;
+		Can2Switch =0;
 	}
 	else if(rc->s2 == 3)
 	{
 		inputmode = KEY_MOUSE_INPUT;
+		Can2Switch =0;
 	}
 	else if(rc->s2 == 2)
 	{
 		inputmode = GETBULLET_INPUT;
+		Can2Switch =1;
 	}	
 }
 

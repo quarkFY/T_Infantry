@@ -88,7 +88,7 @@ uint16_t PM3ThisAngle = 0;
 uint16_t PM3LastAngle = 0;
 uint8_t isPM2FirstEnter = 1;
 uint8_t isPM3FirstEnter = 1;
-fw_PID_Regulator_t PM1PositionPID = fw_PID_INIT(100, 0.0, 200.0, 10000.0, 10000.0, 10000.0, 10000.0);
+fw_PID_Regulator_t PM1PositionPID = fw_PID_INIT(120, 0.0, 200.0, 10000.0, 10000.0, 10000.0, 10000.0);
 fw_PID_Regulator_t PM2PositionPID = fw_PID_INIT(100.0, 0.0, 200.0, 10000.0, 10000.0, 10000.0, 10000.0);
 fw_PID_Regulator_t PM1SpeedPID = fw_PID_INIT(15, 0.0, 40.0, 10000.0, 10000.0, 10000.0, 8000.0);
 fw_PID_Regulator_t PM2SpeedPID = fw_PID_INIT(15, 0.0, 40.0, 10000.0, 10000.0, 10000.0, 8000.0);
@@ -155,7 +155,7 @@ void ControlYaw(void)
 	int16_t yawIntensity = 0;
 	if(IOPool_hasNextRead(GMYAWRxIOPool, 0))
 	{
-		if(s_yawCount == 1)
+		if(s_yawCount == 3)
 		{
 			int16_t yawZeroAngle = 0;
       yawZeroAngle = yaw_zero;
@@ -221,7 +221,7 @@ void ControlPitch(void)
 	int16_t pitchIntensity = 0;
 	if(IOPool_hasNextRead(GMPITCHRxIOPool, 0))
 	{
-		if(s_pitchCount == 1)
+		if(s_pitchCount == 3)
 		{
 		  int16_t pitchZeroAngle = 0;
       pitchZeroAngle = pitch_zero;
@@ -298,7 +298,7 @@ void ControlCMFL(void)
 {		
 	if(IOPool_hasNextRead(CMFLRxIOPool, 0))
 	{
-		if(s_CMFLCount == 1)
+		if(s_CMFLCount == 3)
 		{
 			IOPool_getNextRead(CMFLRxIOPool, 0);
 			Motor820RRxMsg_t *pData = IOPool_pGetReadData(CMFLRxIOPool, 0);
@@ -328,7 +328,7 @@ void ControlCMFR(void)
 {
 	if(IOPool_hasNextRead(CMFRRxIOPool, 0))
 	{
-		if(s_CMFRCount == 1)
+		if(s_CMFRCount == 3)
 		{
 			IOPool_getNextRead(CMFRRxIOPool, 0);
 			Motor820RRxMsg_t *pData = IOPool_pGetReadData(CMFRRxIOPool, 0);
@@ -357,7 +357,7 @@ void ControlCMBL(void)
 {
 	if(IOPool_hasNextRead(CMBLRxIOPool, 0))
 	{
-		if(s_CMBLCount == 1)
+		if(s_CMBLCount == 3)
 		{
 			IOPool_getNextRead(CMBLRxIOPool, 0);
 			Motor820RRxMsg_t *pData = IOPool_pGetReadData(CMBLRxIOPool, 0);
@@ -386,7 +386,7 @@ void ControlCMBR()
 {
 	if(IOPool_hasNextRead(CMBRRxIOPool, 0))
 	{
-		if(s_CMBRCount ==1)
+		if(s_CMBRCount ==3)
 		{
 			IOPool_getNextRead(CMBRRxIOPool, 0);
 			Motor820RRxMsg_t *pData = IOPool_pGetReadData(CMBRRxIOPool, 0);
@@ -416,7 +416,7 @@ void ControlPM1()
 {
 	if(IOPool_hasNextRead(PM1RxIOPool, 0))
 	{
-		if(s_PM1Count == 1)
+		if(s_PM1Count == 3)
 		{
 			IOPool_getNextRead(PM1RxIOPool, 0);
 			Motor820RRxMsg_t *pData = IOPool_pGetReadData(PM1RxIOPool, 0);
@@ -466,7 +466,7 @@ void ControlPM2()
 {
 	if(IOPool_hasNextRead(PM2RxIOPool, 0))
 	{
-		if(s_PM2Count == 1)
+		if(s_PM2Count == 3)
 		{
 			IOPool_getNextRead(PM2RxIOPool, 0);
 			Motor820RRxMsg_t *pData = IOPool_pGetReadData(PM2RxIOPool, 0);

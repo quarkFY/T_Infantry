@@ -33,9 +33,9 @@
 #define GMYAW_RXID 0x20Au
 #define GMPITCH_RXID 0x209u
 //PM为推弹电机
-#define PM1_RXID 0x205u
+//#define PM1_RXID 0x205u
 #define PM2_RXID 0x204u//改到can2
-#define PM3_RXID 0x207u
+#define PM1_RXID 0x207u
 //SM为分弹电机
 //#define SM_RXID 0x204u
 //GYRO为单轴陀螺仪
@@ -46,9 +46,9 @@
 #define AM1_TXID 0x1FFu	//CAN2
 #define GM_TXID 0x2FFu	//CAN1
 #define AM23_TXID 0x200u//CAN2
-#define PM_TXID 0x1FFu	//CAN1
+#define PM_TXID 0x1FFu	//CAN2
 #define PM2_TXID 0x200u //CAN2
-#define PM3_TXID 0x200u	//CAN2
+//#define PM3_TXID 0x200u	//CAN2
 //#define ZGYRO_TXID   0x404u	//CAN2
 
 //RxIOPool
