@@ -400,90 +400,90 @@ void ControlAM3R()
 	//取弹flag置位，当2ms任务检测到置位后，计数器开始计数，根据计数器的值来进行相应的取弹动作
 //}
 
-void armReset()
-{
-	Arm_Horizontal_Position = 500;
-	Arm_Vertical_Position = 250;
-	AM3RAngleTarget = 0;
-	//待完善
-	//思路：
-	//取弹flag清零，回收flag置位，具体动作由2ms定时器任务完成，完成后flag清零
-//	AM1RAngleTarget = 0;
-//	AM2RAngleTarget = 0;
-//	LastAM1RAngleTarget = 0;
-//	LastAM2RAngleTarget = 0;
-//	AM1LAngleTarget = 0;
-//	AM2LAngleTarget = 0;
-//	LastAM1LAngleTarget = 0;
-//	LastAM2LAngleTarget = 0;
+//void armReset()
+//{
+//	Arm_Horizontal_Position = 500;
+//	Arm_Vertical_Position = 250;
 //	AM3RAngleTarget = 0;
-//	LastAM3RAngleTarget = 0;
-//	Arm_Horizontal_Position = 250;
-//	Arm_Vertical_Position = 0;
-	
-}
+//	//待完善
+//	//思路：
+//	//取弹flag清零，回收flag置位，具体动作由2ms定时器任务完成，完成后flag清零
+////	AM1RAngleTarget = 0;
+////	AM2RAngleTarget = 0;
+////	LastAM1RAngleTarget = 0;
+////	LastAM2RAngleTarget = 0;
+////	AM1LAngleTarget = 0;
+////	AM2LAngleTarget = 0;
+////	LastAM1LAngleTarget = 0;
+////	LastAM2LAngleTarget = 0;
+////	AM3RAngleTarget = 0;
+////	LastAM3RAngleTarget = 0;
+////	Arm_Horizontal_Position = 250;
+////	Arm_Vertical_Position = 0;
+//	
+//}
 
-void ARM_INIT()
-{
-	
-	Arm_Horizontal_Position = 500;
-	Arm_Vertical_Position = 250;
-//	AM2RAngleTarget = 10;
-}
+//void ARM_INIT()
+//{
+//	
+//	Arm_Horizontal_Position = 500;
+//	Arm_Vertical_Position = 250;
+////	AM2RAngleTarget = 10;
+//}
 
-void armStretch()
-{
-	Arm_Horizontal_Position -= ArmSpeedRef.forward_back_ref;
-	Arm_Vertical_Position += ArmSpeedRef.up_down_ref;
-	SquareOfRadius = Arm_Horizontal_Position*Arm_Horizontal_Position + Arm_Vertical_Position*Arm_Vertical_Position;
-	if(SquareOfRadius <= 250*250 ||  Arm_Vertical_Position< 0 || SquareOfRadius >= 750*750  || AM1LAngleTarget>=85)
-	{
-		Arm_Horizontal_Position = Last_Arm_Horizontal_Position;
-	  Arm_Vertical_Position = Last_Arm_Vertical_Position;
-	}
-	
-		else
-		{
-			//AM1R_AddUpAngle = asin((SquareOfRadius+LengthOfArm1*LengthOfArm1-LengthOfArm2*LengthOfArm2)/(2*LengthOfArm1*sqrt(SquareOfRadius)))-acos(Arm_Vertical_Position/sqrt(SquareOfRadius))
-			//AM2R_AddUpAngle = asin((SquareOfRadius+LengthOfArm2*LengthOfArm2-LengthOfArm1*LengthOfArm1)/(2*LengthOfArm2*sqrt(SquareOfRadius)))+acos(Arm_Vertical_Position/sqrt(SquareOfRadius))+AM1R_AddUpAngle
-			//AM1RAngleTarget 0-180 ; AM2RAngleTarget 0-180 ;
+//void armStretch()
+//{
+//	Arm_Horizontal_Position -= ArmSpeedRef.forward_back_ref;
+//	Arm_Vertical_Position += ArmSpeedRef.up_down_ref;
+//	SquareOfRadius = Arm_Horizontal_Position*Arm_Horizontal_Position + Arm_Vertical_Position*Arm_Vertical_Position;
+//	if(SquareOfRadius <= 250*250 ||  Arm_Vertical_Position< 0 || SquareOfRadius >= 750*750  || AM1LAngleTarget>=85)
+//	{
+//		Arm_Horizontal_Position = Last_Arm_Horizontal_Position;
+//	  Arm_Vertical_Position = Last_Arm_Vertical_Position;
+//	}
+//	
+//		else
+//		{
+//			//AM1R_AddUpAngle = asin((SquareOfRadius+LengthOfArm1*LengthOfArm1-LengthOfArm2*LengthOfArm2)/(2*LengthOfArm1*sqrt(SquareOfRadius)))-acos(Arm_Vertical_Position/sqrt(SquareOfRadius))
+//			//AM2R_AddUpAngle = asin((SquareOfRadius+LengthOfArm2*LengthOfArm2-LengthOfArm1*LengthOfArm1)/(2*LengthOfArm2*sqrt(SquareOfRadius)))+acos(Arm_Vertical_Position/sqrt(SquareOfRadius))+AM1R_AddUpAngle
+//			//AM1RAngleTarget 0-180 ; AM2RAngleTarget 0-180 ;
 
-			
-			if(Arm_Horizontal_Position > 0 )
-			{
-				AngleOfTarget = 180*atan(Arm_Vertical_Position/Arm_Horizontal_Position)/PI;
-				AM1RAngleTarget = AngleOfTarget - 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
-				AM2RAngleTarget = -(180*acos((312500-SquareOfRadius)/250000)/PI-90);
-				AM1LAngleTarget = -AngleOfTarget + 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
-				AM2LAngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI-90;
-			}
-			else if(Arm_Horizontal_Position == 0)
-			{
-				AngleOfTarget = 90.0;
-				AM1RAngleTarget = AngleOfTarget - 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
-				AM2RAngleTarget = -(180*acos((312500-SquareOfRadius)/250000)/PI-90);
-				AM1LAngleTarget = -AngleOfTarget + 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
-				AM2LAngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI-90;
-			}
-			else
-			{
-				AngleOfTarget = 180*atan(Arm_Vertical_Position/Arm_Horizontal_Position)/PI + 180.0;
-				AM1RAngleTarget = AngleOfTarget - 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
-				AM2RAngleTarget = -(180*acos((312500-SquareOfRadius)/250000)/PI-90);
-				AM1LAngleTarget = -AngleOfTarget + 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
-				AM2LAngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI-90;
-			}
-			
-		}
-		
-		
-			Last_Arm_Horizontal_Position = Arm_Horizontal_Position;
-			Last_Arm_Vertical_Position = Arm_Vertical_Position;
-		
-	    LastAM1LAngleTarget = AM1LAngleTarget;
-      LastAM1RAngleTarget = AM1RAngleTarget;
-      LastAM2LAngleTarget = AM2LAngleTarget;
-      LastAM2RAngleTarget = AM2RAngleTarget;
-      LastAM3RAngleTarget = AM3RAngleTarget;
-}
+//			
+//			if(Arm_Horizontal_Position > 0 )
+//			{
+//				AngleOfTarget = 180*atan(Arm_Vertical_Position/Arm_Horizontal_Position)/PI;
+//				AM1RAngleTarget = AngleOfTarget - 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
+//				AM2RAngleTarget = -(180*acos((312500-SquareOfRadius)/250000)/PI-90);
+//				AM1LAngleTarget = -AngleOfTarget + 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
+//				AM2LAngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI-90;
+//			}
+//			else if(Arm_Horizontal_Position == 0)
+//			{
+//				AngleOfTarget = 90.0;
+//				AM1RAngleTarget = AngleOfTarget - 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
+//				AM2RAngleTarget = -(180*acos((312500-SquareOfRadius)/250000)/PI-90);
+//				AM1LAngleTarget = -AngleOfTarget + 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
+//				AM2LAngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI-90;
+//			}
+//			else
+//			{
+//				AngleOfTarget = 180*atan(Arm_Vertical_Position/Arm_Horizontal_Position)/PI + 180.0;
+//				AM1RAngleTarget = AngleOfTarget - 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
+//				AM2RAngleTarget = -(180*acos((312500-SquareOfRadius)/250000)/PI-90);
+//				AM1LAngleTarget = -AngleOfTarget + 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
+//				AM2LAngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI-90;
+//			}
+//			
+//		}
+//		
+//		
+//			Last_Arm_Horizontal_Position = Arm_Horizontal_Position;
+//			Last_Arm_Vertical_Position = Arm_Vertical_Position;
+//		
+//	    LastAM1LAngleTarget = AM1LAngleTarget;
+//      LastAM1RAngleTarget = AM1RAngleTarget;
+//      LastAM2LAngleTarget = AM2LAngleTarget;
+//      LastAM2RAngleTarget = AM2RAngleTarget;
+//      LastAM3RAngleTarget = AM3RAngleTarget;
+//}
 

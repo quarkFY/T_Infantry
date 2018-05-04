@@ -21,7 +21,7 @@
 #include "rtos_init.h"
 
 #include "drivers_buzzer_low.h"
-#include "drivers_imu_low.h"
+//#include "drivers_imu_low.h"
 
 //#include "utilities_iopool.h"
 #include "drivers_led_low.h"
@@ -44,10 +44,10 @@ osThreadId ledGreenTaskHandle;
 osThreadId ledRedTaskHandle;
 osThreadId buzzerTaskHandle;
 //IMU
-osThreadId printIMUTaskHandle;
+//osThreadId printIMUTaskHandle;
 //UART
 osThreadId RControlTaskHandle;
-osThreadId getCtrlUartTaskHandle;
+//osThreadId getCtrlUartTaskHandle;
 //Motor
 osThreadId Can1ControlTaskHandle;
 osThreadId Can2ControlTaskHandle;
@@ -84,8 +84,8 @@ void rtos_AddThreads()
   ledRedTaskHandle = osThreadCreate(osThread(ledRedTask), NULL);
 	
 //IMU数据获取，角速度(用于云台电机速度反馈)，角度(需四元数解算)
-	osThreadDef(IMUTask, IMUTask, osPriorityHigh, 0, 256);
-  printIMUTaskHandle = osThreadCreate(osThread(IMUTask), NULL);
+//	osThreadDef(IMUTask, IMUTask, osPriorityHigh, 0, 256);
+//  printIMUTaskHandle = osThreadCreate(osThread(IMUTask), NULL);
 
 //遥控器控制任务	
 	osThreadDef(RControlTask, RControlTask, osPriorityHigh , 0, 256);//zy0512
@@ -95,8 +95,8 @@ void rtos_AddThreads()
 //	osThreadDef(ManifoldUartTask, ManifoldUartTask, osPriorityAboveNormal, 0, 128);
 //  getCtrlUartTaskHandle = osThreadCreate(osThread(ManifoldUartTask), NULL);
 
-  osThreadDef(getCtrlUartTask, getCtrlUartTask, osPriorityAboveNormal, 0, 256);
-  getCtrlUartTaskHandle = osThreadCreate(osThread(getCtrlUartTask), NULL);
+//  osThreadDef(getCtrlUartTask, getCtrlUartTask, osPriorityAboveNormal, 0, 256);
+//  getCtrlUartTaskHandle = osThreadCreate(osThread(getCtrlUartTask), NULL);
 	
 	//osThreadDef(Wave_Task, wave_task, osPriorityNormal, 0, 128);
   //WaveTaskHandle = osThreadCreate(osThread(Wave_Task), NULL);

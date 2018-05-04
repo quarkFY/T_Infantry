@@ -99,7 +99,7 @@ uint16_t PM1RotateCount = 0;
 uint8_t PM1RotateFlag = 0;
 
 //陀螺仪角速度（板载）
-extern float gYroXs, gYroYs, gYroZs;
+//extern float gYroXs, gYroYs, gYroZs;
 
 //extern uint8_t g_isGYRO_Rested;//没用到
 //外接单轴陀螺仪角度
@@ -193,7 +193,7 @@ void ControlYaw(void)
 			//NORMALIZE_ANGLE180(yawRealAngle);
 			//限位
 			MINMAX(yawAngleTarget, -180.0f, 180.0f);	
-			yawIntensity = ProcessYawPID(yawAngleTarget, yawRealAngle, -gYroZs);
+			yawIntensity = ProcessYawPID(yawAngleTarget, yawRealAngle, 0);
 			yawIntensityForDebug = yawIntensity;
 			GMYAWLastAngle = GMYAWThisAngle ;
 			
@@ -261,7 +261,7 @@ void ControlPitch(void)
 			//限位
 			//MINMAX(pitchAngleTarget, -10.0f, 30.0f);	
 		  pitchMotorTarget = pitchAngleTarget - yawAngleTarget ; 
-			pitchIntensity = ProcessPitchPID(-pitchMotorTarget,pitchRealAngle,-gYroXs);
+			pitchIntensity = ProcessPitchPID(-pitchMotorTarget,pitchRealAngle,0);
 			GMPITCHLastAngle = GMPITCHThisAngle;
 	
 //		  if (isGMSet == 1)

@@ -26,11 +26,11 @@ extern osSemaphoreId Can2TransmitSemaphoreHandle;
 extern osSemaphoreId Can1RefreshSemaphoreHandle;
 extern osSemaphoreId Can2RefreshSemaphoreHandle;
 
-extern osSemaphoreId imurefreshGimbalSemaphoreHandle;
+//extern osSemaphoreId imurefreshGimbalSemaphoreHandle;
 
 
 //extern osSemaphoreId imuSpiTxRxCpltSemaphoreHandle;
-extern osSemaphoreId refreshMPU6500SemaphoreHandle;
+//extern osSemaphoreId refreshMPU6500SemaphoreHandle;
 
 extern xSemaphoreHandle xSemaphore_mfuart;
 extern xSemaphoreHandle xSemaphore_rcuart;

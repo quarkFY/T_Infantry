@@ -29,9 +29,9 @@ void ControlAM2R(void);
 void ControlAM3R(void);
 
 //void setAMAngle(MotorId id, float angle);
-void getGolf(void);
+//void getGolf(void);
 void armReset(void);
-void armStretch(void);
+//void armStretch(void);
 void ARM_INIT(void);
 
 //void GripLoadProcess(void);

@@ -19,14 +19,14 @@ extern osThreadId ledGreenTaskHandle;
 extern osThreadId ledRedTaskHandle;
 extern osThreadId buzzerTaskHandle;
 //IMU
-extern osThreadId printIMUTaskHandle;
+//extern osThreadId printIMUTaskHandle;
 //UART
-extern osThreadId RControlTaskHandle;;
-extern osThreadId getCtrlUartTaskHandle;
+//extern osThreadId RControlTaskHandle;;
+//extern osThreadId getCtrlUartTaskHandle;
 //Motor
 extern osThreadId GMControlTaskHandle;
 extern osThreadId TimerTaskHandle;
-extern osThreadId PlateTaskHandle;
+//extern osThreadId PlateTaskHandle;
 
 extern osThreadId CMGMCanTransmitTaskHandle;
 extern osThreadId AMCanTransmitTaskHandle;
