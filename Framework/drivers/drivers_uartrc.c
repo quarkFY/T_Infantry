@@ -95,8 +95,8 @@ GMMode_e GMMode = UNLOCK;
 unsigned int zyLeftPostion; //大符用左拨杆位置
  
 static uint32_t RotateCNT = 0;	//长按连发计数
-static uint16_t CNT_1s = 75;	//用于避免四连发模式下两秒内连射8发过于密集的情况
 static uint16_t CNT_250ms = 18;	//用于点射模式下射频限制
+static uint32_t RotateEnableCNT = 0;
 
 //左上拨杆用于调试云台，记得要注释掉
 extern float yaw_zero, pitch_zero;
@@ -291,7 +291,7 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 				
 			}
 
-			else if(sw->switch_value_raw == 2)	//左侧拨杆拨到中间便会开枪
+			else if(sw->switch_value_raw == 2)	//左侧拨杆拨到下边便会开枪
 			{
 				SetShootState(MANUL_SHOOT_ONE);
 				
@@ -328,7 +328,6 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 	 
 void MouseShootControl(Mouse *mouse)
 {
-	++CNT_1s;
 	++CNT_250ms;
 	static int16_t closeDelayCount = 0;   
 	switch(g_friction_wheel_state)
@@ -376,6 +375,7 @@ void MouseShootControl(Mouse *mouse)
 		}break;
 		case FRICTION_WHEEL_ON:
 		{
+			////////////////////////////////////右键长按关摩擦轮
 			if(mouse->press_r == 1)
 			{
 				closeDelayCount++;
@@ -391,45 +391,38 @@ void MouseShootControl(Mouse *mouse)
 				SetFrictionWheelSpeed(800); 
 				frictionRamp.ResetCounter(&frictionRamp);
 				SetShootState(NO_SHOOT);
-			}			
+			}		
+			///////////////////////////////////
 			else if(mouse->last_press_l == 0 && mouse->press_l== 1)  //检测鼠标左键单击动作
 			{
 				SetShootState(MANUL_SHOOT_ONE);
-//				if(getLaunchMode() == SINGLE_MULTI && GetFrictionState()==FRICTION_WHEEL_ON)		//单发模式下，点一下打一发
+				RotateEnableCNT = 1000;
+	//单发模式下，点一下打一发
 				if(GetFrictionState()==FRICTION_WHEEL_ON)
 				{
 					if(CNT_250ms == 8)
 					{
-						shootOneGolfConpensation();
+						shootOneGolfConpensation();					
 					}
 					if(CNT_250ms>17)
 					{
 						CNT_250ms = 0;
 						shootOneGolf();
-						shootOneGolf();
 					}
 				}
-//				else if(getLaunchMode() == CONSTENT_4 && GetFrictionState()==FRICTION_WHEEL_ON)	//四连发模式下，点一下打四发
-//				{
-//					
-//					if(CNT_1s>75)
-//					{
-//						CNT_1s = 0;
-//						shootOneGolf();
-//						shootOneGolf();
-//						shootOneGolf();
-//						shootOneGolf();
-//					}
-//				}
 			}
 			else if(mouse->last_press_l == 0 && mouse->press_l== 0)	//松开鼠标左键的状态
 			{
 				SetShootState(NO_SHOOT);	
-				RotateCNT = 0;			
+				RotateCNT = 0;
+        if(RotateEnableCNT!=0)				
+        {RotateEnableCNT--;}				
 			}			
 //			else if(mouse->last_press_l == 1 && mouse->press_l== 1 && getLaunchMode() == SINGLE_MULTI)//单发模式下长按，便持续连发
 		  else if(mouse->last_press_l == 1 && mouse->press_l== 1 )
 			{
+				SetShootState(MANUL_SHOOT_ONE);
+				RotateEnableCNT = 1000;
 				RotateCNT+=50;
 				if(RotateCNT>=OneShoot)
 				{
@@ -440,7 +433,11 @@ void MouseShootControl(Mouse *mouse)
 				{
 					shootOneGolfConpensation();
 				}
-					
+			}
+			
+			if(shootState==NO_SHOOT && RotateEnableCNT==0)
+			{
+				PMRotate();
 			}
 				
 		} break;				
