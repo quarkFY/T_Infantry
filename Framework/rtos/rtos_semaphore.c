@@ -25,7 +25,7 @@ osSemaphoreId motorCanReceiveSemaphoreHandle;
 osSemaphoreId Can1RefreshSemaphoreHandle;
 osSemaphoreId Can2RefreshSemaphoreHandle;
 
-//osSemaphoreId imurefreshGimbalSemaphoreHandle;
+osSemaphoreId imurefreshGimbalSemaphoreHandle;
 
 //osSemaphoreId imuSpiTxRxCpltSemaphoreHandle;
 osSemaphoreId refreshMPU6500SemaphoreHandle;
@@ -47,8 +47,8 @@ void rtos_AddSemaphores()
 	osSemaphoreDef(Can2RefreshSemaphore);//CAN2接收信号量
 	Can2RefreshSemaphoreHandle = osSemaphoreCreate(osSemaphore(Can2RefreshSemaphore), 1);
 	
-//	osSemaphoreDef(imurefreshGimbalSemaphore);//IMU数据刷新信号量(有Release，无进程Take)
-//	imurefreshGimbalSemaphoreHandle = osSemaphoreCreate(osSemaphore(imurefreshGimbalSemaphore), 1);
+	osSemaphoreDef(imurefreshGimbalSemaphore);//IMU数据刷新信号量(有Release，无进程Take)
+	imurefreshGimbalSemaphoreHandle = osSemaphoreCreate(osSemaphore(imurefreshGimbalSemaphore), 1);
 	
 //	osSemaphoreDef(imuSpiTxRxCpltSemaphore);
 //	imuSpiTxRxCpltSemaphoreHandle = osSemaphoreCreate(osSemaphore(imuSpiTxRxCpltSemaphore), 1);

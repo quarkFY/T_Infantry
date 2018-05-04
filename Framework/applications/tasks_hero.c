@@ -75,10 +75,10 @@ void HeroTask(void const * argument)
 				{
 
 				}break;
-//				case HERO_MANUL_GRIP:
-//				{
+				case HERO_MANUL_GRIP:
+				{
 
-//				}break;
+				}break;
 				case HERO_MANUL_LOAD:
 				{
            HERO_load();

@@ -22,7 +22,7 @@
 #include "drivers_uartupper_low.h"
 #include "drivers_uartrc_low.h"
 #include "tasks_timed.h"
-//#include "drivers_imu_low.h"
+#include "drivers_imu_low.h"
 #include "utilities_tim.h"
 #include "drivers_buzzer_low.h"
 #include "drivers_uartjudge_low.h"
@@ -32,11 +32,11 @@ void rtos_InitInfantry()
 {
 	playMusicWhenInit();//上电音乐
 	
-//	InitMPU6500();
-//	InitIST8310();//初始化IMU
+	InitMPU6500();
+	InitIST8310();//初始化IMU
 	InitJudgeUart();//初始化裁判系统读取串口
 	//InitManifoldUart();//初始化妙算Manifold通信串口，用来做大神符、自动瞄准
-//	ctrlUartInit();
+	ctrlUartInit();
 	InitRemoteControl();//初始化遥控器控制，接收机串口
 	
 	CMControlInit();//底盘PID初始化，copy from官方开源程序

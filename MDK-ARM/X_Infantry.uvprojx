@@ -694,6 +694,16 @@
               <FileType>5</FileType>
               <FilePath>..\Framework\utilities\utilities_tim.h</FilePath>
             </File>
+            <File>
+              <FileName>visualscope.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Framework\utilities\visualscope.c</FilePath>
+            </File>
+            <File>
+              <FileName>visualscope.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Framework\utilities\visualscope.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -715,9 +725,29 @@
               <FilePath>..\Framework\drivers\drivers_led_user.h</FilePath>
             </File>
             <File>
+              <FileName>drivers_imu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Framework\drivers\drivers_imu.c</FilePath>
+            </File>
+            <File>
               <FileName>drivers_canmotor_user.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Framework\drivers\drivers_canmotor_user.h</FilePath>
+            </File>
+            <File>
+              <FileName>drivers_imu_mpu6500_reg.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Framework\drivers\drivers_imu_mpu6500_reg.h</FilePath>
+            </File>
+            <File>
+              <FileName>drivers_imu_IST8310_reg.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Framework\drivers\drivers_imu_IST8310_reg.h</FilePath>
+            </File>
+            <File>
+              <FileName>drivers_imu_low.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Framework\drivers\drivers_imu_low.h</FilePath>
             </File>
             <File>
               <FileName>drivers_buzzer_low.h</FileName>
@@ -825,6 +855,16 @@
               <FilePath>..\Framework\drivers\pid_regulator.c</FilePath>
             </File>
             <File>
+              <FileName>pwm_server_ motor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Framework\drivers\pwm_server_ motor.c</FilePath>
+            </File>
+            <File>
+              <FileName>pwm_server_motor.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Framework\drivers\pwm_server_motor.h</FilePath>
+            </File>
+            <File>
               <FileName>drivers_uartjudge.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Framework\drivers\drivers_uartjudge.c</FilePath>
@@ -835,6 +875,16 @@
               <FilePath>..\Framework\drivers\drivers_uartjudge_low.h</FilePath>
             </File>
             <File>
+              <FileName>drivers_platemotor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Framework\drivers\drivers_platemotor.c</FilePath>
+            </File>
+            <File>
+              <FileName>drivers_platemotor.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Framework\drivers\drivers_platemotor.h</FilePath>
+            </File>
+            <File>
               <FileName>drivers_cmpower.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Framework\drivers\drivers_cmpower.c</FilePath>
@@ -843,6 +893,16 @@
               <FileName>drivers_cmpower.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Framework\drivers\drivers_cmpower.h</FilePath>
+            </File>
+            <File>
+              <FileName>UserProtocal.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Framework\drivers\UserProtocal.c</FilePath>
+            </File>
+            <File>
+              <FileName>UserProtocal.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Framework\drivers\UserProtocal.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -870,6 +930,26 @@
               <FilePath>..\Framework\applications\application_motorcontrol.h</FilePath>
             </File>
             <File>
+              <FileName>tasks_upper.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Framework\applications\tasks_upper.c</FilePath>
+            </File>
+            <File>
+              <FileName>tasks_upper.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Framework\applications\tasks_upper.h</FilePath>
+            </File>
+            <File>
+              <FileName>application_quaternion.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Framework\applications\application_quaternion.c</FilePath>
+            </File>
+            <File>
+              <FileName>application_quaternion.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Framework\applications\application_quaternion.h</FilePath>
+            </File>
+            <File>
               <FileName>tasks_remotecontrol.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Framework\applications\tasks_remotecontrol.c</FilePath>
@@ -888,6 +968,26 @@
               <FileName>tasks_timed.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Framework\applications\tasks_timed.h</FilePath>
+            </File>
+            <File>
+              <FileName>application_waveform.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Framework\applications\application_waveform.c</FilePath>
+            </File>
+            <File>
+              <FileName>application_waveform.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Framework\applications\application_waveform.h</FilePath>
+            </File>
+            <File>
+              <FileName>tasks_platemotor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Framework\applications\tasks_platemotor.c</FilePath>
+            </File>
+            <File>
+              <FileName>tasks_platemotor.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Framework\applications\tasks_platemotor.h</FilePath>
             </File>
             <File>
               <FileName>ReadMe.txt</FileName>

@@ -161,11 +161,11 @@ void Timer_2ms_lTask(void const * argument)
 			PM1RotateFlag = 1;
 		}
 		
-//		ad1=ADC_Value[1];
-//		ad2=ADC_Value[2];
-//		ad3=ADC_Value[3];
-//		ad4=ADC_Value[4];
-//		ad5=ADC_Value[5];
+		ad1=ADC_Value[1];
+		ad2=ADC_Value[2];
+		ad3=ADC_Value[3];
+		ad4=ADC_Value[4];
+		ad5=ADC_Value[5];
 		vTaskDelayUntil( &xLastWakeTime, ( 2 / portTICK_RATE_MS ) );//这里进入阻塞态等待2ms
 	}
 }

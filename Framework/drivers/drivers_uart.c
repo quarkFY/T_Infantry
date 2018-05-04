@@ -27,12 +27,12 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 		//遥控器
 		rcUartRxCpltCallback();
 		
-	}//else if(UartHandle == &huart3){
+	}else if(UartHandle == &huart3){
 		//妙算通信串口
 		//自定义协议
 //		fw_printfln("manifold get!!!");
-//		ctrlUartRxCpltCallback();
-	//}
+		ctrlUartRxCpltCallback();
+	}
 	else if(UartHandle == &JUDGE_UART){
 		//裁判系统读取采用单字节阻塞接收方式
 		//比赛剩余时间
