@@ -108,16 +108,18 @@ void HeroTask(void const * argument)
 void HERO_prepare(void)
 {
 	HERO_step(45,45,0);
-	osDelay(800);
-	HERO_step(70,30,-120);
+	osDelay(600);
+	HERO_step(70,30,-90);
+	osDelay(600);
+	HERO_step(100,10,-180);
 	HERO_Order = HERO_MANUL_FETCH;
 }
 
 void HERO_load(void)
 {
-	HERO_step(70,70,-120);
-	osDelay(1000);
-	HERO_step(70,30,-120);
+	HERO_step(100,145,-40);
+	osDelay(1500);
+	HERO_step(100,10,-180);
 	HERO_Order = HERO_MANUL_FETCH;
 }
 

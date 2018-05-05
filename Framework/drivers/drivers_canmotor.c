@@ -353,8 +353,7 @@ void TransmitCAN1(void)
 extern uint8_t Can2Switch;
 void TransmitCAN2(void)
 {
-	if (Can2Switch == 1)
-	{
+
 		if(IOPool_hasNextRead(AM1TxIOPool, 0))
 		{
 				osSemaphoreWait(Can2TransmitSemaphoreHandle, osWaitForever);
@@ -368,7 +367,8 @@ void TransmitCAN2(void)
 				}
 				taskEXIT_CRITICAL();
 		}
-
+	if (Can2Switch == 1)
+	{
 		if(IOPool_hasNextRead(AM23TxIOPool, 0))
 		{
 				osSemaphoreWait(Can2TransmitSemaphoreHandle, osWaitForever);
