@@ -38,9 +38,9 @@
 
 //PID_INIT(Kp, Ki, Kd, KpMax, KiMax, KdMax, OutputMax)
 //云台
-int yaw_zero = 3800;
+int yaw_zero = 2670;
 int yaw_zero_revise =3800;
-int pitch_zero = 5600;
+int pitch_zero = 5540;
 float yawEncoder = 0;
 float GMYAWThisAngle, GMYAWLastAngle;
 float yawRealAngle = 0.0;
@@ -192,7 +192,7 @@ void ControlYaw(void)
 							
 			//NORMALIZE_ANGLE180(yawRealAngle);
 			//限位
-			MINMAX(yawAngleTarget, -180.0f, 180.0f);	
+			MINMAX(yawAngleTarget, -30.0f, 30.0f);	
 			yawIntensity = ProcessYawPID(yawAngleTarget, yawRealAngle, -gYroZs);
 			yawIntensityForDebug = yawIntensity;
 			GMYAWLastAngle = GMYAWThisAngle ;
@@ -259,7 +259,7 @@ void ControlPitch(void)
 			
 			//NORMALIZE_ANGLE180(pitchRealAngle);
 			//限位
-			//MINMAX(pitchAngleTarget, -10.0f, 30.0f);	
+			MINMAX(pitchAngleTarget, -10.0f, 30.0f);	
 		  pitchMotorTarget = pitchAngleTarget - yawAngleTarget ; 
 			pitchIntensity = ProcessPitchPID(-pitchMotorTarget,pitchRealAngle,-gYroXs);
 			GMPITCHLastAngle = GMPITCHThisAngle;

@@ -222,7 +222,7 @@ void RemoteControlProcess(Remote *rc)
 		//yawAngleTarget   -= (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT; 
 		
 		ChassisSpeedRef.rotate_ref   = (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) *STICK_TO_CHASSIS_SPEED_REF_FACT ;
-  	//yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
+  	yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
 		
 		//机械臂控制，暂时放在这
 //		ArmSpeedRef.forward_back_ref = (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
@@ -484,6 +484,14 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 		if(GetBulletState == NO_GETBULLET)
 		{
 			
+		ChassisSpeedRef.forward_back_ref = (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_CHASSIS_SPEED_REF_FACT;
+		ChassisSpeedRef.left_right_ref   = (rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_CHASSIS_SPEED_REF_FACT; 
+		
+ 		pitchAngleTarget += (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_PITCH_ANGLE_INC_FACT;
+		//yawAngleTarget   -= (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT; 
+		
+		ChassisSpeedRef.rotate_ref   = (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) *STICK_TO_CHASSIS_SPEED_REF_FACT ;
+  	yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
 //				AM1RAngleTarget = 0;
 //				AM1LAngleTarget = 0;
 //				AM2RAngleTarget = 0;
