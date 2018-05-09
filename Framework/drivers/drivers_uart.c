@@ -19,8 +19,11 @@
 #include "drivers_uartjudge_low.h"
 #include "peripheral_define.h"
 #include "utilities_debug.h"
+#include "drivers_uartrc_low.h"
+#include "drivers_uartrc_user.h"
 
 /********************所有串口接收中断****************************/
+extern InputMode_e inputmode;
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 {
 	if(UartHandle == &RC_UART){
@@ -39,6 +42,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 		//血量
 		//底盘电压、电流
 		//能量槽*****重要，超功率掉血
+		if(inputmode != GETBULLET_INPUT)
 		judgeUartRxCpltCallback();
 	}
 }   

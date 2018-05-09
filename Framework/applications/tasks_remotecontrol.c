@@ -221,7 +221,7 @@ void RemoteControlProcess(Remote *rc)
  		pitchAngleTarget += (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_PITCH_ANGLE_INC_FACT;
 		//yawAngleTarget   -= (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT; 
 		
-		ChassisSpeedRef.rotate_ref   = (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) *STICK_TO_CHASSIS_SPEED_REF_FACT ;
+		ChassisSpeedRef.rotate_ref   = (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) *STICK_TO_CHASSIS_SPEED_REF_FACT/2 ;
   	yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
 		
 		//机械臂控制，暂时放在这
