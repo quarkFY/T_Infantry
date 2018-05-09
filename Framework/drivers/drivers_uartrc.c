@@ -210,11 +210,11 @@ void SetInputMode(Remote *rc)
 		inputmode = GETBULLET_INPUT;
 		Can2Switch =1;
 	}	
-	else if( lastRc == 2 && rc->s2==3)
-	{
-		HERO_Order = HERO_MANUL_RECOVER;
-	}
-	lastRc = rc->s2;
+//	else if( lastRc == 2 && rc->s2==3)
+//	{
+//		HERO_Order = HERO_MANUL_RECOVER;
+//	}
+//	lastRc = rc->s2;
 }
 
 
@@ -539,7 +539,7 @@ void RemoteGetBulletControl(RemoteSwitch_t *sw, uint8_t val)
 	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)
 	{
 		SetGetBulletState(NO_GETBULLET);
-//		HERO_Order = HERO_MANUL_RECOVER;
+		HERO_Order = HERO_MANUL_RECOVER;
 		GRIP_SOV_OFF();
 		//底盘速度恢复为NORMAL
 		forward_back_speed =  NORMAL_FORWARD_BACK_SPEED;

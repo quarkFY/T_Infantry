@@ -67,23 +67,23 @@ void setMotor(MotorId motorId, int16_t Intensity){
 //			if(CMReady & 0x8){CMReady = 0xF;}else{CMReady |= 0x8;}
 //			CMBRIntensity = Intensity;break;
 		case CMFL:
-			if(CMReady & 0x1){}else{CMReady |= 0x1;}
+			if(CMReady & 0x1){CMReady = 0xF;}else{CMReady |= 0x1;}
 			CMFLIntensity = Intensity;break;
 		case CMFR:
-			if(CMReady & 0x2){}else{CMReady |= 0x2;}
+			if(CMReady & 0x2){CMReady = 0xF;}else{CMReady |= 0x2;}
 			CMFRIntensity = Intensity;break;
 		case CMBL:
-			if(CMReady & 0x4){}else{CMReady |= 0x4;}
+			if(CMReady & 0x4){CMReady = 0xF;}else{CMReady |= 0x4;}
 			CMBLIntensity = Intensity;break;
 		case CMBR:
-			if(CMReady & 0x8){}else{CMReady |= 0x8;}
+			if(CMReady & 0x8){CMReady = 0xF;}else{CMReady |= 0x8;}
 			CMBRIntensity = Intensity;break;		
 		
 		case GMYAW:
-			if(GMReady & 0x1){}else{GMReady |= 0x1;}
+			if(GMReady & 0x1){GMReady = 0x3;}else{GMReady |= 0x1;}
 			GMYAWIntensity = Intensity;break;
 		case GMPITCH:
-			if(GMReady & 0x2){}else{GMReady |= 0x2;}
+			if(GMReady & 0x2){GMReady = 0x3;}else{GMReady |= 0x2;}
 			GMPITCHIntensity = Intensity;break;
 		
 //		case PM1:

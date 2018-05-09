@@ -417,8 +417,8 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 		if(GMMode == LOCK)
 		{
 			//GMReset();
-			ChassisSpeedRef.rotate_ref += mouse->x/15.0*3000;
-			yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
+//			ChassisSpeedRef.rotate_ref += mouse->x/15.0*3000;
+//			yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
 			
 //			GMReset();
 //			ChassisSpeedRef.rotate_ref += mouse->x/15.0*3000;

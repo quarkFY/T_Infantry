@@ -119,7 +119,7 @@ void HERO_load(void)
 {
 	HERO_step(100,145,-40);
 	osDelay(1500);
-	HERO_step(100,10,-180);
+	HERO_step(100,-10,-360);
 	HERO_Order = HERO_MANUL_FETCH;
 }
 
