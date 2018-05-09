@@ -38,9 +38,9 @@
 
 //PID_INIT(Kp, Ki, Kd, KpMax, KiMax, KdMax, OutputMax)
 //云台
-int yaw_zero = 4200;
-int yaw_zero_revise =3800;
-int pitch_zero = 5800;
+int yaw_zero = 4100;
+int yaw_zero_revise =4100;
+int pitch_zero = 4100;
 float yawEncoder = 0;
 float GMYAWThisAngle, GMYAWLastAngle;
 float yawRealAngle = 0.0;
@@ -266,7 +266,7 @@ void ControlPitch(void)
 	
 //		  if (isGMSet == 1)
 //			{
-				setMotor(GMPITCH, -pitchIntensity);
+					setMotor(GMPITCH, -pitchIntensity);
 //			}
 
 			s_pitchCount = 0;
@@ -668,5 +668,4 @@ void GMReset(void)
 {
 	yaw_zero = yaw_zero_revise;
 }
-
 

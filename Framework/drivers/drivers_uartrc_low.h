@@ -34,14 +34,14 @@ void InitRemoteControl(void);
 #define STICK_TO_PITCH_ANGLE_INC_FACT       0.005f
 #define STICK_TO_YAW_ANGLE_INC_FACT         0.005f
 
-#define FRICTION_WHEEL_MAX_DUTY             1200
+#define FRICTION_WHEEL_MAX_DUTY             1000
 
 //mouse control parameters
 //#define MOUSE_TO_PITCH_ANGLE_INC_FACT 		0.025f * 3
 //#define MOUSE_TO_YAW_ANGLE_INC_FACT 		0.025f * 3
 
-#define NORMAL_FORWARD_BACK_SPEED 			900
-#define NORMAL_LEFT_RIGHT_SPEED   			800
+#define NORMAL_FORWARD_BACK_SPEED 			1200
+#define NORMAL_LEFT_RIGHT_SPEED   			1200
 #define NORMAL_ROTATE_SPEED   			800
 #define HIGH_FORWARD_BACK_SPEED 			1000
 #define HIGH_LEFT_RIGHT_SPEED   			800
