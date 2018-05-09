@@ -421,8 +421,8 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 //			yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
 			
 //			GMReset();
-//			ChassisSpeedRef.rotate_ref += mouse->x/15.0*3000;
-//			yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
+			ChassisSpeedRef.rotate_ref += mouse->x/15.0*3000;
+			yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
 		}
 		if(GMMode == UNLOCK) 
 		{
@@ -529,37 +529,6 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 					CMF =2;
 					CMB =2;
 				}
-				
-				//抬升底盘前轮	
-//				if(key->v == 0x0200)//f
-//				{
-//					FrontWheel_Mode = CHASSIS_HIGH;
-//				}
-//				//回复正常底盘
-//				if(key->v == (0x0200|0x10))//f+shift
-//				{
-//					FrontWheel_Mode = CHASSIS_NORMAL;
-//				}
-//				//放低底盘前轮
-//				if(key->v == (0x0200|0x20))//f+ctrl
-//				{
-//					FrontWheel_Mode = CHASSIS_LOW;
-//				}
-//				//抬升底盘后轮
-//				if(key->v == 0x8000)//b
-//				{
-//					BehindWheel_Mode = CHASSIS_HIGH;
-//				}
-//				//回复正常底盘
-//				if(key->v == (0x8000|0x10))//b+shift
-//				{
-//					BehindWheel_Mode = CHASSIS_NORMAL;
-//				}
-//				//放低底盘后轮
-//				if(key->v == (0x8000|0x20))//b+ctrl
-//				{
-//					BehindWheel_Mode = CHASSIS_LOW;
-//				}
 				lastKey = key ->v;
 				
 		}

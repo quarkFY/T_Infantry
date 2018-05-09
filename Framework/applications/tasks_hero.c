@@ -111,15 +111,15 @@ void HERO_prepare(void)
 	osDelay(600);
 	HERO_step(70,30,-90);
 	osDelay(600);
-	HERO_step(100,10,-180);
+	HERO_step(100,20,-180);
 	HERO_Order = HERO_MANUL_FETCH;
 }
 
 void HERO_load(void)
 {
-	HERO_step(100,145,-40);
+	HERO_step(100,145,-225);
 	osDelay(1500);
-	HERO_step(100,-10,-360);
+	HERO_step(100,-10,-180);
 	HERO_Order = HERO_MANUL_FETCH;
 }
 
