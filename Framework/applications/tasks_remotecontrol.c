@@ -240,7 +240,7 @@ uint16_t left_right_speed = 0;
 uint16_t rotate_speed=0;
 ///////////////////////////键鼠模式//////////////////////////
 //调整鼠标灵敏度
-#define MOUSE_TO_PITCH_ANGLE_INC_FACT 		0.025f * 2
+#define MOUSE_TO_PITCH_ANGLE_INC_FACT 		0.025f * 3
 #define MOUSE_TO_YAW_ANGLE_INC_FACT 		0.025f * 2
 
 int keyDebug;

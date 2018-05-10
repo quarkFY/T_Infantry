@@ -34,7 +34,7 @@ void InitRemoteControl(void);
 #define STICK_TO_PITCH_ANGLE_INC_FACT       0.005f
 #define STICK_TO_YAW_ANGLE_INC_FACT         0.005f
 
-#define FRICTION_WHEEL_MAX_DUTY             1000
+#define FRICTION_WHEEL_MAX_DUTY             970
 
 //mouse control parameters
 //#define MOUSE_TO_PITCH_ANGLE_INC_FACT 		0.025f * 3

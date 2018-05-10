@@ -120,9 +120,13 @@ void HERO_prepare(void)
 
 void HERO_load(void)
 {
-	HERO_step(100,145,-225);
-	osDelay(1500);
-	HERO_step(100,20,-180);
+	armUpleft();
+	osDelay(100);
+	armUpleft();
+	osDelay(200);
+//	HERO_step(100,145,-225);
+//	osDelay(1500);
+//	HERO_step(100,20,-180);
 	HERO_Order = HERO_MANUL_FETCH;
 }
 
