@@ -554,16 +554,16 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 //					HERO_Order=HERO_MANUL_READY;
 //				}
 //				//抓取
-//				else if(key->v & 0x1000)//x
-//				{
-//					HERO_Order=HERO_MANUL_GRIP;
-//				}
+				 if(key->v & 0x1000)//x
+				{
+					HERO_Order=HERO_MANUL_READY;
+				}
 //				if(key->v & (0x1000|0x10))//x+shift
 //				{
 //					HERO_Order=HERO_MANUL_READY;
 //				}
 				//装弹
-			  if(key->v & 0x2000)//c
+			  else if(key->v & 0x2000)//c
 				{
 					HERO_Order=HERO_MANUL_LOAD;
 				}

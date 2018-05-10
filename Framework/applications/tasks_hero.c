@@ -73,7 +73,7 @@ void HeroTask(void const * argument)
 				}break;
 				case HERO_MANUL_READY:
 				{
-
+            HERO_ready();
 				}break;
 				case HERO_MANUL_GRIP:
 				{
@@ -118,7 +118,7 @@ void HERO_prepare(void)
 	//70£¬0£¬-180
 }
 
-void HERO_load(void)
+void HERO_ready(void)
 {
 	armUpleft();
 	osDelay(100);
@@ -130,6 +130,13 @@ void HERO_load(void)
 	HERO_Order = HERO_MANUL_FETCH;
 }
 
+void HERO_load(void)
+{
+  HERO_step(80,135,-205);
+	osDelay(1500);
+	HERO_step(65,-5,-180);
+	HERO_Order = HERO_MANUL_FETCH;
+}
 
 void HERO_recover()
 {
