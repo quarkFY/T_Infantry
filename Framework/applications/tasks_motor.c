@@ -38,9 +38,9 @@
 
 //PID_INIT(Kp, Ki, Kd, KpMax, KiMax, KdMax, OutputMax)
 //云台
-int yaw_zero = 3500;
+int yaw_zero = 3900;
 int yaw_zero_revise =4100;
-int pitch_zero = 6300;
+int pitch_zero = 5300;
 float yawEncoder = 0;
 float GMYAWThisAngle, GMYAWLastAngle;
 float yawRealAngle = 0.0;
@@ -259,7 +259,7 @@ void ControlPitch(void)
 			
 			//NORMALIZE_ANGLE180(pitchRealAngle);
 			//限位
-			MINMAX(pitchAngleTarget, -10.0f, 30.0f);	
+			MINMAX(pitchAngleTarget, -10.0f, 40.0f);	
 		  pitchMotorTarget = pitchAngleTarget - yawAngleTarget ; 
 			pitchIntensity = ProcessPitchPID(-pitchMotorTarget,pitchRealAngle,-gYroXs);
 			GMPITCHLastAngle = GMPITCHThisAngle;
@@ -564,7 +564,7 @@ extern uint8_t realLevel;
 extern float realHeat42;
 void heatJudge()
 {
-	heatUpperLimit = 80*(pow(2,realLevel -1));
+	heatUpperLimit = 80*(pow(2,realLevel - 1));
 	if ((heatUpperLimit - realHeat42) >= 40)
 	{
 		heatFlag = 1;
@@ -582,7 +582,7 @@ void shootOneGolf()
 	//PM1是下边电机
 	if(DirOfRotate)
 	{
-	 if((PM1RealAngle-PM1AngleTarget)>300 || (PM2AngleTarget-PM2RealAngle)>300)
+	 if((PM1RealAngle-PM1AngleTarget)>650 || (PM2AngleTarget-PM2RealAngle)>600)
 		{
 			DirOfRotate = !DirOfRotate;
 			PM1AngleTarget = PM1RealAngle;
@@ -592,16 +592,16 @@ void shootOneGolf()
 		{
 			if (heatFlag == 1)
 			{
-				PM1AngleTarget = PM1AngleTarget - 160;
+				PM1AngleTarget = PM1AngleTarget - 175;
 				PM2AngleTarget = PM2AngleTarget + 160;
 			}
 		}
 	}
 	else
 	{
-		PM2AngleTarget = PM2AngleTarget - 360;
+		 PM2AngleTarget = PM2AngleTarget - 360;
 //	  PM2AngleTarget = PM2AngleTarget - 160;
-		if((PM1AngleTarget-PM1RealAngle)<60)
+		if((PM1AngleTarget-PM1RealAngle)<90)
 		{
 	    DirOfRotate = !DirOfRotate;
 			PM1AngleTarget = PM1RealAngle;
@@ -613,7 +613,7 @@ void shootOneGolf()
 
 void shootOneGolfConpensation()
 {
-	if((PM1RealAngle-PM1AngleTarget)>300 || (PM2AngleTarget-PM2RealAngle)>300)
+	if((PM1RealAngle-PM1AngleTarget)>400 || (PM2AngleTarget-PM2RealAngle)>400)
 		{
 			
 		}

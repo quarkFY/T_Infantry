@@ -113,16 +113,16 @@ void HERO_prepare(void)
 	osDelay(300);
 	HERO_step(50,0,-130);	
 	osDelay(600);
-	HERO_step(65,-5,-180);
+	HERO_step(65,20,-200);
 	HERO_Order = HERO_MANUL_FETCH;
 	//70£¬0£¬-180
 }
 
 void HERO_ready(void)
 {
-	armUpleft();
+	armUpleft(90,-70);
 	osDelay(100);
-	armUpleft();
+	armUpleft(90,-80);
 	osDelay(200);
 //	HERO_step(100,145,-225);
 //	osDelay(1500);
@@ -132,12 +132,27 @@ void HERO_ready(void)
 
 void HERO_load(void)
 {
-  HERO_step(80,135,-205);
-	osDelay(1500);
-	HERO_step(65,-5,-180);
+//  HERO_step(80,135,-205);
+//	osDelay(1500);
+//	HERO_step(65,-5,-180);
+	HERO_step(90,70,-135);
+	osDelay(500);
+	HERO_step(50,0,-165);
+	osDelay(500);
+	HERO_step(50,70,-300);
+	osDelay(2000);
+	HERO_step(50,100,-270);
+	osDelay(500);	
 	HERO_Order = HERO_MANUL_FETCH;
 }
+//90£¬70£¬-135
+//50,0,-165
+//50£¬0£¬-300
 
+//50,97,-300
+
+//72,43,-148
+//
 void HERO_recover()
 {
 	HERO_step(45,45,0);

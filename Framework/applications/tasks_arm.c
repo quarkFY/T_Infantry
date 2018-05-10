@@ -432,17 +432,18 @@ void ARM_INIT()
 }
 
 float AM1,AM2,AngleTarget,debugAM;
-float upleftedHeight = 0;
-void armUpleft()
+float upleftedHeight = 0,x =0;
+void armUpleft(float height, float translation)
 {
-	upleftedHeight = 50; // 上抬 5 cm
-	Arm_Horizontal_Position = -cos(AM1RRealAngle*PI/180)* 500 + cos((AM2LRealAngle+82-AM1RRealAngle)*PI/180)*250;//AM2RealAngle
-	Arm_Vertical_Position = sin(AM1RRealAngle*PI/180)* 500 + sin((AM2LRealAngle+82-AM1RRealAngle)*PI/180)*250 + upleftedHeight;
+	upleftedHeight = 90; // 上抬 5 cm
+	x = 70;
+	Arm_Horizontal_Position = -cos(AM1RRealAngle*PI/180)* 500 + cos((AM2LRealAngle+82-AM1RRealAngle)*PI/180)*250 + translation;//AM2RealAngle
+	Arm_Vertical_Position = sin(AM1RRealAngle*PI/180)* 500 + sin((AM2LRealAngle+82-AM1RRealAngle)*PI/180)*250 + height;
 	SquareOfRadius = Arm_Horizontal_Position*Arm_Horizontal_Position + Arm_Vertical_Position*Arm_Vertical_Position;
 	if(SquareOfRadius <= 250*250 ||  Arm_Vertical_Position< 0 || SquareOfRadius >= 750*750  || AM1LAngleTarget>=85)
 	{
 //		Arm_Horizontal_Position = Last_Arm_Horizontal_Position;
-	  Arm_Vertical_Position -= upleftedHeight;
+	  Arm_Vertical_Position -= height;
 	}
 	else
 	{
@@ -474,7 +475,7 @@ void armUpleft()
 	//			debugAM = 180*acos((SquareOfRadius +187500)/(1000 * sqrt(SquareOfRadius)))/PI;
 		}
 
-	AM3RAngleTarget =-( AM1RAngleTarget - AM2LAngleTarget + 98);
+	AM3RAngleTarget =-( AM1RAngleTarget - AM2LAngleTarget + 115);
 }
 }
 

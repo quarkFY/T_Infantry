@@ -31,7 +31,7 @@ void ControlAM3R(void);
 //void setAMAngle(MotorId id, float angle);
 void getGolf(void);
 void armReset(void);
-void armUpleft(void);
+void armUpleft(float height, float translation);
 void armStretch(void);
 void ARM_INIT(void);
 
