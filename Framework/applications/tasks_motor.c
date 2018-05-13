@@ -559,9 +559,10 @@ void ControlPM3()
 }
 
 uint8_t heatFlag = 0;
+
 float heatUpperLimit = 80;
 extern uint8_t realLevel;
-extern float realHeat42;
+extern float realHeat42,lastRealHeat42;
 void heatJudge()
 {
 	heatUpperLimit = 80*(pow(2,realLevel - 1));
@@ -574,7 +575,8 @@ void heatJudge()
 		heatFlag = 0;
 	}
 }
-	
+
+extern uint8_t isShootDone;
 uint8_t DirOfRotate = 1;
 void shootOneGolf()
 {
@@ -592,8 +594,16 @@ void shootOneGolf()
 		{
 			if (heatFlag == 1)
 			{
-				PM1AngleTarget = PM1AngleTarget - 175;
-				PM2AngleTarget = PM2AngleTarget + 160;
+				for(int i=0;i<175;i++)
+				{
+					if(!isShootDone)
+					{
+				    PM1AngleTarget --;
+				    PM2AngleTarget ++;
+					}
+					
+				}
+				isShootDone = 0;
 			}
 		}
 	}

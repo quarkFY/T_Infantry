@@ -244,6 +244,8 @@ float shoot2Freq,shoot2Speed;
 float realPower;
 float realPowerBuffer;
 float realHeat17,realHeat42;
+float lastRealHeat42;
+uint8_t isShootDone = 0;
 uint8_t realLevel;
 uint16_t maxHP;
 uint16_t remainHP;
@@ -316,7 +318,9 @@ void Judge_Refresh_Power()
 	for(int i = 0; i<2; i++){
 		bs3[i] = (unsigned char)c3[i];
 	}
+	lastRealHeat42 = realHeat42;
 	realHeat42 = PowerHeatData.shooterHeat1;
+	if(realHeat42 - lastRealHeat42  > 20) isShootDone = 1;
 	
 	JUDGE_Received = 1;
 }

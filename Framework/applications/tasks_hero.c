@@ -193,6 +193,7 @@ void HERO_recover()
 //给值时，AM1R,AM2L为正，AM3R为负
 void HERO_step(float angle1,float angle2,float angle3)
 {
+	
 	float step_length1,step_length2,step_length3;
 	uint16_t step = 20;
 	step_length1 = (angle1 - AM1RRealAngle)/step;
@@ -220,34 +221,7 @@ void HERO_step(float angle1,float angle2,float angle3)
 			
 }
 
-void HERO_step_slow(float angle1,float angle2,float angle3)
-{
-	float step_length1,step_length2,step_length3;
-	uint16_t step = 40;
-	step_length1 = (angle1 - AM1RRealAngle)/step;
-	step_length2 = (angle2 - AM2LRealAngle)/step;
-	step_length3 = (angle3 - AM3RRealAngle)/step;
-  for(uint32_t i=0;i<step;i++)
-				{
-					AM1RAngleTarget += step_length1;
-					AM1LAngleTarget -= step_length1;
-					AM2LAngleTarget += step_length2;
-					AM2RAngleTarget -= step_length2;
-					AM3RAngleTarget += step_length3;
-			//		if(HERO_Order==HERO_STOP)
-			//		{	
-			//			fw_printfln("stop called when strech!");
-			//			return 0;
-			//		}
-					osDelay(50);
-				}
-				AM1RAngleTarget = angle1;
-				AM1LAngleTarget = -angle1;
-				AM2LAngleTarget = angle2;
-				AM2RAngleTarget = -angle2;
-				AM3RAngleTarget = angle3;
-			
-}
+
 
 
 //
