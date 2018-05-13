@@ -554,7 +554,7 @@ void RemoteGetBulletControl(RemoteSwitch_t *sw, uint8_t val)
 	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_2TO3)
 	{
 		SetGetBulletState(MANUAL_GETBULLET);
-		GRIP_SOV_OFF();
+		//GRIP_SOV_OFF();
 	}
 	else if(sw->switch_value_raw == 3)
 	{

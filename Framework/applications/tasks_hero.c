@@ -120,9 +120,13 @@ void HERO_prepare(void)
 
 void HERO_ready(void)
 {
-	armUpleft(90,-70);
+//	armUpleft(90,-70);
+//	osDelay(100);
+//	armUpleft(90,-80);
+//	osDelay(200);
+	armUpleft(45,-35);
 	osDelay(100);
-	armUpleft(90,-80);
+	armUpleft(45,-40);
 	osDelay(200);
 //	HERO_step(100,145,-225);
 //	osDelay(1500);
@@ -130,18 +134,40 @@ void HERO_ready(void)
 	HERO_Order = HERO_MANUL_FETCH;
 }
 
+void HERO_discard(void)
+{
+	HERO_step(50,0,-270);
+	osDelay(1000);
+	HERO_step(85,0,-270);
+	osDelay(1000);
+	HERO_step(65,20,-200);
+	osDelay(500);	
+	HERO_Order = HERO_MANUL_FETCH;
+}
+//50 0 -270 
+//85 0 -270
 void HERO_load(void)
 {
 //  HERO_step(80,135,-205);
 //	osDelay(1500);
 //	HERO_step(65,-5,-180);
-	HERO_step(90,70,-135);
+	HERO_step(90,75,-125);
 	osDelay(500);
 	HERO_step(50,0,-165);
 	osDelay(500);
 	HERO_step(50,70,-300);
 	osDelay(2000);
 	HERO_step(50,100,-270);
+	osDelay(500);
+	GRIP_SOV_OFF();
+	osDelay(1000);	
+	
+	//discard
+	HERO_step(50,0,-270);
+	osDelay(800);
+	HERO_step(85,0,-270);
+	osDelay(800);
+	HERO_step(65,20,-200);
 	osDelay(500);	
 	HERO_Order = HERO_MANUL_FETCH;
 }
@@ -160,6 +186,9 @@ void HERO_recover()
 	HERO_step(0,0,0);
 	HERO_Order = HERO_STANDBY;
 }
+
+//50 0 -270 
+//85 0 -270
 
 //给值时，AM1R,AM2L为正，AM3R为负
 void HERO_step(float angle1,float angle2,float angle3)

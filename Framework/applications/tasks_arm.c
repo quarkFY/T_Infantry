@@ -440,7 +440,7 @@ void armUpleft(float height, float translation)
 	Arm_Horizontal_Position = -cos(AM1RRealAngle*PI/180)* 500 + cos((AM2LRealAngle+82-AM1RRealAngle)*PI/180)*250 + translation;//AM2RealAngle
 	Arm_Vertical_Position = sin(AM1RRealAngle*PI/180)* 500 + sin((AM2LRealAngle+82-AM1RRealAngle)*PI/180)*250 + height;
 	SquareOfRadius = Arm_Horizontal_Position*Arm_Horizontal_Position + Arm_Vertical_Position*Arm_Vertical_Position;
-	if(SquareOfRadius <= 250*250 ||  Arm_Vertical_Position< 0 || SquareOfRadius >= 750*750  || AM1LAngleTarget>=85)
+	if(SquareOfRadius <= 250*250 ||  Arm_Vertical_Position< 0 || SquareOfRadius >= 750*750  )
 	{
 //		Arm_Horizontal_Position = Last_Arm_Horizontal_Position;
 	  Arm_Vertical_Position -= height;

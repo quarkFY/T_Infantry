@@ -582,7 +582,7 @@ void shootOneGolf()
 	//PM1是下边电机
 	if(DirOfRotate)
 	{
-	 if((PM1RealAngle-PM1AngleTarget)>650 || (PM2AngleTarget-PM2RealAngle)>600)
+	 if((PM1RealAngle-PM1AngleTarget)>300 || (PM2AngleTarget-PM2RealAngle)>300)
 		{
 			DirOfRotate = !DirOfRotate;
 			PM1AngleTarget = PM1RealAngle;

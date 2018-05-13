@@ -9,6 +9,7 @@ void HERO_recover(void);
 void HERO_step(float angle1,float angle2,float angle3);
 void HERO_step_slow(float angle1,float angle2,float angle3);
 void HERO_load(void);
+void HERO_discard(void);
 void HERO_ready(void);
 void RaiseControlProcess(void);
 uint8_t gapOK(float AngleTarget,float RealAngle);
