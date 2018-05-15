@@ -249,7 +249,7 @@ uint16_t maxHP;
 uint16_t remainHP;
 void Judge_Refresh_ShootData()
 {
-	printf("verify OK\r\n");
+//	printf("verify OK\r\n");
 //	if(cmdID==0X0004)
 //	{
 //		PowerHeatData.chassisVolt = (0x00000000 | buffer[7]) | (buffer[8]<<8) | (buffer[9]<<16) | (buffer[10]<<24);
@@ -283,7 +283,7 @@ void Judge_Refresh_ShootData()
 
 void Judge_Refresh_Power()
 {
-	printf("verify OK\r\n");
+	//printf("verify OK\r\n");
 //	if(cmdID==0X0004)
 //	{
 //		PowerHeatData.chassisVolt = (0x00000000 | buffer[7]) | (buffer[8]<<8) | (buffer[9]<<16) | (buffer[10]<<24);
