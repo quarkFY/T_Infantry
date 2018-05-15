@@ -401,6 +401,10 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 /////////////////////////取弹模式/////////////////////////////
 uint8_t CMF = 0 , CMB =0;
 uint16_t lastKey;
+uint8_t checkinMode = 0;
+float lastAM1, lastAM2, lastAM3;
+float ArmHorizontalPosition, ArmVerticalPosition;
+float rcch;
 void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 {
 	if(GetWorkState() == NORMAL_STATE)
@@ -538,11 +542,41 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 		}
 		else if(GetBulletState == MANUAL_GETBULLET)
 		{
+//			AM1RAngleTarget +=(rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
+//			AM1LAngleTarget =-AM1RAngleTarget;
+//			AM2RAngleTarget  += (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
+//			AM2LAngleTarget =-AM2RAngleTarget;
+//			AM3RAngleTarget -=  (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
+			checkinMonitor(&(RC_CtrlData.rc));
+			lastAM1 = AM1RAngleTarget;
+			lastAM2 = AM2RAngleTarget;
+			lastAM3 = AM3RAngleTarget;
+			
 			AM1RAngleTarget +=(rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
 			AM1LAngleTarget =-AM1RAngleTarget;
 			AM2RAngleTarget  += (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
 			AM2LAngleTarget =-AM2RAngleTarget;
+			if(checkinMode == 0)
+			{
 			AM3RAngleTarget -=  (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
+			}
+			
+			if(checkinMode == 1)
+			{
+				ArmHorizontalPosition = -cos(AM1RAngleTarget*3.1415/180)* 500 + cos((AM2LAngleTarget+82-AM1RAngleTarget)*3.1415/180)*250 ;//AM2RealAngle
+				ArmVerticalPosition = sin(AM1RAngleTarget*3.1415/180)* 500 + sin((AM2LAngleTarget+82-AM1RAngleTarget)*3.1415/180)*250 ;
+				
+				AM3RAngleTarget =-( AM1RAngleTarget - AM2LAngleTarget + 90);
+				
+				if(ArmHorizontalPosition >  250 || ArmVerticalPosition > 690)
+				{
+					AM1RAngleTarget = lastAM1;
+					AM1LAngleTarget =-AM1RAngleTarget;
+					AM2RAngleTarget = lastAM2;
+					AM2LAngleTarget =-AM2RAngleTarget;
+					AM3RAngleTarget = lastAM3;
+				}
+			}
 			
 //取弹模式下，右侧摇杆控制取弹机械臂运动
 //				armStretch();

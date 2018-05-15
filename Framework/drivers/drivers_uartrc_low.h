@@ -177,6 +177,7 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val);
 void MouseShootControl(Mouse *mouse);
 void SetInputMode(Remote *rc);
 void SetFrictionWheelSpeed(uint16_t x);
+void checkinMonitor(Remote *rc);
 
 void zySetLeftMode(Remote *rc);
 unsigned int zyGetLeftPostion(void);

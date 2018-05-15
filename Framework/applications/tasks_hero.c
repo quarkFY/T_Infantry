@@ -95,6 +95,10 @@ void HeroTask(void const * argument)
 				{
 					RaiseControlProcess();
 				}break;
+				case HERO_CHECK_IN:
+				{
+					HERO_checkin();
+				}
 				default:
 				  fw_Error_Handler();
 					
@@ -113,7 +117,7 @@ void HERO_prepare(void)
 	osDelay(300);
 	HERO_step(50,0,-130);	
 	osDelay(600);
-	HERO_step(65,20,-200);
+	HERO_step(65,20,-185);
 	HERO_Order = HERO_MANUL_FETCH;
 	//70£¬0£¬-180
 }
@@ -146,29 +150,37 @@ void HERO_discard(void)
 }
 //50 0 -270 
 //85 0 -270
+
+void HERO_checkin(void)
+{
+
+	HERO_step(65,0,-200);
+	HERO_Order = HERO_MANUL_FETCH;
+}
+
 void HERO_load(void)
 {
 //  HERO_step(80,135,-205);
 //	osDelay(1500);
 //	HERO_step(65,-5,-180);
 	HERO_step(90,75,-125);
-	osDelay(500);
+	osDelay(80);
 	HERO_step(50,0,-165);
-	osDelay(500);
+	osDelay(80);
 	HERO_step(50,70,-300);
-	osDelay(2000);
+	osDelay(1500);
 	HERO_step(50,100,-270);
-	osDelay(500);
+	osDelay(50);
 	GRIP_SOV_OFF();
-	osDelay(1000);	
+	osDelay(800);	
 	
 	//discard
 	HERO_step(50,0,-270);
-	osDelay(800);
+	osDelay(200);
 	HERO_step(85,0,-270);
-	osDelay(800);
+	osDelay(80);
 	HERO_step(65,20,-200);
-	osDelay(500);	
+	osDelay(80);	
 	HERO_Order = HERO_MANUL_FETCH;
 }
 //90£¬70£¬-135

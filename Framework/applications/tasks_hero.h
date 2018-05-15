@@ -11,6 +11,7 @@ void HERO_step_slow(float angle1,float angle2,float angle3);
 void HERO_load(void);
 void HERO_discard(void);
 void HERO_ready(void);
+void HERO_checkin(void);
 void RaiseControlProcess(void);
 uint8_t gapOK(float AngleTarget,float RealAngle);
 //void HERO_Adjustdistance();
@@ -28,6 +29,7 @@ typedef enum
 	//空命令,除底盘云台外不存在其他功能
 	HERO_STANDBY = 6,
 	HERO_MANUL_RECOVER = 7,
+	HERO_CHECK_IN =8,
 	
 	
 }HERO_Order_t;

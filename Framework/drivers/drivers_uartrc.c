@@ -456,7 +456,35 @@ void MouseShootControl(Mouse *mouse)
 	mouse->last_press_l = mouse->press_l;
 }
 
+extern uint8_t checkinMode;
+uint8_t checkinCNTL = 0, checkinCNTR = 0;
+void checkinMonitor(Remote *rc)
+{
 
+	if ((rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) > 500 )
+	{
+		checkinCNTL++;
+	}
+	else if ((rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) < -500 )
+	{
+		checkinCNTR++;
+	}
+	else
+	{
+		checkinCNTL = 0;
+		checkinCNTR = 0;
+	}
+	if(checkinCNTR>100)   
+	{
+		checkinMode = 1;
+		HERO_Order = HERO_CHECK_IN;
+	}
+	if(checkinCNTL>100)   
+	{
+		checkinMode = 0;
+		//HERO_Order = HERO_MANUL_FETCH;
+	}
+}	
 
 
 Shoot_State_e GetShootState()
@@ -554,7 +582,7 @@ void RemoteGetBulletControl(RemoteSwitch_t *sw, uint8_t val)
 	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_2TO3)
 	{
 		SetGetBulletState(MANUAL_GETBULLET);
-		//GRIP_SOV_OFF();
+		GRIP_SOV_OFF();
 	}
 	else if(sw->switch_value_raw == 3)
 	{

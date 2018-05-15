@@ -592,8 +592,10 @@ void shootOneGolf()
 		{
 			if (heatFlag == 1)
 			{
-				PM1AngleTarget = PM1AngleTarget - 175;
-				PM2AngleTarget = PM2AngleTarget + 160;
+//				PM1AngleTarget = PM1AngleTarget - 175;
+//				PM2AngleTarget = PM2AngleTarget + 160;
+					PM1AngleTarget = PM1RealAngle - 175;
+				  PM2AngleTarget = PM2RealAngle + 160;
 			}
 		}
 	}
