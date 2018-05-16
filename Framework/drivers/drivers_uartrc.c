@@ -95,7 +95,7 @@ GMMode_e GMMode = LOCK;
 unsigned int zyLeftPostion; //大符用左拨杆位置
  
 static uint32_t RotateCNT = 0;	//长按连发计数
-static uint16_t CNT_250ms = 18;	//用于点射模式下射频限制
+static uint16_t CNT_250ms = 26;	//用于点射模式下射频限制
 static uint32_t RotateEnableCNT = 0;
 
 //左上拨杆用于调试云台，记得要注释掉
@@ -414,7 +414,7 @@ void MouseShootControl(Mouse *mouse)
 					{
 						shootOneGolfConpensation();					
 					}
-					if(CNT_250ms>17)
+					if(CNT_250ms>25)
 					{
 						CNT_250ms = 0;
 						shootOneGolf();

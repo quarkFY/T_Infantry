@@ -128,9 +128,9 @@ void HERO_ready(void)
 //	osDelay(100);
 //	armUpleft(90,-80);
 //	osDelay(200);
-	armUpleft(45,-35);
+	armUpleft(45,0);
 	osDelay(100);
-	armUpleft(45,-40);
+	armUpleft(45,0);
 	osDelay(200);
 //	HERO_step(100,145,-225);
 //	osDelay(1500);
