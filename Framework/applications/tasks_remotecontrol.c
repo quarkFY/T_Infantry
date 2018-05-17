@@ -558,7 +558,7 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 			lastAM2 = AM2RAngleTarget;
 			lastAM3 = AM3RAngleTarget;
 			
-			AM1RAngleTarget +=(rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
+			AM1RAngleTarget +=(rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*1.6;
 			AM1LAngleTarget =-AM1RAngleTarget;
 			AM2RAngleTarget  += (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
 			AM2LAngleTarget =-AM2RAngleTarget;
@@ -631,7 +631,7 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 		}
 		else if(GetBulletState == AUTO_GETBULLET)
 		{
-			AM1RAngleTarget +=(rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
+			AM1RAngleTarget +=(rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*1.6;
 			AM1LAngleTarget =-AM1RAngleTarget;
 			AM2RAngleTarget  += (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT*2;
 			AM2LAngleTarget =-AM2RAngleTarget;
