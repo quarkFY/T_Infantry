@@ -139,6 +139,7 @@ void judgeUartRxCpltCallback(void)
 //	fw_printfln("judge receive");
 		if(receiving) 
 		{
+			if(buffercnt > 50)buffercnt = 4;
 			buffer[buffercnt] = tmp_judge;
 			buffercnt++;
 			

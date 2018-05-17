@@ -244,6 +244,7 @@ uint16_t rotate_speed=0;
 #define MOUSE_TO_YAW_ANGLE_INC_FACT 		0.025f * 2
 
 int keyDebug;
+uint8_t going;
 //遥控器模式下机器人无级变速  键鼠模式下机器人速度为固定档位
 void MouseKeyControlProcess(Mouse *mouse, Key *key)
 {
@@ -264,24 +265,29 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		//yawAngleTarget    -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
 
 		//speed mode: normal speed/high speed 
+		forward_back_speed =  NORMAL_FORWARD_BACK_SPEED;
+		left_right_speed = NORMAL_LEFT_RIGHT_SPEED;
+		rotate_speed = NORMAL_ROTATE_SPEED;
 		if(key->v & 0x10)//Shift
 		{
 			forward_back_speed =  LOW_FORWARD_BACK_SPEED;
 			left_right_speed = LOW_LEFT_RIGHT_SPEED;
 			rotate_speed = LOW_ROTATE_SPEED;
+			going = 1;
 		}
-		else if(key->v == 0x20)//Ctrl
+		else going = 0;
+		if(key->v == 0x20)//Ctrl
 		{	
 			forward_back_speed =  MIDDLE_FORWARD_BACK_SPEED;
 			left_right_speed = MIDDLE_LEFT_RIGHT_SPEED;
 			rotate_speed = MIDDLE_ROTATE_SPEED;
 		}
-		else
-		{
-			forward_back_speed =  NORMAL_FORWARD_BACK_SPEED;
-			left_right_speed = NORMAL_LEFT_RIGHT_SPEED;
-			rotate_speed = NORMAL_ROTATE_SPEED;
-		}
+//		else
+//		{
+//			forward_back_speed =  NORMAL_FORWARD_BACK_SPEED;
+//			left_right_speed = NORMAL_LEFT_RIGHT_SPEED;
+//			rotate_speed = NORMAL_ROTATE_SPEED;
+//		}
 		//movement process
 		if(key->v & 0x01)  // key: w
 		{

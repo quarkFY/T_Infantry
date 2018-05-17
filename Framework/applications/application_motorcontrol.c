@@ -51,6 +51,7 @@ void setMotor(MotorId motorId, int16_t Intensity){
 	static int16_t AM2RIntensity = 0;
 	static int16_t AM3RIntensity = 0;
 	static int8_t AMReady = 0;
+	extern uint8_t going;
 	
 	switch(motorId)
 	{
@@ -129,7 +130,7 @@ void setMotor(MotorId motorId, int16_t Intensity){
 	float CMBLIntensity_max = CMBLIntensity_MAX;
 	float CMBRIntensity_max = CMBRIntensity_MAX;
 
-	if (PowerHeatData.chassisPowerBuffer > 10 & PowerHeatData.chassisPowerBuffer < 40){
+	if (PowerHeatData.chassisPowerBuffer > 15 & PowerHeatData.chassisPowerBuffer < 40){
 			
 		 CM_current_max = CM_current_lower;
 		 CMFLIntensity_max = CMFLIntensity_lower;
@@ -138,7 +139,7 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		 CMBRIntensity_max = CMBRIntensity_lower;
 	}
 	
-	if (PowerHeatData.chassisPowerBuffer < 10 ){
+	if (PowerHeatData.chassisPowerBuffer < 15 ){
 			
 		 CM_current_max = 0;
 		 CMFLIntensity_max = 0;
@@ -147,23 +148,37 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		 CMBRIntensity_max = 0;
 	}
 
-	if (PowerHeatData.chassisPowerBuffer < 10 ){
-			
-		 CM_current_max = CM_current_bottom;
-		 CMFLIntensity_max = CMFLIntensity_bottom;
-		 CMFRIntensity_max = CMFRIntensity_bottom;
-		 CMBLIntensity_max = CMBLIntensity_bottom;
-		 CMBRIntensity_max = CMBRIntensity_bottom;
-	}
+//	if (PowerHeatData.chassisPowerBuffer < 10 ){
+//			
+//		 CM_current_max = CM_current_bottom;
+//		 CMFLIntensity_max = CMFLIntensity_bottom;
+//		 CMFRIntensity_max = CMFRIntensity_bottom;
+//		 CMBLIntensity_max = CMBLIntensity_bottom;
+//		 CMBRIntensity_max = CMBRIntensity_bottom;
+//	}
 
 	if (JUDGE_State == OFFLINE)
 	{
-		 CM_current_max = 13000;
-		 CMFLIntensity_max = 4500;
-		 CMFRIntensity_max = 4500;
-		 CMBLIntensity_max = 4500;
-		 CMBRIntensity_max = 4500;
+		 CM_current_max = 19000;
+		 CMFLIntensity_max = 5000;
+		 CMFRIntensity_max = 5000;
+		 CMBLIntensity_max = 5000;
+		 CMBRIntensity_max = 5000;
 	}
+	if(going)
+	{
+		CM_current_max = 53200;
+		 CMFLIntensity_max = 13200;
+		 CMFRIntensity_max = 13200;
+		 CMBLIntensity_max = 13200;
+		 CMBRIntensity_max = 13200;
+	}
+//	CM_current_max = 38000;
+//		 CMFLIntensity_max = 7700;
+//		 CMFRIntensity_max = 7700;
+//		 CMBLIntensity_max = 00;
+//		 CMBRIntensity_max = 9800;
+	
 
 	float sum = (abs(CMFLIntensity) + abs(CMFRIntensity) + abs(CMBLIntensity) + abs(CMBRIntensity));
 	

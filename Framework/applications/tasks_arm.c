@@ -475,7 +475,7 @@ void armUpleft(float height, float translation)
 	//			debugAM = 180*acos((SquareOfRadius +187500)/(1000 * sqrt(SquareOfRadius)))/PI;
 		}
 
-	AM3RAngleTarget =-( AM1RAngleTarget - AM2LAngleTarget + 90);
+	AM3RAngleTarget =-( AM1RAngleTarget - AM2LAngleTarget + 100);
 }
 }
 
