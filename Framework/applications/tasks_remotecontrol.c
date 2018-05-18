@@ -338,7 +338,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		if(GMMode == LOCK)
 		{
 			//GMReset();
-			ChassisSpeedRef.rotate_ref += mouse->x/15.0*3000;
+			ChassisSpeedRef.rotate_ref += mouse->x/27.0*3000;
 			yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
 		}
 //		if(key->v == 0x0420) GMMode = UNLOCK;  //解锁云台  G + Ctrl
@@ -408,6 +408,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 uint8_t CMF = 0 , CMB =0;
 uint16_t lastKey;
 uint8_t checkinMode = 0;
+uint8_t receive =0;
 float lastAM1, lastAM2, lastAM3;
 float ArmHorizontalPosition, ArmVerticalPosition;
 float rcch;
@@ -507,6 +508,16 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 //				AM2RAngleTarget = 0;
 //				AM2LAngleTarget = 0;
 //				AM3RAngleTarget = 0;
+				if(key->v == 0x4000)//v
+				{
+					receive = 1;
+					HERO_Order=HERO_RECEIVE;
+				}
+				else if(key->v == 0x4010)//shift+v
+				{
+					receive = 0;
+					HERO_Order=HERO_RECEIVE;
+				} 
 			
 
 			//1:up, 2:down\
@@ -588,11 +599,11 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 //				armStretch();
 //				AM3RAngleTarget = AM2LAngleTarget - AM1RAngleTarget - 60;
 						
-//				if(key->v & 0x0800)//z
-//				
-//			  {
-//					HERO_Order=HERO_MANUL_READY;
-//				}
+				if(key->v & 0x0800)//z				
+			  {
+//				 AM3RAngleTarget =-( AM1RAngleTarget - AM2LAngleTarget + 80);
+					HERO_Order=HERO_BUCKLE;
+				}
 //				//抓取
 				 if(key->v & 0x1000)//x
 				{
@@ -608,10 +619,18 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 					HERO_Order=HERO_MANUL_LOAD;
 				}
 //				//
-//				else if(key->v & 0x4000)//v
+//				else if(key->v == 0x4000)//v
 //				{
-//					HERO_Order=HERO_MANUL_DISCARD;
+//					receive = 1;
+//					HERO_Order=HERO_RECEIVE;
+//					
+//					
 //				}
+//				else if(key->v == 0x4010)//shift+v
+//				{
+//					receive = 0;
+//					HERO_Order=HERO_RECEIVE;
+//				}    
 //						
 //						else if(key->v & 0x8000)//b
 //						{

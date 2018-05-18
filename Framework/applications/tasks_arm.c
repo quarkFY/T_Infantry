@@ -433,6 +433,7 @@ void ARM_INIT()
 
 float AM1,AM2,AngleTarget,debugAM;
 float upleftedHeight = 0,x =0;
+
 void armUpleft(float height, float translation)
 {
 	upleftedHeight = 90; // 上抬 5 cm

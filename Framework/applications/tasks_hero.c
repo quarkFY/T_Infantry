@@ -98,7 +98,15 @@ void HeroTask(void const * argument)
 				case HERO_CHECK_IN:
 				{
 					HERO_checkin();
-				}
+				}break;
+				case HERO_BUCKLE:
+				{
+					HERO_buckle();
+				}break;
+				case HERO_RECEIVE:
+				{
+					HERO_receive();
+				}break;
 				default:
 				  fw_Error_Handler();
 					
@@ -111,13 +119,13 @@ void HeroTask(void const * argument)
 	
 void HERO_prepare(void)
 {
-	HERO_step(45,45,0);
+	HERO_step(45,30,0);
 	osDelay(300);
 	HERO_step(45,45,-90);
 	osDelay(300);
 	HERO_step(50,0,-130);	
 	osDelay(600);
-	HERO_step(65,20,-185);
+	HERO_step(65,30,-177);
 	HERO_Order = HERO_MANUL_FETCH;
 	//70£¬0£¬-180
 }
@@ -158,6 +166,28 @@ void HERO_checkin(void)
 	HERO_Order = HERO_MANUL_FETCH;
 }
 
+float AM3tem;
+void HERO_buckle(void)
+{
+	AM3tem =-( AM1RAngleTarget - AM2LAngleTarget + 80);
+	HERO_step( AM1RRealAngle, AM2LRealAngle, AM3tem);
+	HERO_Order = HERO_MANUL_FETCH;
+}
+
+extern uint8_t receive;
+void HERO_receive(void)
+{
+	if(receive)
+	{
+	HERO_step(20,0,0);
+	HERO_Order = HERO_MANUL_FETCH;
+	}
+	else if(!receive)
+	{
+	  HERO_step(0,0,0);
+		HERO_Order = HERO_MANUL_FETCH;
+	}
+}
 void HERO_load(void)
 {
 //  HERO_step(80,135,-205);
@@ -193,7 +223,7 @@ void HERO_load(void)
 //
 void HERO_recover()
 {
-	HERO_step(45,45,0);
+	HERO_step(45,30,0);
 	osDelay(800);
 	HERO_step(0,0,0);
 	HERO_Order = HERO_STANDBY;
