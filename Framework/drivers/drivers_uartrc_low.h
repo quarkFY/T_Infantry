@@ -29,7 +29,7 @@ void InitRemoteControl(void);
 //remote control parameters
 #define REMOTE_CONTROLLER_STICK_OFFSET      1024u   
 #define RC_FRAME_LENGTH                     18u
-#define STICK_TO_CHASSIS_SPEED_REF_FACT     4.f
+#define STICK_TO_CHASSIS_SPEED_REF_FACT     3.f
 #define STICK_TO_ARM_SPEED_REF_FACT     0.001f
 #define STICK_TO_PITCH_ANGLE_INC_FACT       0.005f
 #define STICK_TO_YAW_ANGLE_INC_FACT         0.005f
@@ -40,8 +40,8 @@ void InitRemoteControl(void);
 //#define MOUSE_TO_PITCH_ANGLE_INC_FACT 		0.025f * 3
 //#define MOUSE_TO_YAW_ANGLE_INC_FACT 		0.025f * 3
 
-#define NORMAL_FORWARD_BACK_SPEED 			1200
-#define NORMAL_LEFT_RIGHT_SPEED   			1200
+#define NORMAL_FORWARD_BACK_SPEED 			900
+#define NORMAL_LEFT_RIGHT_SPEED   			900
 #define NORMAL_ROTATE_SPEED   			300
 #define HIGH_FORWARD_BACK_SPEED 			1000
 #define HIGH_LEFT_RIGHT_SPEED   			800

@@ -1066,14 +1066,14 @@
               <FilePath>../Src/gpio.c</FilePath>
             </File>
             <File>
-              <FileName>usb_device.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Src/usb_device.c</FilePath>
-            </File>
-            <File>
               <FileName>usbd_desc.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Src/usbd_desc.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_device.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Src/usb_device.c</FilePath>
             </File>
             <File>
               <FileName>dma.c</FileName>

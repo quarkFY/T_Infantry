@@ -190,16 +190,14 @@ void HERO_receive(void)
 }
 void HERO_load(void)
 {
-//  HERO_step(80,135,-205);
-//	osDelay(1500);
-//	HERO_step(65,-5,-180);
+
 	HERO_step(90,75,-125);
 	osDelay(80);
-	HERO_step(50,0,-165);
+	HERO_step(80,0,-165);
 	osDelay(80);
-	HERO_step(50,70,-260);
+	HERO_step(80,70,-260);
 	osDelay(1500);
-	HERO_step(50,100,-260);
+	HERO_step(70,90,-260);
 	osDelay(500);
 	GRIP_SOV_OFF();
 	osDelay(800);	

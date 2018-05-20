@@ -221,7 +221,7 @@ void RemoteControlProcess(Remote *rc)
  		pitchAngleTarget += (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_PITCH_ANGLE_INC_FACT;
 		//yawAngleTarget   -= (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT; 
 		
-		ChassisSpeedRef.rotate_ref   = (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) *STICK_TO_CHASSIS_SPEED_REF_FACT/4 ;
+		ChassisSpeedRef.rotate_ref   = (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) *STICK_TO_CHASSIS_SPEED_REF_FACT/6 ;
   	yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
 		
 		//机械臂控制，暂时放在这
@@ -601,8 +601,8 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 						
 				if(key->v & 0x0800)//z				
 			  {
-//				 AM3RAngleTarget =-( AM1RAngleTarget - AM2LAngleTarget + 80);
-					HERO_Order=HERO_BUCKLE;
+				 AM3RAngleTarget =-( AM1RAngleTarget - AM2LAngleTarget + 80);
+//					HERO_Order=HERO_BUCKLE;
 				}
 //				//抓取
 				 if(key->v & 0x1000)//x
