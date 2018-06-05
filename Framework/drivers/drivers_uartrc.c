@@ -93,6 +93,7 @@ GMMode_e GMMode = UNLOCK;
 
 extern float PM2AngleTarget,PM2RealAngle;
 uint8_t PM2RotateEnale = 1;
+uint8_t PM2RotateCounter = 0;
 
 unsigned int zyLeftPostion; //大符用左拨杆位置
  
@@ -110,8 +111,6 @@ void SetGMZeroPoint(RemoteSwitch_t *sw, uint8_t val)
 {
 	if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_1TO3)   //OFF->HL
 	{
-//		yaw_zero = yawEncoder;
-//		pitch_zero = pitchEncoder;
 		isGMSet = 1;
 	}
 	if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)	//CL->HL
@@ -236,11 +235,6 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 				LASER_ON(); 
 				FRONT_SOV1_OFF();		}
 				PMRotate();
-//			else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)		//收回取弹机械臂
-//			{
-//				armReset();
-//				
-//			}
 		}break;
 		case FRICTION_WHEEL_START_TURNNING:
 		{
@@ -253,15 +247,9 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 				frictionRamp.ResetCounter(&frictionRamp);
 			}
 			
-	//		else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)	
-	//		{
-//				LASER_OFF();
-//				SetShootState(NO_SHOOT);
-//				SetFrictionWheelSpeed(1000);
-//				g_friction_wheel_state = FRICTION_WHEEL_OFF;
-//				frictionRamp.ResetCounter(&frictionRamp);
-				
-	//		}
+//		else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)	
+//		{
+//		}
 			
 			else
 			{
@@ -334,13 +322,6 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 					--remoteShootDelay;
 				}
 				
-//				if(remoteShootDelay!=0) 
-//					--remoteShootDelay;
-//				else
-//				{
-//					shootOneGolf();
-//					remoteShootDelay = 50;
-//				}
 			}
 			else
 			{
@@ -403,7 +384,14 @@ void MouseShootControl(Mouse *mouse)
 			//正常一直转
 			if(PM2RotateEnale == 1)
 			{
-				PM2AngleTarget+=20;
+				PM2RotateCounter++;
+				if(PM2RotateCounter==80)
+				{
+					PM2RotateCounter = 0;
+					PM2AngleTarget -= 90;
+					PM2RotateEnale = 0;
+				}
+				else PM2AngleTarget+=15;
 			}
 			//堵转回转90度
 			else if(PM2RotateEnale == 2)
@@ -417,7 +405,7 @@ void MouseShootControl(Mouse *mouse)
 					PM2RotateEnale = 1;
 			}
 			//堵转检测
-			if((PM2AngleTarget-PM2RealAngle)>200)
+			if((PM2AngleTarget-PM2RealAngle)>100 && PM2RotateEnale == 1)
 			{
 				PM2AngleTarget=PM2RealAngle;
 				PM2RotateEnale = 2;
@@ -441,7 +429,6 @@ void MouseShootControl(Mouse *mouse)
 			else if(mouse->last_press_l == 0 && mouse->press_l== 1)  //检测鼠标左键单击动作
 			{
 				SetShootState(MANUL_SHOOT_ONE);
-//				if(getLaunchMode() == SINGLE_MULTI && GetFrictionState()==FRICTION_WHEEL_ON)		//单发模式下，点一下打一发
 				if(GetFrictionState()==FRICTION_WHEEL_ON)
 				{
 					if(CNT_250ms == 8)
@@ -452,28 +439,14 @@ void MouseShootControl(Mouse *mouse)
 					{
 						CNT_250ms = 0;
 						shootOneGolf();
-						//shootOneGolf();
 					}
 				}
-//				else if(getLaunchMode() == CONSTENT_4 && GetFrictionState()==FRICTION_WHEEL_ON)	//四连发模式下，点一下打四发
-//				{
-//					
-//					if(CNT_1s>75)
-//					{
-//						CNT_1s = 0;
-//						shootOneGolf();
-//						shootOneGolf();
-//						shootOneGolf();
-//						shootOneGolf();
-//					}
-//				}
 			}
 			else if(mouse->last_press_l == 0 && mouse->press_l== 0)	//松开鼠标左键的状态
 			{
 				SetShootState(NO_SHOOT);	
 				RotateCNT = 0;			
 			}			
-//			else if(mouse->last_press_l == 1 && mouse->press_l== 1 && getLaunchMode() == SINGLE_MULTI)//单发模式下长按，便持续连发
 		  else if(mouse->last_press_l == 1 && mouse->press_l== 1 )
 			{
 				RotateCNT+=50;
@@ -549,17 +522,6 @@ void SetMoveSpeed(Move_Speed_e v)
 }
 
 
-/*
-Slab_Mode_e slabmode = CLOSE;
-Slab_Mode_e GetSlabState()
-{
-	return slabmode;
-}
-
-void SetSlabState(Slab_Mode_e v)
-{
-	slabmode = v;
-}*/
 
 extern uint16_t forward_back_speed, left_right_speed , rotate_speed;
 void RemoteGetBulletControl(RemoteSwitch_t *sw, uint8_t val)

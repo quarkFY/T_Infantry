@@ -35,9 +35,5 @@ void ControlPM3(void);
 void shootOneGolf(void);
 void shootOneGolfConpensation(void);
 void PMRotate(void);
-void spitOneBullet(void);
 
-void GetGMRealZero(void);
-	
-void GMReset(void);
 #endif

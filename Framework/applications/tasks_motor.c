@@ -623,27 +623,3 @@ void PMRotate()
 		PM1RotateFlag = 0;
 	}
 }
-
-void spitOneBullet()
-{
-	PM3AngleTarget+=30;
-}
-
-//可能需要除抖，待调试
-void GetGMRealZero(void)
-{
-	This_GM_RST = HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_4);
-	if(This_GM_RST != Last_GM_RST)
-	{
-		IOPool_getNextRead(GMYAWRxIOPool, 0); 
-		yaw_zero_revise = IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle;
-	}
-	Last_GM_RST = This_GM_RST;
-}
-	
-void GMReset(void)
-{
-	yaw_zero = yaw_zero_revise;
-}
-
-

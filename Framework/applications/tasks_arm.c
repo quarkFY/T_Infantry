@@ -45,12 +45,6 @@ fw_PID_Regulator_t AM2LSpeedPID = fw_PID_INIT(6.0, 0.0, 0.0, 10000.0, 10000.0, 1
 fw_PID_Regulator_t AM2RSpeedPID = fw_PID_INIT(6.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 8000.0);
 fw_PID_Regulator_t AM3RSpeedPID = fw_PID_INIT(8.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 8000.0);
 
-////待标定
-//#define AM1L_zero 0
-//#define AM1R_zero 0
-//#define AM2L_zero 0
-//#define AM2R_zero 0
-//#define AM3R_zero 0
 extern float PM1AngleTarget;
 extern Emergency_Flag emergency_Flag;
 
@@ -80,27 +74,6 @@ float AM1RRealAngle = 0.0;
 float AM2LRealAngle = 0.0;
 float AM2RRealAngle = 0.0;
 float AM3RRealAngle = 0.0;
-
-//末端水平垂直位置
-double Arm_Horizontal_Position = LengthOfArm1 - LengthOfArm2;
-double Arm_Vertical_Position = 0.0;
-double SquareOfRadius = 250.0*250.0;
-double AngleOfTarget = 0.0;
-
-//水平垂直运动目标解算值
-//double AM1R_AddUpAngle = 0;
-//double AM1L_AddUpAngle = 0;
-//double AM2R_AddUpAngle = 0;
-//double AM2L_AddUpAngle = 0;
-//double AM3R_AddUpAngle = 0;
-	
-extern ArmSpeed_Ref_t ArmSpeedRef;
-
-//uint16_t AM1LRawAngle = 0;
-//uint16_t AM1RRawAngle = 0;
-//uint16_t AM2LRawAngle = 0;
-//uint16_t AM2RRawAngle = 0;
-//uint16_t AM3RRawAngle = 0;
 
 
 //用于减小系统开销
@@ -370,120 +343,3 @@ void ControlAM3R()
 		}
 	}
 }
-
-
-//void setAMAngle(MotorId id, float angle)
-//{
-//	switch(id){
-//		case AM1L:
-//			AM1LAngleTarget = angle;break;
-//		case AM1R:
-//			AM1RAngleTarget = angle;break;
-//		case AM2L:
-//			AM2LAngleTarget = angle;break;
-//		case AM2R:
-//			AM2RAngleTarget = angle;break;
-//		case AM3R:
-//			AM3RAngleTarget = angle;break;
-//		default:
-//			fw_Error_Handler();
-//	}
-//}
-
-//一整套动作为下达取弹指令后，展开机械臂，进行取弹，取弹完毕后下达收回指令，机械臂收回
-//void getGolf()
-//{
-	//待完善
-	//思路：
-	//目前两个电机的task都是用于跟踪的，即令反馈值跟踪上目标值
-	//在遥控器任务和2ms定时任务中对目标值进行修改，从而做出指定的动作
-	//取弹flag置位，当2ms任务检测到置位后，计数器开始计数，根据计数器的值来进行相应的取弹动作
-//}
-
-void armReset()
-{
-	Arm_Horizontal_Position = 500;
-	Arm_Vertical_Position = 250;
-	AM3RAngleTarget = 0;
-	//待完善
-	//思路：
-	//取弹flag清零，回收flag置位，具体动作由2ms定时器任务完成，完成后flag清零
-//	AM1RAngleTarget = 0;
-//	AM2RAngleTarget = 0;
-//	LastAM1RAngleTarget = 0;
-//	LastAM2RAngleTarget = 0;
-//	AM1LAngleTarget = 0;
-//	AM2LAngleTarget = 0;
-//	LastAM1LAngleTarget = 0;
-//	LastAM2LAngleTarget = 0;
-//	AM3RAngleTarget = 0;
-//	LastAM3RAngleTarget = 0;
-//	Arm_Horizontal_Position = 250;
-//	Arm_Vertical_Position = 0;
-	
-}
-
-void ARM_INIT()
-{
-	
-	Arm_Horizontal_Position = 500;
-	Arm_Vertical_Position = 250;
-//	AM2RAngleTarget = 10;
-}
-
-void armStretch()
-{
-	Arm_Horizontal_Position -= ArmSpeedRef.forward_back_ref;
-	Arm_Vertical_Position += ArmSpeedRef.up_down_ref;
-	SquareOfRadius = Arm_Horizontal_Position*Arm_Horizontal_Position + Arm_Vertical_Position*Arm_Vertical_Position;
-	if(SquareOfRadius <= 250*250 ||  Arm_Vertical_Position< 0 || SquareOfRadius >= 750*750  || AM1LAngleTarget>=85)
-	{
-		Arm_Horizontal_Position = Last_Arm_Horizontal_Position;
-	  Arm_Vertical_Position = Last_Arm_Vertical_Position;
-	}
-	
-		else
-		{
-			//AM1R_AddUpAngle = asin((SquareOfRadius+LengthOfArm1*LengthOfArm1-LengthOfArm2*LengthOfArm2)/(2*LengthOfArm1*sqrt(SquareOfRadius)))-acos(Arm_Vertical_Position/sqrt(SquareOfRadius))
-			//AM2R_AddUpAngle = asin((SquareOfRadius+LengthOfArm2*LengthOfArm2-LengthOfArm1*LengthOfArm1)/(2*LengthOfArm2*sqrt(SquareOfRadius)))+acos(Arm_Vertical_Position/sqrt(SquareOfRadius))+AM1R_AddUpAngle
-			//AM1RAngleTarget 0-180 ; AM2RAngleTarget 0-180 ;
-
-			
-			if(Arm_Horizontal_Position > 0 )
-			{
-				AngleOfTarget = 180*atan(Arm_Vertical_Position/Arm_Horizontal_Position)/PI;
-				AM1RAngleTarget = AngleOfTarget - 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
-				AM2RAngleTarget = -(180*acos((312500-SquareOfRadius)/250000)/PI-90);
-				AM1LAngleTarget = -AngleOfTarget + 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
-				AM2LAngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI-90;
-			}
-			else if(Arm_Horizontal_Position == 0)
-			{
-				AngleOfTarget = 90.0;
-				AM1RAngleTarget = AngleOfTarget - 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
-				AM2RAngleTarget = -(180*acos((312500-SquareOfRadius)/250000)/PI-90);
-				AM1LAngleTarget = -AngleOfTarget + 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
-				AM2LAngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI-90;
-			}
-			else
-			{
-				AngleOfTarget = 180*atan(Arm_Vertical_Position/Arm_Horizontal_Position)/PI + 180.0;
-				AM1RAngleTarget = AngleOfTarget - 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
-				AM2RAngleTarget = -(180*acos((312500-SquareOfRadius)/250000)/PI-90);
-				AM1LAngleTarget = -AngleOfTarget + 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
-				AM2LAngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI-90;
-			}
-			
-		}
-		
-		
-			Last_Arm_Horizontal_Position = Arm_Horizontal_Position;
-			Last_Arm_Vertical_Position = Arm_Vertical_Position;
-		
-	    LastAM1LAngleTarget = AM1LAngleTarget;
-      LastAM1RAngleTarget = AM1RAngleTarget;
-      LastAM2LAngleTarget = AM2LAngleTarget;
-      LastAM2RAngleTarget = AM2RAngleTarget;
-      LastAM3RAngleTarget = AM3RAngleTarget;
-}
-
