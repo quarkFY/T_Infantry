@@ -46,7 +46,7 @@ else if(val>=max)\
 	val = max;\
 }\
 
-
+//uint8_t going = 0;
 extern ChassisSpeed_Ref_t ChassisSpeedRef;
 extern ArmSpeed_Ref_t ArmSpeedRef;
 extern Gimbal_Ref_t GimbalRef;
@@ -218,10 +218,10 @@ void RemoteControlProcess(Remote *rc)
 		ChassisSpeedRef.forward_back_ref = (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_CHASSIS_SPEED_REF_FACT;
 		ChassisSpeedRef.left_right_ref   = (rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_CHASSIS_SPEED_REF_FACT; 
 		
- 		pitchAngleTarget -= (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_PITCH_ANGLE_INC_FACT;
+ 		pitchAngleTarget += (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_PITCH_ANGLE_INC_FACT;
 		yawAngleTarget   -= (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT; 
 		
-		ChassisSpeedRef.rotate_ref   = (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT;
+		ChassisSpeedRef.rotate_ref   = (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) *STICK_TO_CHASSIS_SPEED_REF_FACT ;
   	//yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
 		
 		//机械臂控制，暂时放在这
@@ -235,29 +235,31 @@ void RemoteControlProcess(Remote *rc)
 
 
 extern uint8_t JUDGE_State;
-static uint16_t forward_back_speed = 0;
-static uint16_t left_right_speed = 0;
-static uint16_t rotate_speed=0;
+uint16_t forward_back_speed = 0;
+uint16_t left_right_speed = 0;
+uint16_t rotate_speed=0;
 ///////////////////////////键鼠模式//////////////////////////
 //调整鼠标灵敏度
 #define MOUSE_TO_PITCH_ANGLE_INC_FACT 		0.025f * 2
 #define MOUSE_TO_YAW_ANGLE_INC_FACT 		0.025f * 2
 
-
+int keyDebug;
 //遥控器模式下机器人无级变速  键鼠模式下机器人速度为固定档位
 void MouseKeyControlProcess(Mouse *mouse, Key *key)
 {
-	
+	keyDebug = key ->v;
 	if(GetWorkState() == NORMAL_STATE)
 	{
 		VAL_LIMIT(mouse->x, -150, 150); 
 		VAL_LIMIT(mouse->y, -150, 150); 
 	
-		pitchAngleTarget -= mouse->y* MOUSE_TO_PITCH_ANGLE_INC_FACT;  
+		pitchAngleTarget -= mouse->y* MOUSE_TO_PITCH_ANGLE_INC_FACT; 
+		if(key->v == 0x0400) GMMode = LOCK;    //锁定云台  G
+		if(key->v == 0x0420) GMMode = UNLOCK;  //解锁云台  G + Ctrl				
 		if(GMMode == UNLOCK) 
 		{
 			yawAngleTarget    -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
-			GetGMRealZero();
+			//GetGMRealZero();
 		}
 		//yawAngleTarget    -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
 
@@ -269,7 +271,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 			rotate_speed = LOW_ROTATE_SPEED;
 		}
 		else if(key->v == 0x20)//Ctrl
-		{
+		{	
 			forward_back_speed =  MIDDLE_FORWARD_BACK_SPEED;
 			left_right_speed = MIDDLE_LEFT_RIGHT_SPEED;
 			rotate_speed = MIDDLE_ROTATE_SPEED;
@@ -316,7 +318,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 			ChassisSpeedRef.rotate_ref=rotate_speed*RotSpeedRamp.Calc(&RotSpeedRamp);
 			//setLaunchMode(SINGLE_MULTI);
 		}
-		if(key->v & 0x40)	//key:q  
+		else if(key->v & 0x40)	//key:q  
 		{
 			ChassisSpeedRef.rotate_ref=-rotate_speed*RotSpeedRamp.Calc(&RotSpeedRamp);
 			//setLaunchMode(CONSTENT_4);
@@ -329,12 +331,12 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		//mouse x y control
 		if(GMMode == LOCK)
 		{
-			GMReset();
+			//GMReset();
 			ChassisSpeedRef.rotate_ref += mouse->x/15.0*3000;
 			yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
 		}
-		if(key->v & 0x0400) GMMode = UNLOCK;  //解锁云台  G
-		if(key->v & 0x0200) GMMode = LOCK;    //锁定云台  F
+//		if(key->v == 0x0420) GMMode = UNLOCK;  //解锁云台  G + Ctrl
+//		if(key->v & 0x0400) GMMode = LOCK;    //锁定云台  G
 		/*裁判系统离线时的功率限制方式*/
 		if(JUDGE_State == OFFLINE)
 		{
@@ -397,165 +399,218 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 }
 
 /////////////////////////取弹模式/////////////////////////////
+uint8_t CMF = 0 , CMB =0;
+uint16_t lastKey;
 void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 {
 	if(GetWorkState() == NORMAL_STATE)
 	{
-	//		//
 	//		ChassisSpeedRef.forward_back_ref = -(rc->ch1 - 1024) / 66.0 * 1000;   //慢速移动
 	//		ChassisSpeedRef.left_right_ref = (rc->ch0 - 1024) / 66.0 * 1000;
 	//		ChassisSpeedRef.rotate_ref=  -(rc->ch2 - 1024) /66.0*1000;
-	//			//yawAngleTarget   -= (rc->ch2 - 1024)/6600.0 * (YAWUPLIMIT-YAWDOWNLIMIT); 
-		//取弹模式下，左侧摇杆控制底盘移动,慢速
-		ChassisSpeedRef.forward_back_ref = (RC_CtrlData.rc.ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_CHASSIS_SPEED_REF_FACT/10;
-		ChassisSpeedRef.left_right_ref   = (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_CHASSIS_SPEED_REF_FACT/10; 	
+	//		yawAngleTarget   -= (rc->ch2 - 1024)/6600.0 * (YAWUPLIMIT-YAWDOWNLIMIT); 
+		
 		//鼠标控制pitch&yaw
-		pitchAngleTarget -= mouse->y* MOUSE_TO_PITCH_ANGLE_INC_FACT; 
-		if(key->v & 0x0400) GMMode = UNLOCK;  //解锁云台  G
-		if(key->v & 0x0200) GMMode = LOCK;    //锁定云台  F		
+		pitchAngleTarget += mouse->y* MOUSE_TO_PITCH_ANGLE_INC_FACT; 
+		if(key->v == 0x0400) GMMode = LOCK;    //锁定云台  G
+		if(key->v == 0x0420) GMMode = UNLOCK;  //解锁云台  G + Ctrl			
 		if(GMMode == LOCK)
 		{
-			GMReset();
+			//GMReset();
 			ChassisSpeedRef.rotate_ref += mouse->x/15.0*3000;
 			yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
+			
+//			GMReset();
+//			ChassisSpeedRef.rotate_ref += mouse->x/15.0*3000;
+//			yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
 		}
 		if(GMMode == UNLOCK) 
 		{
 			yawAngleTarget    -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
-			GetGMRealZero();
+//			GetGMRealZero();
+		}
+//		if(key->v & (0x0400|0x10))// G+shift
+//		{
+//			osDelay(1000);
+//		}
+		if(key->v & 0x01)  // key: w
+		{
+			ChassisSpeedRef.forward_back_ref = forward_back_speed* FBSpeedRamp.Calc(&FBSpeedRamp);
+			
+		}
+		else if(key->v & 0x02) //key: s
+		{
+			ChassisSpeedRef.forward_back_ref = -forward_back_speed* FBSpeedRamp.Calc(&FBSpeedRamp);
+			
+		}
+		else
+		{
+			ChassisSpeedRef.forward_back_ref = 0;
+			FBSpeedRamp.ResetCounter(&FBSpeedRamp);
+		}
+		if(key->v & 0x04)  // key: d
+		{
+			ChassisSpeedRef.left_right_ref = -left_right_speed* LRSpeedRamp.Calc(&LRSpeedRamp);
+			
+		}
+		else if(key->v & 0x08) //key: a
+		{
+			ChassisSpeedRef.left_right_ref = left_right_speed* LRSpeedRamp.Calc(&LRSpeedRamp);
+			
+		}
+		else
+		{
+			ChassisSpeedRef.left_right_ref = 0;
+			LRSpeedRamp.ResetCounter(&LRSpeedRamp);
+		}
+		if(key->v & 0x80)	//key:e  检测第8位是不是1
+		{
+			ChassisSpeedRef.rotate_ref=rotate_speed*RotSpeedRamp.Calc(&RotSpeedRamp);
+			//setLaunchMode(SINGLE_MULTI);
+		}
+		else if(key->v & 0x40)	//key:q  
+		{
+			ChassisSpeedRef.rotate_ref=-rotate_speed*RotSpeedRamp.Calc(&RotSpeedRamp);
+			//setLaunchMode(CONSTENT_4);
+		}
+		else 
+		{
+			ChassisSpeedRef.rotate_ref = 0;
+			RotSpeedRamp.ResetCounter(&RotSpeedRamp);
 		}
 		
 		if(inputmode==GETBULLET_INPUT)
 		{
-			//HeroTask();
-			if(GetBulletState == NO_GETBULLET)
-			{
-				armReset();
-				//抬升底盘前轮
-				if(key->v & 0x0200)//f
-				{
-					FrontWheel_Mode = CHASSIS_HIGH;
-				}
-				//回复正常底盘
-				if(key->v & (0x0200|0x10))//f+shift
-				{
-					FrontWheel_Mode = CHASSIS_NORMAL;
-				}
-				//放低底盘
-				if(key->v & (0x0200|0x20))//f+ctrl
-				{
-					FrontWheel_Mode = CHASSIS_LOW;
-				}
-				//抬升底盘后轮
-				if(key->v & 0x8000)//b
-				{
-					BehindWheel_Mode = CHASSIS_HIGH;
-				}
-				//回复正常底盘
-				if(key->v & (0x8000|0x10))//b+shift
-				{
-					BehindWheel_Mode = CHASSIS_NORMAL;
-				}
-				//放低底盘
-				if(key->v & (0x8000|0x20))//b+ctrl
-				{
-					BehindWheel_Mode = CHASSIS_LOW;
-				}
-				RaiseControlProcess();
-			}
-			else if(GetBulletState == MANUL_GETBULLET)
-			{
-				//取弹模式下，右侧摇杆控制取弹机械臂运动
-				ArmSpeedRef.forward_back_ref = (rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
-				ArmSpeedRef.up_down_ref = (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
-				//armStretch();
-				//手动取弹装弹,手动HERO
-				
-				//放平
-				if(key->v & 0x0800)//z
-				{
-					HERO_Order=HERO_MANUL_READY;
-				}
-				//抓取
-				else if(key->v & 0x1000)//x
-				{
-					HERO_Order=HERO_MANUL_GRIP;
-				}
-				if(key->v & (0x1000|0x10))//x+shift
-				{
-					HERO_Order=HERO_MANUL_READY;
-				}
-				//装弹
-				else if(key->v & 0x2000)//c
-				{
-					HERO_Order=HERO_MANUL_LOAD;
-				}
-				//
-				else if(key->v & 0x4000)//v
-				{
-					HERO_Order=HERO_MANUL_DISCARD;
-				}
-//						
-//						else if(key->v & 0x8000)//b
-//						{
-//							//HERO_Order=HERO_BELT_BACK;
-//						  //pwm_server_motor_set_angle(0,180);
-//						}
-//						
-				
-//						if(key->v & 0x0100)  //R
-//						{
-//							GripLoadProcess();
-//						}
-//						if(key->v == 272)  // key: r+Shift松开机械爪
-//						{
-//							GRIP_SOV_OFF();
-//						}
-			}
-			else if(GetBulletState == AUTO_GETBULLET)
-			{
-				
-				
-				/*
-						AM1RAngleTarget = 100;
-		AM1LAngleTarget = -100;
-		AM2RAngleTarget = -100;
-		AM2LAngleTarget = 100;
-		AM3RAngleTarget = 90;
-		osDelay(1);
-		if((-1<(AM1RAngleTarget -AM1RRealAngle)<1)&&(-1<(AM1LAngleTarget -AM1LRealAngle)<1)&&(-1<(AM2RAngleTarget -AM2RRealAngle)<1)&&(-1<(AM2LAngleTarget -AM2LRealAngle)<1)&&(-1<(AM3RAngleTarget -AM3RRealAngle)<1))
-		{	
-		load_cnt = 2;
-		}
-		
-		if(load_cnt == 2)
+		if(GetBulletState == NO_GETBULLET)
 		{
-		AM2RAngleTarget = -190;
-			AM2LAngleTarget = 190;
-			AM3RAngleTarget = 120;
-			osDelay(1);
-			if((-1<(AM1RAngleTarget -AM1RRealAngle)<1)&&(-1<(AM1LAngleTarget -AM1LRealAngle)<1)&&(-1<(AM2RAngleTarget -AM2RRealAngle)<1)&&(-1<(AM2LAngleTarget -AM2LRealAngle)<1)&&(-1<(AM3RAngleTarget -AM3RRealAngle)<1))
-			{	
-			load_cnt = 3;
-			}
-		}
-		if(load_cnt ==3)
-		{
-			AM2RAngleTarget = -250;
-			AM2LAngleTarget = 250;
-			AM3RAngleTarget = 30;
-		}
 			
-				*/
-			}
-		}
-		else
-		{
-		//	armReset();
-		}
+//				AM1RAngleTarget = 0;
+//				AM1LAngleTarget = 0;
+//				AM2RAngleTarget = 0;
+//				AM2LAngleTarget = 0;
+//				AM3RAngleTarget = 0;
+			
+
+			//1:up, 2:down\
 				
-		RemoteGetBulletControl(&g_switch1, rc->s1);
+			
+			//旧英雄上岛
+//				if(lastKey == 0x0200 && key ->v == 0x0210) // F -> F + Shift 
+//				{
+//					CMF =1;
+//				}
+//				if(lastKey == 0x0200 && key ->v == 0x0220) // F -> F + Ctrl
+//				{
+//					CMF =2;
+//				}
+//				if(lastKey == 0x8000 && key ->v == 0x8010) // B -> B + Shift
+//				{
+//					CMB =1;
+//				}
+//				if(lastKey == 0x8000 && key ->v == 0x8020) // B -> B + Ctrl
+//				{
+//					CMB =2;
+//				}
+//				if(lastKey == 0x8200 && key ->v == 0x8210) // F + B -> F + B + Shift
+//				{
+//					CMF =1;
+//					CMB =1;
+//				}
+//				if(lastKey == 0x8200 && key ->v == 0x8220) // F + B -> F + B + Ctrl
+//				{
+//					CMF =2;
+//					CMB =2;
+//				}
+				
+				//抬升底盘前轮	
+//				if(key->v == 0x0200)//f
+//				{
+//					FrontWheel_Mode = CHASSIS_HIGH;
+//				}
+//				//回复正常底盘
+//				if(key->v == (0x0200|0x10))//f+shift
+//				{
+//					FrontWheel_Mode = CHASSIS_NORMAL;
+//				}
+//				//放低底盘前轮
+//				if(key->v == (0x0200|0x20))//f+ctrl
+//				{
+//					FrontWheel_Mode = CHASSIS_LOW;
+//				}
+//				//抬升底盘后轮
+//				if(key->v == 0x8000)//b
+//				{
+//					BehindWheel_Mode = CHASSIS_HIGH;
+//				}
+//				//回复正常底盘
+//				if(key->v == (0x8000|0x10))//b+shift
+//				{
+//					BehindWheel_Mode = CHASSIS_NORMAL;
+//				}
+//				//放低底盘后轮
+//				if(key->v == (0x8000|0x20))//b+ctrl
+//				{
+//					BehindWheel_Mode = CHASSIS_LOW;
+//				}
+				lastKey = key ->v;
+				
+		}
+		else if(GetBulletState == GEBULLET_PREPARE)
+		{
+			HERO_Order = HERO_MANUL_PREPARE;
+		}
+		else if(GetBulletState == MANUAL_GETBULLET)
+		{
+			AM1RAngleTarget +=(rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT; //右侧电机 
+			AM1LAngleTarget -=(rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT; //左侧电机
+			
+//				if(key->v & 0x0800)//z				
+//			  {
+//				 		HERO_Order = HERO_MANUL_PREPARE;
+//				}
+			 if(key->v == 0x0810)//shift+z
+				{
+					  HERO_Order = HERO_MANUL_LOAD;
+				}
+				else if(key->v == 0x0820)//ctrl+z
+				{
+					  HERO_Order = HERO_MANUL_RECOVER;
+				}
+//				//抓取
+				 if(key->v & 0x1000)//x
+				{
+					GRIP_SOV_ON();
+				}
+				//放开
+				if(key->v == 0x1010)//x+shift
+				{
+					GRIP_SOV_OFF();
+				}
+				//up
+			  else if(key->v == 0x2000)//c
+				{
+					FRONT_SOV1_ON();
+				}
+				//down
+				else if(key->v == 0x2010)//c+shift
+				{
+					FRONT_SOV1_OFF();
+				}
+
+		}
+		else if(GetBulletState == AUTO_GETBULLET)
+		{
+			AM1RAngleTarget +=(rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
+			AM1LAngleTarget -=(rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
+		}
 	}
+	else
+	{
+
+	}
+			
+	RemoteGetBulletControl(&g_switch1, rc->s1);
+}
 
 }
 

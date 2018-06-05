@@ -45,6 +45,7 @@
 #include <stdbool.h>
 #include "visualscope.h"
 #include "tasks_hero.h"
+#include "peripheral_sov.h"
 
 extern PID_Regulator_t CMRotatePID ; 
 extern PID_Regulator_t CM1SpeedPID;
@@ -97,6 +98,7 @@ uint16_t checkKeyTime=500;
  int ad1,ad2,ad3,ad4,ad5;
 extern uint32_t ADC_Value[100];
 
+
 void Timer_2ms_lTask(void const * argument)
 {
 	//RTOS提供，用来做2ms精确定时
@@ -126,9 +128,6 @@ void Timer_2ms_lTask(void const * argument)
 		}
 
 
-//			VisualScope(&huart3, (int)PM1RealAngle, 0, 0, 0); 
-		
-		
 //定时1s,发送调试信息		
 		if(s_countWhile >= 2000)//150 1000
 		{
@@ -149,12 +148,13 @@ void Timer_2ms_lTask(void const * argument)
 			s_countWhile++;
 		}
 		
-		if(PM1RotateCount <= 350)
+		if(PM1RotateCount <= 300)
 		{
 			PM1RotateCount++;
 		}
 		else
 		{
+//			spitOneBullet();
 			PM1RotateCount = 0;
 			PM1RotateFlag = 1;
 		}
@@ -237,6 +237,7 @@ void WorkStateSwitchProcess(void)
 		SetFrictionWheelSpeed(800);
 		SetFrictionState(FRICTION_WHEEL_OFF);
 		frictionRamp.ResetCounter(&frictionRamp);
+		GRIP_SOV_OFF();
 	}
 	//如果从其他模式切换到prapare模式，要将一系列参数初始化
 	if((lastWorkState != g_workState) && (g_workState == PREPARE_STATE))  
