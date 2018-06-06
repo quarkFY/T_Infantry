@@ -250,7 +250,11 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 	
 		pitchAngleTarget -= mouse->y* MOUSE_TO_PITCH_ANGLE_INC_FACT; 
 		if(key->v == 0x0400) GMMode = LOCK;    //锁定云台  G
-		if(key->v == 0x0420) GMMode = UNLOCK;  //解锁云台  G + Ctrl				
+		if(key->v == 0x0420) GMMode = UNLOCK;  //解锁云台  G + Ctrl		
+		if(key->v == 0x8000)//b
+		{
+			HERO_Order = HERO_SHOOT_LOAD;
+		}				
 		if(GMMode == UNLOCK) 
 		{
 			yawAngleTarget    -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;

@@ -20,6 +20,7 @@ typedef enum
 	HERO_STANDBY = 2,
 	HERO_MANUL_RECOVER = 3,
 	HERO_MANUL_FETCH = 4,
+	HERO_SHOOT_LOAD = 5,
 	
 	
 }HERO_Order_t;

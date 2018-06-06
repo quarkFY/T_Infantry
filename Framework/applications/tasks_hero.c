@@ -65,6 +65,11 @@ void HeroTask(void const * argument)
 				{
 					
 				}break;
+				case HERO_SHOOT_LOAD:
+				{
+					shootLoad();
+					HERO_Order = HERO_MANUL_FETCH;
+				}break;
 				default:
 				  fw_Error_Handler();
 					
