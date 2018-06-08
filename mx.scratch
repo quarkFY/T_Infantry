@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Project>
-<ProjectName>E:\Users\P51\Desktop\T_Infantry - &#20113;&#21488;&#21435;&#32806;&#21512;_&#26519;&#28851;&#36745;&#20462;&#25913;\T_Infantry - &#20113;&#21488;&#21435;&#32806;&#21512;\\X_Infantry</ProjectName>
+<ProjectName>E:\Users\P51\Documents\GitHub\T_Infantry\\X_Infantry</ProjectName>
 <CMSIS>..\Drivers\CMSIS</CMSIS>
 <HAL_Driver>C:\Users\P51\STM32Cube\Repository\STM32Cube_FW_F4_V1.15.0\Drivers\CMSIS</HAL_Driver>
 
@@ -138,6 +138,12 @@
 							<name>../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c</name>
 						</file>
 						<file>
+							<name>../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c</name>
+						</file>
+						<file>
+							<name>../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c</name>
+						</file>
+						<file>
 							<name>../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c</name>
 						</file>
 						<file>
@@ -209,6 +215,10 @@
 
                                 <file>
                                  <name>..\Src\gpio.c</name>
+                                </file>
+
+                                <file>
+                                 <name>..\Src\adc.c</name>
                                 </file>
 
                                 <file>
