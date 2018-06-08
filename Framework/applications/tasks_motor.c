@@ -304,7 +304,7 @@ void ControlCMFL(void)
 		if(s_CMFLCount == 1)
 		{
 			IOPool_getNextRead(CMFLRxIOPool, 0);
-			Motor820RRxMsg_t *pData = IOPool_pGetReadData(CMFLRxIOPool, 0);
+			MotorC620RxMsg_t *pData = IOPool_pGetReadData(CMFLRxIOPool, 0);
 			
 			CM2SpeedPID.ref = - ChassisSpeedRef.forward_back_ref*0.075 
 											 - ChassisSpeedRef.left_right_ref*0.075 
@@ -334,7 +334,7 @@ void ControlCMFR(void)
 		if(s_CMFRCount == 1)
 		{
 			IOPool_getNextRead(CMFRRxIOPool, 0);
-			Motor820RRxMsg_t *pData = IOPool_pGetReadData(CMFRRxIOPool, 0);
+			MotorC620RxMsg_t *pData = IOPool_pGetReadData(CMFRRxIOPool, 0);
 			
 			CM1SpeedPID.ref =  ChassisSpeedRef.forward_back_ref*0.075 
 											 - ChassisSpeedRef.left_right_ref*0.075 
@@ -363,7 +363,7 @@ void ControlCMBL(void)
 		if(s_CMBLCount == 1)
 		{
 			IOPool_getNextRead(CMBLRxIOPool, 0);
-			Motor820RRxMsg_t *pData = IOPool_pGetReadData(CMBLRxIOPool, 0);
+			MotorC620RxMsg_t *pData = IOPool_pGetReadData(CMBLRxIOPool, 0);
 			
 			CM3SpeedPID.ref = -ChassisSpeedRef.forward_back_ref*0.075 
 											 + ChassisSpeedRef.left_right_ref*0.075 
@@ -392,7 +392,7 @@ void ControlCMBR()
 		if(s_CMBRCount ==1)
 		{
 			IOPool_getNextRead(CMBRRxIOPool, 0);
-			Motor820RRxMsg_t *pData = IOPool_pGetReadData(CMBRRxIOPool, 0);
+			MotorC620RxMsg_t *pData = IOPool_pGetReadData(CMBRRxIOPool, 0);
 			
 			CM4SpeedPID.ref = ChassisSpeedRef.forward_back_ref*0.075 
 											 + ChassisSpeedRef.left_right_ref*0.075 
