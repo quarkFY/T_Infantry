@@ -57,8 +57,8 @@ int isGMYAWFirstEnter = 1;
 int isGMPITCHFirstEnter = 1;
 int isGMSet;
 
-fw_PID_Regulator_t pitchPositionPID = fw_PID_INIT(100, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
-fw_PID_Regulator_t yawPositionPID = fw_PID_INIT(100.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);//等幅振荡P37.3 I11.9 D3.75  原26.1 8.0 1.1
+fw_PID_Regulator_t pitchPositionPID = fw_PID_INIT(100, 0.0, 0.0, 4000.0, 10000.0, 10000.0, 10000.0);
+fw_PID_Regulator_t yawPositionPID = fw_PID_INIT(100.0, 0.0, 0.0, 4000.0, 10000.0, 10000.0, 10000.0);//等幅振荡P37.3 I11.9 D3.75  原26.1 8.0 1.1
 fw_PID_Regulator_t pitchSpeedPID = fw_PID_INIT(5.0, 0.0, 5.0, 3000.0, 10000.0, 10000.0, 5000);
 fw_PID_Regulator_t yawSpeedPID = fw_PID_INIT(5.0, 0.0, 5.0, 3000.0, 10000.0, 10000.0, 5000.0);
 
@@ -598,6 +598,29 @@ void shootOneGolfConpensation()
 		{
 	PM2AngleTarget = PM2AngleTarget - 30;
 		}
+}
+
+uint8_t bulletNum = 8;
+void shootLoad()
+{
+	uint16_t PM2tmp = PM2AngleTarget;
+	for(uint8_t i=0;i<100;i++)
+	{
+		if(fabs(PM2AngleTarget-PM2RealAngle)< 180 )
+		{
+			PM2AngleTarget += 20;
+			osDelay(20);
+		}
+//		PM2AngleTarget += 20;
+//		osDelay(10);
+	}
+	osDelay(100);
+	for(uint8_t i=0;i<bulletNum;i++)
+	{
+		shootOneGolf();
+		PM2AngleTarget += 240;
+		osDelay(300);
+	}
 }
 
 RotateDirection_e PMRotateDirection = CLOCKWISE;
