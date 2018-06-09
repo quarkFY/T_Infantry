@@ -11,6 +11,9 @@
 #include "drivers_uartrc_user.h"
 #include "tasks_arm.h"
 #include "peripheral_sov.h"
+
+#include <stdlib.h>
+#include <math.h>
 //参考工程车，增加英雄取弹模块
 uint8_t HERO_task_on=0;
 extern Get_Bullet_e GetBulletState;
@@ -30,12 +33,16 @@ extern float LastAM2LAngleTarget;
 extern float LastAM2RAngleTarget;
 extern float LastAM3RAngleTarget;
 
+extern float PM2AngleTarget,PM2RealAngle;
+uint8_t PM2RotateEnale = 1;
+uint8_t PM2RotateCounter = 0;
+
 //红外ADC配置
 extern uint32_t ADC_Value[60];
 //状态及命令枚举
 HERO_Order_t HERO_Order=HERO_STANDBY;
 HERO_Order_t Last_HERO_Order=HERO_STANDBY;
-
+extern FrictionWheelState_e g_friction_wheel_state; 
  Chassis_Mode_e FrontWheel_Mode = CHASSIS_NORMAL, Last_FrontWheel_Mode = CHASSIS_NORMAL,BehindWheel_Mode = CHASSIS_NORMAL, Last_BehindWheel_Mode = CHASSIS_NORMAL;
 
 void HeroTask(void const * argument)
@@ -69,6 +76,40 @@ void HeroTask(void const * argument)
 				{
 					shootLoad();
 					HERO_Order = HERO_MANUL_FETCH;
+				}break;
+				case HERO_STEADY_ROTATE:
+				{
+					if(g_friction_wheel_state == FRICTION_WHEEL_ON)
+					{
+						//正常一直转
+						if(PM2RotateEnale == 1)
+						{
+							PM2AngleTarget+=20;
+							osDelay(20);
+						}
+						//堵转回90度
+						else if(PM2RotateEnale == 2)
+						{
+								PM2AngleTarget-=90;
+								PM2RotateEnale = 0;
+						}
+						//回转到位
+						else if(fabs(PM2AngleTarget-PM2RealAngle)<5)
+						{
+								PM2RotateEnale = 1;
+						}
+						//堵转检测
+						if((PM2AngleTarget-PM2RealAngle)>200)
+						{
+							PM2AngleTarget=PM2RealAngle;
+							PM2RotateEnale = 2;
+						}
+					}
+					else
+					{
+						HERO_Order = HERO_MANUL_FETCH;
+						PM2AngleTarget=PM2RealAngle;
+					}
 				}break;
 				default:
 				  fw_Error_Handler();

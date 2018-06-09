@@ -92,8 +92,6 @@ GMMode_e GMMode = UNLOCK;
 
 
 extern float PM2AngleTarget,PM2RealAngle;
-uint8_t PM2RotateEnale = 1;
-uint8_t PM2RotateCounter = 0;
 
 unsigned int zyLeftPostion; //大符用左拨杆位置
  
@@ -257,35 +255,37 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 				SetFrictionWheelSpeed(800 + (FRICTION_WHEEL_MAX_DUTY-800)*frictionRamp.Calc(&frictionRamp)); 
 				if(frictionRamp.IsOverflow(&frictionRamp))
 				{
-					g_friction_wheel_state = FRICTION_WHEEL_ON; 	
+					g_friction_wheel_state = FRICTION_WHEEL_ON; 
+          HERO_Order = HERO_STEADY_ROTATE;					
 				}
 				
 			}
 		}break;
 		case FRICTION_WHEEL_ON:
 		{
-			//正常一直转
-			if(PM2RotateEnale == 1)
-			{
-				PM2AngleTarget+=10;
-			}
-			//堵转回转90度
-			else if(PM2RotateEnale == 2)
-			{
-					PM2AngleTarget-=90;
-					PM2RotateEnale = 0;
-			}
-			//回转到位
-			else if(fabs(PM2AngleTarget-PM2RealAngle)<10)
-			{
-					PM2RotateEnale = 1;
-			}
-			//堵转检测
-			if((PM2AngleTarget-PM2RealAngle)>200)
-			{
-				PM2AngleTarget=PM2RealAngle;
-				PM2RotateEnale = 2;
-			}
+			
+//			//正常一直转
+//			if(PM2RotateEnale == 1)
+//			{
+//				PM2AngleTarget+=10;
+//			}
+//			//堵转回转90度
+//			else if(PM2RotateEnale == 2)
+//			{
+//					PM2AngleTarget-=90;
+//					PM2RotateEnale = 0;
+//			}
+//			//回转到位
+//			else if(fabs(PM2AngleTarget-PM2RealAngle)<10)
+//			{
+//					PM2RotateEnale = 1;
+//			}
+//			//堵转检测
+//			if((PM2AngleTarget-PM2RealAngle)>200)
+//			{
+//				PM2AngleTarget=PM2RealAngle;
+//				PM2RotateEnale = 2;
+//			}
 			if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)   
 			{
 				LASER_OFF();//zy0802
@@ -375,34 +375,14 @@ void MouseShootControl(Mouse *mouse)
 				if(frictionRamp.IsOverflow(&frictionRamp))
 				{
 					g_friction_wheel_state = FRICTION_WHEEL_ON; 	
+					HERO_Order = HERO_STEADY_ROTATE;
 				}
 				
 			}
 		}break;
 		case FRICTION_WHEEL_ON:
 		{
-			//正常一直转
-			if(PM2RotateEnale == 1)
-			{
-				PM2AngleTarget+=20;
-			}
-			//堵转回转90度
-			else if(PM2RotateEnale == 2)
-			{
-					PM2AngleTarget-=90;
-					PM2RotateEnale = 0;
-			}
-			//回转到位
-			else if(fabs(PM2AngleTarget-PM2RealAngle)<5)
-			{
-					PM2RotateEnale = 1;
-			}
-			//堵转检测
-			if((PM2AngleTarget-PM2RealAngle)>200)
-			{
-				PM2AngleTarget=PM2RealAngle;
-				PM2RotateEnale = 2;
-			}
+			
 			if(mouse->press_r == 1)
 			{
 				closeDelayCount++;

@@ -21,6 +21,7 @@ typedef enum
 	HERO_MANUL_RECOVER = 3,
 	HERO_MANUL_FETCH = 4,
 	HERO_SHOOT_LOAD = 5,
+	HERO_STEADY_ROTATE = 6,
 	
 	
 }HERO_Order_t;
