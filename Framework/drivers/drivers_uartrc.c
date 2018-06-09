@@ -267,7 +267,7 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 			//正常一直转
 			if(PM2RotateEnale == 1)
 			{
-				PM2AngleTarget+=20;
+				PM2AngleTarget+=10;
 			}
 			//堵转回转90度
 			else if(PM2RotateEnale == 2)
@@ -276,7 +276,7 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 					PM2RotateEnale = 0;
 			}
 			//回转到位
-			else if(fabs(PM2AngleTarget-PM2RealAngle)<5)
+			else if(fabs(PM2AngleTarget-PM2RealAngle)<10)
 			{
 					PM2RotateEnale = 1;
 			}

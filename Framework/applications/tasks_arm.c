@@ -518,8 +518,10 @@ void shootOneGolfConpensation()
 }
 
 uint8_t bulletNum = 8;
+uint8_t PM1RotateFlag2 =1;
 void shootLoad()
 {
+	PM1RotateFlag2 = 0;
 	uint16_t PM2tmp = PM2AngleTarget;
 	for(uint8_t i=0;i<100;i++)
 	{
@@ -538,28 +540,32 @@ void shootLoad()
 		PM2AngleTarget += 240;
 		osDelay(300);
 	}
+	PM1RotateFlag2 = 1;
 }
 
 RotateDirection_e PMRotateDirection = CLOCKWISE;
 
 void PMRotate()
 {
-	if(PM1RotateFlag == 1)
+	if(PM1RotateFlag2)
 	{
-		switch(PMRotateDirection)
+		if(PM1RotateFlag == 1)
 		{
-			case CLOCKWISE:
+			switch(PMRotateDirection)
 			{
-				PM2AngleTarget = PM2AngleTarget - 90;
-				PMRotateDirection = ANTICLOCKWISE;
-			}break;
-			case ANTICLOCKWISE:
-			{
-				PM2AngleTarget = PM2AngleTarget + 90;
-				PMRotateDirection = CLOCKWISE;
-			}break;
+				case CLOCKWISE:
+				{
+					PM2AngleTarget = PM2AngleTarget - 90;
+					PMRotateDirection = ANTICLOCKWISE;
+				}break;
+				case ANTICLOCKWISE:
+				{
+					PM2AngleTarget = PM2AngleTarget + 90;
+					PMRotateDirection = CLOCKWISE;
+				}break;
+			}
+			
+			PM1RotateFlag = 0;
 		}
-		
-		PM1RotateFlag = 0;
-	}
+	}	
 }
