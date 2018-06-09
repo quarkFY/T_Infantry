@@ -384,14 +384,7 @@ void MouseShootControl(Mouse *mouse)
 			//正常一直转
 			if(PM2RotateEnale == 1)
 			{
-				PM2RotateCounter++;
-				if(PM2RotateCounter==80)
-				{
-					PM2RotateCounter = 0;
-					PM2AngleTarget -= 90;
-					PM2RotateEnale = 0;
-				}
-				else PM2AngleTarget+=15;
+				PM2AngleTarget+=20;
 			}
 			//堵转回转90度
 			else if(PM2RotateEnale == 2)
@@ -405,7 +398,7 @@ void MouseShootControl(Mouse *mouse)
 					PM2RotateEnale = 1;
 			}
 			//堵转检测
-			if((PM2AngleTarget-PM2RealAngle)>100 && PM2RotateEnale == 1)
+			if((PM2AngleTarget-PM2RealAngle)>200)
 			{
 				PM2AngleTarget=PM2RealAngle;
 				PM2RotateEnale = 2;

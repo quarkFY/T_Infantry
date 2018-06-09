@@ -284,7 +284,7 @@ void ControlCMFL(void)
 			CM2SpeedPID.fdb = pData->RotateSpeed;
 			CM2SpeedPID.Calc(&CM2SpeedPID);
 			
-			setMotor(CMFR, -CHASSIS_SPEED_ATTENUATION * CM2SpeedPID.output);
+			setMotor(CMFR, CHASSIS_SPEED_ATTENUATION * CM2SpeedPID.output);
 			
 			s_CMFLCount = 0;
 		}
@@ -313,7 +313,7 @@ void ControlCMFR(void)
 			
 			CM1SpeedPID.Calc(&CM1SpeedPID);
 			
-			setMotor(CMFL, -CHASSIS_SPEED_ATTENUATION * CM1SpeedPID.output);
+			setMotor(CMFL, CHASSIS_SPEED_ATTENUATION * CM1SpeedPID.output);
 			
 			s_CMFRCount = 0;
 		}
