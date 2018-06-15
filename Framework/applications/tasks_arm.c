@@ -173,7 +173,7 @@ void ControlAM1L()
 			AM1LSpeedPID.feedback = IOPool_pGetReadData(AM1LRxIOPool, 0)->RotateSpeed;
 			AM1LSpeedPID.Calc(&AM1LSpeedPID);
 			
-			setMotor(AM1L, -AM1LSpeedPID.output);
+			setMotor(AM1L, AM1LSpeedPID.output);
 			s_AM1LCount = 0;
 			AM1LLastAngle = AM1LThisAngle;
 		}

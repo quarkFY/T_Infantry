@@ -144,17 +144,6 @@ void RemoteTaskInit()
 	SetFrictionState(FRICTION_WHEEL_OFF);
 	ArmSpeedRef.forward_back_ref = 0.0f;
 	ArmSpeedRef.up_down_ref = 0.0f;
-	FR1_OFF();
-			FR2_OFF();
-			
-			FL1_OFF();
-			FL2_OFF();
-			
-			BL1_OFF();
-			BL2_OFF();
-			
-			BR1_OFF();
-			BR2_OFF();
 }
 
 /*拨杆数据处理*/   
@@ -232,22 +221,114 @@ extern PID_Regulator_t PM2PositionPID;
 uint16_t remoteShootDelay = 500;
 void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val) 
 {
-	    if(sw->switch_value_raw == 1)	//左侧拨杆拨到中间便会开枪
+	switch(g_friction_wheel_state)
+	{
+		case FRICTION_WHEEL_OFF:
+		{
+			if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_1TO3)   
 			{
+				SetShootState(NO_SHOOT);
+				frictionRamp.ResetCounter(&frictionRamp);
+				g_friction_wheel_state = FRICTION_WHEEL_START_TURNNING;	 
+				LASER_ON(); 
+				FRONT_SOV1_OFF();		}
+				PMRotate();
+		}break;
+		case FRICTION_WHEEL_START_TURNNING:
+		{
+			if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)   
+			{
+				LASER_OFF();//zy0802
+				SetShootState(NO_SHOOT);
+				SetFrictionWheelSpeed(800);
 				g_friction_wheel_state = FRICTION_WHEEL_OFF;
-				
-			}		
-      if(sw->switch_value_raw == 3)	//左侧拨杆拨到中间便会开枪
+				frictionRamp.ResetCounter(&frictionRamp);
+			}
+			
+//		else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)	
+//		{
+//		}
+			
+			else
 			{
-				g_friction_wheel_state = FRICTION_WHEEL_ON;
+				/*斜坡函数必须有，避免电流过大烧坏主控板*/
+				SetFrictionWheelSpeed(800 + (FRICTION_WHEEL_MAX_DUTY-800)*frictionRamp.Calc(&frictionRamp)); 
+				if(frictionRamp.IsOverflow(&frictionRamp))
+				{
+					g_friction_wheel_state = FRICTION_WHEEL_ON; 
+          HERO_Order = HERO_STEADY_ROTATE;					
+				}
 				
-			}		
-      if(sw->switch_value_raw == 2)	//左侧拨杆拨到中间便会开枪
+			}
+		}break;
+		case FRICTION_WHEEL_ON:
+		{
+			
+//			//正常一直转
+//			if(PM2RotateEnale == 1)
+//			{
+//				PM2AngleTarget+=10;
+//			}
+//			//堵转回转90度
+//			else if(PM2RotateEnale == 2)
+//			{
+//					PM2AngleTarget-=90;
+//					PM2RotateEnale = 0;
+//			}
+//			//回转到位
+//			else if(fabs(PM2AngleTarget-PM2RealAngle)<10)
+//			{
+//					PM2RotateEnale = 1;
+//			}
+//			//堵转检测
+//			if((PM2AngleTarget-PM2RealAngle)>200)
+//			{
+//				PM2AngleTarget=PM2RealAngle;
+//				PM2RotateEnale = 2;
+//			}
+			if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)   
 			{
-				g_friction_wheel_state = FRICTION_WHEEL_START_TURNNING;
+				LASER_OFF();//zy0802
+				g_friction_wheel_state = FRICTION_WHEEL_OFF;				  
+				SetFrictionWheelSpeed(800); 
+				frictionRamp.ResetCounter(&frictionRamp);
+				SetShootState(NO_SHOOT);
+			}
+			else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_2TO3)   
+			{
 				
-			}					
-	
+			}
+			else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)   
+			{
+				
+			}
+
+			else if(sw->switch_value_raw == 2)	//左侧拨杆拨到中间便会开枪
+			{
+				SetShootState(MANUL_SHOOT_ONE);
+				
+				if (remoteShootDelay == 0)
+				{
+					shootOneGolf();
+					remoteShootDelay = 50;
+				}
+				else if (remoteShootDelay == 25)
+				{
+					shootOneGolfConpensation();
+					--remoteShootDelay;
+				}
+				else 
+				{
+					--remoteShootDelay;
+				}
+				
+			}
+			else
+			{
+				SetShootState(NO_SHOOT);
+			}					 
+		} break;				
+	}
 }
 	 
 void MouseShootControl(Mouse *mouse)
@@ -432,7 +513,7 @@ void RemoteGetBulletControl(RemoteSwitch_t *sw, uint8_t val)
 	{
 		SetGetBulletState(NO_GETBULLET);
 		HERO_Order = HERO_MANUL_RECOVER;
-//		GRIP_SOV_OFF();
+		GRIP_SOV_OFF();
 		//底盘速度恢复为NORMAL
 		forward_back_speed =  NORMAL_FORWARD_BACK_SPEED;
 		left_right_speed = NORMAL_LEFT_RIGHT_SPEED;
@@ -442,12 +523,12 @@ void RemoteGetBulletControl(RemoteSwitch_t *sw, uint8_t val)
 	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)
 	{
 		SetGetBulletState(MANUAL_GETBULLET);
-//		GRIP_SOV_ON();
+		GRIP_SOV_ON();
 	}
 	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_2TO3)
 	{
 		SetGetBulletState(MANUAL_GETBULLET);
-//		GRIP_SOV_OFF();
+		GRIP_SOV_OFF();
 	}
 	else if(sw->switch_value_raw == 3)
 	{

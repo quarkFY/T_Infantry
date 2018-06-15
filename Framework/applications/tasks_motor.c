@@ -35,7 +35,7 @@
 #include "peripheral_define.h"
 #include "drivers_uartupper_user.h"
 
-#define CMReduction 19
+
 //PID_INIT(Kp, Ki, Kd, KpMax, KiMax, KdMax, OutputMax)
 //云台
 int yaw_zero = 620;
@@ -70,26 +70,7 @@ PID_Regulator_t CM3SpeedPID = CHASSIS_MOTOR_SPEED_PID_DEFAULT;
 PID_Regulator_t CM4SpeedPID = CHASSIS_MOTOR_SPEED_PID_DEFAULT;
 
 
-fw_PID_Regulator_t CMFLPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
-fw_PID_Regulator_t CMFRPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
-fw_PID_Regulator_t CMBLPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
-fw_PID_Regulator_t CMBRPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
-fw_PID_Regulator_t CMFRSpeedPID = fw_PID_INIT(6.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 8000.0);
-fw_PID_Regulator_t CMFLSpeedPID = fw_PID_INIT(6.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 8000.0);
-fw_PID_Regulator_t CMBLSpeedPID = fw_PID_INIT(6.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 8000.0);
-fw_PID_Regulator_t CMBRSpeedPID = fw_PID_INIT(6.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 8000.0);
 
-//机械臂电机目标物理角度值
-float CMFLAngleTarget = 0.0;
-float CMFRAngleTarget = 0.0;
-float CMBLAngleTarget = 0.0;
-float CMBRAngleTarget = 0.0;
-
-//机械臂电机实际物理角度值
-float CMFLRealAngle = 0.0;
-float CMFRRealAngle = 0.0;
-float CMBLRealAngle = 0.0;
-float CMBRRealAngle = 0.0;
 //陀螺仪角速度（板载）
 extern float gYroXs, gYroYs, gYroZs;
 
@@ -202,6 +183,7 @@ void ControlYaw(void)
 	}
 }
 
+
 /*Pitch电机*/
 void ControlPitch(void)
 {
@@ -212,16 +194,20 @@ void ControlPitch(void)
 		{
 		  int16_t pitchZeroAngle = 0;
       pitchZeroAngle = pitch_zero;
-		  /*从IOPool读编码器*/
+		  
+			/*从IOPool读编码器*/
 			IOPool_getNextRead(GMPITCHRxIOPool, 0); 
+			//fw_printfln("pitch%d",IOPool_pGetReadData(GMPITCHRxIOPool, 0)->angle);
+			//pitchRealAngle = (IOPool_pGetReadData(GMPITCHRxIOPool, 0)->angle- pitchZeroAngle) * 360 * 11 / (8192.0f * 50);
+			
 			GMPITCHThisAngle = IOPool_pGetReadData(GMPITCHRxIOPool, 0)->angle;
 			GMPITCHCurrent = IOPool_pGetWriteData(GMPITCHRxIOPool)->realIntensity;
-      pitchEncoder = IOPool_pGetReadData(GMPITCHRxIOPool, 0)->angle;
+
+			pitchEncoder = IOPool_pGetReadData(GMPITCHRxIOPool, 0)->angle;
 			if(isGMPITCHFirstEnter==1) 
 			{
 				GMPITCHLastAngle = GMPITCHThisAngle;
-				//初始化复位
-				//pitchRealAngle = (IOPool_pGetReadData(GMPITCHRxIOPool, 0)->angle- pitchZeroAngle) * 360  / 8192.0f ; 
+				//pitchRealAngle = (IOPool_pGetReadData(GMPITCHRxIOPool, 0)->angle- pitchZeroAngle) * 360  / 8192.0f ; //初始化复位
 				pitchRealAngle = 0;
 				isGMPITCHFirstEnter = 0;
 			}	//初始化时，记录下当前编码器的值
@@ -245,11 +231,15 @@ void ControlPitch(void)
 			//限位
 			//MINMAX(pitchAngleTarget, -10.0f, 30.0f);	
 			
-		  //pitchMotorTarget = pitchAngleTarget - yawAngleTarget ;  //耦合
+//		  pitchMotorTarget = pitchAngleTarget - yawAngleTarget ;  //耦合
 			pitchIntensity = ProcessPitchPID(-pitchAngleTarget,pitchRealAngle,-gYroXs); 
 			GMPITCHLastAngle = GMPITCHThisAngle;
 	
-		  setMotor(GMPITCH, -pitchIntensity);
+//		  if (isGMSet == 1)
+//			{
+				setMotor(GMPITCH, -pitchIntensity);
+//			}
+
 			s_pitchCount = 0;
 		}
 		else
@@ -258,8 +248,6 @@ void ControlPitch(void)
 		}
 	}
 }
-
-
 /*底盘转动控制：跟随云台等,英雄没有*/
 //void ControlRotate(void)
 //{
@@ -277,9 +265,6 @@ void ControlPitch(void)
 //}
 
 /*底盘电机控制FL(ForwardLeft)FR BL BR*/
-uint8_t isCMFLFirstEnter = 1;
-uint16_t CMFLThisAngle = 0;
-uint16_t CMFLLastAngle = 0;
 void ControlCMFL(void)
 {		
 	if(IOPool_hasNextRead(CMFLRxIOPool, 0))
@@ -287,37 +272,21 @@ void ControlCMFL(void)
 		if(s_CMFLCount == 1)
 		{
 			IOPool_getNextRead(CMFLRxIOPool, 0);
-			CMFLThisAngle = IOPool_pGetReadData(CMFLRxIOPool, 0)->angle;
+			MotorC620RxMsg_t *pData = IOPool_pGetReadData(CMFLRxIOPool, 0);
 			
-			if(isCMFLFirstEnter==1) {CMFLLastAngle = CMFLThisAngle;isCMFLFirstEnter = 0;return;}	//初始化时，记录下当前编码器的值
+			CM2SpeedPID.ref = - ChassisSpeedRef.forward_back_ref*0.075 
+											 - ChassisSpeedRef.left_right_ref*0.075 
+											 - ChassisSpeedRef.rotate_ref
+			                 ;
+			CM2SpeedPID.ref = 160 * CM2SpeedPID.ref;
 			
-			if(CMFLThisAngle<=CMFLLastAngle)
-			{
-				if((CMFLLastAngle-CMFLThisAngle)>3000)//编码器上溢
-					CMFLRealAngle = CMFLRealAngle + (CMFLThisAngle+8192-CMFLLastAngle) * 360 / 8192.0 / 19;
-				else//反转
-					CMFLRealAngle = CMFLRealAngle - (CMFLLastAngle - CMFLThisAngle) * 360 / 8192.0 / 19;
-			}
-			else
-			{
-				if((CMFLThisAngle-CMFLLastAngle)>3000)//编码器下溢
-					CMFLRealAngle = CMFLRealAngle - (CMFLLastAngle+8192-CMFLThisAngle) *360 / 8192.0 / 19;
-				else//正转
-					CMFLRealAngle = CMFLRealAngle + (CMFLThisAngle - CMFLLastAngle) * 360 / 8192.0 / 19;
-			}
+	
+			CM2SpeedPID.fdb = pData->RotateSpeed;
+			CM2SpeedPID.Calc(&CM2SpeedPID);
 			
+			setMotor(CMFR, CHASSIS_SPEED_ATTENUATION * CM2SpeedPID.output);
 			
-			CMFLPositionPID.target = CMFLAngleTarget;
-			CMFLPositionPID.feedback = CMFLRealAngle;
-			CMFLPositionPID.Calc(&CMFLPositionPID);
-			
-			CMFLSpeedPID.target = CMFLPositionPID.output;
-			CMFLSpeedPID.feedback = IOPool_pGetReadData(CMFLRxIOPool, 0)->RotateSpeed;
-			CMFLSpeedPID.Calc(&CMFLSpeedPID);
-			
-			setMotor(CMFL, -CMFLSpeedPID.output);
 			s_CMFLCount = 0;
-			CMFLLastAngle = CMFLThisAngle;
 		}
 		else
 		{
@@ -325,47 +294,28 @@ void ControlCMFL(void)
 		}
 	}
 }
-uint8_t isCMFRFirstEnter = 1;
-uint16_t CMFRThisAngle = 0;
-uint16_t CMFRLastAngle = 0;
+
 void ControlCMFR(void)
-{		
+{
 	if(IOPool_hasNextRead(CMFRRxIOPool, 0))
 	{
 		if(s_CMFRCount == 1)
 		{
 			IOPool_getNextRead(CMFRRxIOPool, 0);
-			CMFRThisAngle = IOPool_pGetReadData(CMFRRxIOPool, 0)->angle;
+			MotorC620RxMsg_t *pData = IOPool_pGetReadData(CMFRRxIOPool, 0);
 			
-			if(isCMFRFirstEnter==1) {CMFRLastAngle = CMFRThisAngle;isCMFRFirstEnter = 0;return;}	//初始化时，记录下当前编码器的值
+			CM1SpeedPID.ref =  ChassisSpeedRef.forward_back_ref*0.075 
+											 - ChassisSpeedRef.left_right_ref*0.075 
+											 - ChassisSpeedRef.rotate_ref
+			                 ;	
+			CM1SpeedPID.ref = 160 * CM1SpeedPID.ref;
+			CM1SpeedPID.fdb = pData->RotateSpeed;
 			
-			if(CMFRThisAngle<=CMFRLastAngle)
-			{
-				if((CMFRLastAngle-CMFRThisAngle)>3000)//编码器上溢
-					CMFRRealAngle = CMFRRealAngle + (CMFRThisAngle+8192-CMFRLastAngle) * 360 / 8192.0 / CMReduction;
-				else//反转
-					CMFRRealAngle = CMFRRealAngle - (CMFRLastAngle - CMFRThisAngle) * 360 / 8192.0 / CMReduction;
-			}
-			else
-			{
-				if((CMFRThisAngle-CMFRLastAngle)>3000)//编码器下溢
-					CMFRRealAngle = CMFRRealAngle - (CMFRLastAngle+8192-CMFRThisAngle) *360 / 8192.0 / CMReduction;
-				else//正转
-					CMFRRealAngle = CMFRRealAngle + (CMFRThisAngle - CMFRLastAngle) * 360 / 8192.0 / CMReduction;
-			}
+			CM1SpeedPID.Calc(&CM1SpeedPID);
 			
+			setMotor(CMFL, CHASSIS_SPEED_ATTENUATION * CM1SpeedPID.output);
 			
-			CMFRPositionPID.target = CMFRAngleTarget;
-			CMFRPositionPID.feedback = CMFRRealAngle;
-			CMFRPositionPID.Calc(&CMFRPositionPID);
-			
-			CMFRSpeedPID.target = CMFRPositionPID.output;
-			CMFRSpeedPID.feedback = IOPool_pGetReadData(CMFRRxIOPool, 0)->RotateSpeed;
-			CMFRSpeedPID.Calc(&CMFRSpeedPID);
-			
-			setMotor(CMFR, -CMFRSpeedPID.output);
 			s_CMFRCount = 0;
-			CMFRLastAngle = CMFRThisAngle;
 		}
 		else
 		{
@@ -373,49 +323,28 @@ void ControlCMFR(void)
 		}
 	}
 }
-
 	
-uint8_t isCMBLFirstEnter = 1;
-uint16_t CMBLThisAngle = 0;
-uint16_t CMBLLastAngle = 0;
 void ControlCMBL(void)
-{		
+{
 	if(IOPool_hasNextRead(CMBLRxIOPool, 0))
 	{
 		if(s_CMBLCount == 1)
 		{
 			IOPool_getNextRead(CMBLRxIOPool, 0);
-			CMBLThisAngle = IOPool_pGetReadData(CMBLRxIOPool, 0)->angle;
+			MotorC620RxMsg_t *pData = IOPool_pGetReadData(CMBLRxIOPool, 0);
 			
-			if(isCMBLFirstEnter==1) {CMBLLastAngle = CMBLThisAngle;isCMBLFirstEnter = 0;return;}	//初始化时，记录下当前编码器的值
+			CM3SpeedPID.ref = -ChassisSpeedRef.forward_back_ref*0.075 
+											 + ChassisSpeedRef.left_right_ref*0.075 
+											 - ChassisSpeedRef.rotate_ref
+			                 ;
+			CM3SpeedPID.ref = 160 * CM3SpeedPID.ref;
+			CM3SpeedPID.fdb = pData->RotateSpeed;
 			
-			if(CMBLThisAngle<=CMBLLastAngle)
-			{
-				if((CMBLLastAngle-CMBLThisAngle)>3000)//编码器上溢
-					CMBLRealAngle = CMBLRealAngle + (CMBLThisAngle+8192-CMBLLastAngle) * 360 / 8192.0 / CMReduction;
-				else//反转
-					CMBLRealAngle = CMBLRealAngle - (CMBLLastAngle - CMBLThisAngle) * 360 / 8192.0 / CMReduction;
-			}
-			else
-			{
-				if((CMBLThisAngle-CMBLLastAngle)>3000)//编码器下溢
-					CMBLRealAngle = CMBLRealAngle - (CMBLLastAngle+8192-CMBLThisAngle) *360 / 8192.0 / CMReduction;
-				else//正转
-					CMBLRealAngle = CMBLRealAngle + (CMBLThisAngle - CMBLLastAngle) * 360 / 8192.0 / CMReduction;
-			}
+			CM3SpeedPID.Calc(&CM3SpeedPID);
 			
+			setMotor(CMBL, CHASSIS_SPEED_ATTENUATION * CM3SpeedPID.output);
 			
-			CMBLPositionPID.target = CMBLAngleTarget;
-			CMBLPositionPID.feedback = CMBLRealAngle;
-			CMBLPositionPID.Calc(&CMBLPositionPID);
-			
-			CMBLSpeedPID.target = CMBLPositionPID.output;
-			CMBLSpeedPID.feedback = IOPool_pGetReadData(CMBLRxIOPool, 0)->RotateSpeed;
-			CMBLSpeedPID.Calc(&CMBLSpeedPID);
-			
-			setMotor(CMBL, CMBLSpeedPID.output);
 			s_CMBLCount = 0;
-			CMBLLastAngle = CMBLThisAngle;
 		}
 		else
 		{
@@ -424,47 +353,27 @@ void ControlCMBL(void)
 	}
 }
 
-uint8_t isCMBRFirstEnter = 1;
-uint16_t CMBRThisAngle = 0;
-uint16_t CMBRLastAngle = 0;
-void ControlCMBR(void)
-{		
+void ControlCMBR()
+{
 	if(IOPool_hasNextRead(CMBRRxIOPool, 0))
 	{
-		if(s_CMBRCount == 1)
+		if(s_CMBRCount ==1)
 		{
 			IOPool_getNextRead(CMBRRxIOPool, 0);
-			CMBRThisAngle = IOPool_pGetReadData(CMBRRxIOPool, 0)->angle;
+			MotorC620RxMsg_t *pData = IOPool_pGetReadData(CMBRRxIOPool, 0);
 			
-			if(isCMBRFirstEnter==1) {CMBRLastAngle = CMBRThisAngle;isCMBRFirstEnter = 0;return;}	//初始化时，记录下当前编码器的值
+			CM4SpeedPID.ref = ChassisSpeedRef.forward_back_ref*0.075 
+											 + ChassisSpeedRef.left_right_ref*0.075 
+											 - ChassisSpeedRef.rotate_ref
+			                 ;
+			CM4SpeedPID.ref = 160 * CM4SpeedPID.ref;
+			CM4SpeedPID.fdb = pData->RotateSpeed;
+					
+			CM4SpeedPID.Calc(&CM4SpeedPID);
 			
-			if(CMBRThisAngle<=CMBRLastAngle)
-			{
-				if((CMBRLastAngle-CMBRThisAngle)>3000)//编码器上溢
-					CMBRRealAngle = CMBRRealAngle + (CMBRThisAngle+8192-CMBRLastAngle) * 360 / 8192.0 / CMReduction;
-				else//反转
-					CMBRRealAngle = CMBRRealAngle - (CMBRLastAngle - CMBRThisAngle) * 360 / 8192.0 / CMReduction;
-			}
-			else
-			{
-				if((CMBRThisAngle-CMBRLastAngle)>3000)//编码器下溢
-					CMBRRealAngle = CMBRRealAngle - (CMBRLastAngle+8192-CMBRThisAngle) *360 / 8192.0 / CMReduction;
-				else//正转
-					CMBRRealAngle = CMBRRealAngle + (CMBRThisAngle - CMBRLastAngle) * 360 / 8192.0 / CMReduction;
-			}
+			setMotor(CMBR, CHASSIS_SPEED_ATTENUATION * CM4SpeedPID.output);
 			
-			
-			CMBRPositionPID.target = CMBRAngleTarget;
-			CMBRPositionPID.feedback = CMBRRealAngle;
-			CMBRPositionPID.Calc(&CMBRPositionPID);
-			
-			CMBRSpeedPID.target = CMBRPositionPID.output;
-			CMBRSpeedPID.feedback = IOPool_pGetReadData(CMBRRxIOPool, 0)->RotateSpeed;
-			CMBRSpeedPID.Calc(&CMBRSpeedPID);
-			
-			setMotor(CMBR, CMBRSpeedPID.output);
 			s_CMBRCount = 0;
-			CMBRLastAngle = CMBRThisAngle;
 		}
 		else
 		{
@@ -472,6 +381,8 @@ void ControlCMBR(void)
 		}
 	}
 }
+
+
 
 
 //void ControlPM3()

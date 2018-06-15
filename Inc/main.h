@@ -59,10 +59,10 @@
 
 #define LASER_Pin GPIO_PIN_13
 #define LASER_GPIO_Port GPIOG
-#define FR1_Pin GPIO_PIN_5
-#define FR1_GPIO_Port GPIOE
-#define FR2_Pin GPIO_PIN_6
-#define FR2_GPIO_Port GPIOE
+#define FRONT_SOV1_Pin GPIO_PIN_5
+#define FRONT_SOV1_GPIO_Port GPIOE
+#define FRONT_SOV2_Pin GPIO_PIN_6
+#define FRONT_SOV2_GPIO_Port GPIOE
 #define LASER2_Pin GPIO_PIN_0
 #define LASER2_GPIO_Port GPIOI
 #define GRIP_SOV_Pin GPIO_PIN_1
@@ -71,20 +71,14 @@
 #define EncoderB_GPIO_Port GPIOH
 #define EncoderA_Pin GPIO_PIN_10
 #define EncoderA_GPIO_Port GPIOH
-#define BR1_Pin GPIO_PIN_0
-#define BR1_GPIO_Port GPIOC
-#define BL1_Pin GPIO_PIN_2
-#define BL1_GPIO_Port GPIOC
-#define BL2_Pin GPIO_PIN_3
-#define BL2_GPIO_Port GPIOC
-#define FL1_Pin GPIO_PIN_4
-#define FL1_GPIO_Port GPIOA
-#define BR2_Pin GPIO_PIN_4
-#define BR2_GPIO_Port GPIOC
+#define BEHIND_SOV2_Pin GPIO_PIN_0
+#define BEHIND_SOV2_GPIO_Port GPIOC
+#define BEHIND_SOV1_Pin GPIO_PIN_2
+#define BEHIND_SOV1_GPIO_Port GPIOC
+#define GM_RST_Pin GPIO_PIN_4
+#define GM_RST_GPIO_Port GPIOC
 #define PM_Ctrl_Pin GPIO_PIN_12
 #define PM_Ctrl_GPIO_Port GPIOD
-#define FL2_Pin GPIO_PIN_5
-#define FL2_GPIO_Port GPIOA
 
 /* ########################## Assert Selection ############################## */
 /**

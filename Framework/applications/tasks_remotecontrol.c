@@ -212,69 +212,17 @@ void RemoteDataProcess(uint8_t *pData)
 
 /////////////////////////遥控器模式//////////////////////////
 float forward_kp = 1.0 ;
-
-extern float CMFLAngleTarget;
-extern float CMFRAngleTarget;
-extern float CMBLAngleTarget;
-extern float CMBRAngleTarget;
 void RemoteControlProcess(Remote *rc)
 {
 	if(GetWorkState() == NORMAL_STATE)
 	{
-		if(g_friction_wheel_state == FRICTION_WHEEL_ON)
-		{
-			FR1_OFF();
-			FR2_OFF();
-			
-			FL1_OFF();
-			FL2_OFF();
-			
-			BL1_OFF();
-			BL2_OFF();
-			
-			BR1_OFF();
-			BR2_OFF();
-		CMFLAngleTarget += (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
-			CMFRAngleTarget -= (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
-		//CMFRAngleTarget  -= (rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT; 
-		
- 		CMBLAngleTarget += (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
-			CMBRAngleTarget -= (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT;
-		//CMBRAngleTarget   -= (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT; 
+		ChassisSpeedRef.forward_back_ref = (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_CHASSIS_SPEED_REF_FACT;
+		ChassisSpeedRef.left_right_ref   = (rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_CHASSIS_SPEED_REF_FACT; 
 		
  		pitchAngleTarget += (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_PITCH_ANGLE_INC_FACT;
 		yawAngleTarget   -= (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT; 
 		
-		//ChassisSpeedRef.rotate_ref   = (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) *STICK_TO_CHASSIS_SPEED_REF_FACT ;
-		}
-		else if(g_friction_wheel_state == FRICTION_WHEEL_START_TURNNING)
-		{
-			FR1_OFF();
-			FR2_ON();
-			
-			FL1_OFF();
-			FL2_ON();
-			
-			BL1_OFF();
-			BL2_ON();
-			
-			BR1_OFF();
-			BR2_ON();
-		}
-		else if(g_friction_wheel_state == FRICTION_WHEEL_OFF)
-		{
-			FR1_ON();
-			FR2_OFF();
-			
-			FL1_ON();
-			FL2_OFF();
-			
-			BL1_ON();
-			BL2_OFF();
-			
-			BR1_ON();
-			BR2_OFF();
-		}
+		ChassisSpeedRef.rotate_ref   = (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) *STICK_TO_CHASSIS_SPEED_REF_FACT ;
 	 
 	}
 	 RemoteShootControl(&g_switch1, rc->s1);
@@ -528,22 +476,22 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 			//grip
 			 if(lastKey == 0x0000 && key->v & 0x1000)//x
 			{
-			//	GRIP_SOV_ON();
+				GRIP_SOV_ON();
 			}
 			//release
 			if(key->v == 0x1010)//x+shift
 			{
-			//	GRIP_SOV_OFF();
+				GRIP_SOV_OFF();
 			}
 			//up
 			else if(lastKey == 0x0000 && key->v == 0x2000)//c
 			{
-			//	FRONT_SOV1_ON();
+				FRONT_SOV1_ON();
 			}
 			//down
 			else if(key->v == 0x2010)//c+shift
 			{
-			//	FRONT_SOV1_OFF();
+				FRONT_SOV1_OFF();
 			}
 			//next
 			if(key->v == 0x8000)//b
