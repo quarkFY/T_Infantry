@@ -34,7 +34,7 @@ extern float LastAM2RAngleTarget;
 extern float LastAM3RAngleTarget;
 
 extern float PM2AngleTarget,PM2RealAngle;
-uint8_t PM2RotateEnale = 1;
+uint8_t PM2RotateEnable = 1;
 uint8_t PM2RotateCounter = 0;
 
 //红外ADC配置
@@ -82,27 +82,35 @@ void HeroTask(void const * argument)
 					if(g_friction_wheel_state == FRICTION_WHEEL_ON)
 					{
 						//正常一直转
-						if(PM2RotateEnale == 1)
+						PM2RotateCounter++;
+						if(PM2RotateCounter == 80)
+						{
+							PM2AngleTarget -=90;
+							PM2RotateEnable=0;
+							PM2RotateCounter=0;
+						}
+							
+						if(PM2RotateEnable == 1)
 						{
 							PM2AngleTarget+=20;
 							osDelay(20);
 						}
 						//堵转回90度
-						else if(PM2RotateEnale == 2)
+						else if(PM2RotateEnable == 2)
 						{
 								PM2AngleTarget-=90;
-								PM2RotateEnale = 0;
+								PM2RotateEnable = 0;
 						}
 						//回转到位
 						else if(fabs(PM2AngleTarget-PM2RealAngle)<5)
 						{
-								PM2RotateEnale = 1;
+								PM2RotateEnable = 1;
 						}
 						//堵转检测
 						if((PM2AngleTarget-PM2RealAngle)>200)
 						{
 							PM2AngleTarget=PM2RealAngle;
-							PM2RotateEnale = 2;
+							PM2RotateEnable = 2;
 						}
 					}
 					else
