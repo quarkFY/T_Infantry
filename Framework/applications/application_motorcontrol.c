@@ -214,10 +214,10 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		CanTxMsgTypeDef *pData = IOPool_pGetWriteData(CMTxIOPool);
 		
 		pData->StdId = CM_TXID;
-  	pData->Data[0] = (uint8_t)(CMFLIntensity >> 8);
-		pData->Data[1] = (uint8_t)CMFLIntensity;
-		pData->Data[2] = (uint8_t)(CMFRIntensity >> 8);
-		pData->Data[3] = (uint8_t)CMFRIntensity;
+  	pData->Data[0] = (uint8_t)(CMFRIntensity >> 8);
+		pData->Data[1] = (uint8_t)CMFRIntensity;
+		pData->Data[2] = (uint8_t)(CMFLIntensity >> 8);
+		pData->Data[3] = (uint8_t)CMFLIntensity;
 		pData->Data[4] = (uint8_t)(CMBLIntensity >> 8);
 		pData->Data[5] = (uint8_t)CMBLIntensity;
 		pData->Data[6] = (uint8_t)(CMBRIntensity >> 8);
