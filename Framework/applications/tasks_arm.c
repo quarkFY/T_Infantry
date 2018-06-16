@@ -496,14 +496,14 @@ void heatJudge()
 }
 	
 uint8_t DirOfRotate = 1;
+float tmpPM1AngleTarget;
 void shootOneGolf()
 {
-	
-				PM1AngleTarget = PM1AngleTarget + 72;
+	tmpPM1AngleTarget = PM1AngleTarget;
+	PM1AngleTarget = PM1AngleTarget + 72;
 				//PM2AngleTarget = PM2AngleTarget + 240;
-			
-	
 }
+
 
 void shootOneGolfConpensation()
 {

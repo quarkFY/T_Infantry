@@ -105,6 +105,8 @@ extern float yawEncoder, pitchEncoder;
 extern float yawAngleTarget, pitchAngleTarget;
 extern int isGMSet;
 
+extern float  tmpPM1AngleTarget,PM1AngleTarget,PM1RealAngle;
+
 void SetGMZeroPoint(RemoteSwitch_t *sw, uint8_t val) 
 {
 	if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_1TO3)   //OFF->HL
@@ -433,6 +435,10 @@ void MouseShootControl(Mouse *mouse)
 					shootOneGolfConpensation();
 				}
 					
+			}
+			if(fabs(PM1AngleTarget-PM1RealAngle)>70) //pm1堵转归位
+			{
+				PM1AngleTarget = tmpPM1AngleTarget;
 			}
 				
 		} break;				
