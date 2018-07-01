@@ -14,7 +14,7 @@
 #ifndef TASKS_MOTOR_H
 #define TASKS_MOTOR_H
 
-
+#define CMReduction 19.0
 
 #define AngleOfOneGolf 160.0
 
@@ -26,6 +26,12 @@ void ControlCMFL(void);
 void ControlCMFR(void);
 void ControlCMBL(void);
 void ControlCMBR(void);
+
+void Control_ANGLE_CMFL(void);
+void Control_ANGLE_CMFR(void);
+void Control_ANGLE_CMBL(void);
+void Control_ANGLE_CMBR(void);
+
 //void ControlPM1(void);
 //void ControlPM2(void);
 //void ControlPM3(void);

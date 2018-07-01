@@ -50,6 +50,7 @@ void setMotor(MotorId motorId, int16_t Intensity){
 	static int16_t AM2LIntensity = 0;
 	static int16_t AM2RIntensity = 0;
 	static int16_t AM3RIntensity = 0;
+	static int16_t LANDIntensity = 0;
 	static int8_t AMReady = 0;
 	
 	switch(motorId)
@@ -99,9 +100,9 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		case AM2R:
 			if(AMReady & 0x08){AMReady = 0x1F;}else{AMReady |= 0x08;}
 			AM2RIntensity = Intensity;break;
-		case AM3R:
+		case LAND:
 			if(AMReady & 0x10){AMReady = 0x1F;}else{AMReady |= 0x10;}
-			AM3RIntensity = Intensity;break;
+			LANDIntensity = Intensity;break;
 			
 		default:
 			fw_Error_Handler();
@@ -114,7 +115,11 @@ void setMotor(MotorId motorId, int16_t Intensity){
 	float CMFRIntensity_max = CMFRIntensity_MAX;
 	float CMBLIntensity_max = CMBLIntensity_MAX;
 	float CMBRIntensity_max = CMBRIntensity_MAX;
+	float sum = 0;
 
+	
+	//原版功率限制算法
+	/*
 	if (PowerHeatData.chassisPowerBuffer > 10 & PowerHeatData.chassisPowerBuffer < 40){
 			
 		 CM_current_max = CM_current_lower;
@@ -140,8 +145,8 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		 CMFRIntensity_max = CMFRIntensity_bottom;
 		 CMBLIntensity_max = CMBLIntensity_bottom;
 		 CMBRIntensity_max = CMBRIntensity_bottom;
-	}
-
+	}*/
+	//离线模式
 	if (JUDGE_State == OFFLINE)
 	{
 		 CM_current_max = 13000;
@@ -150,7 +155,19 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		 CMBLIntensity_max = 4500;
 		 CMBRIntensity_max = 4500;
 	}
-
+	//林炳辉仿桂电功率控制策略
+	else if(PowerHeatData.chassisPowerBuffer-PowerHeatData.chassisPower*0.26f < 7.0f)
+	{
+			sum = (abs(CMFLIntensity) + abs(CMFRIntensity) + abs(CMBLIntensity) + abs(CMBRIntensity));
+			float realPowerBuffer = PowerHeatData.chassisPowerBuffer;
+			//float realPower = PowerHeatData.chassisPower;
+			CMFLIntensity = (CMFLIntensity/(sum+1.0f))*CM_current_full*(1.0f+realPowerBuffer*0.03f);
+			CMFRIntensity = (CMFRIntensity/(sum+1.0f))*CM_current_full*(1.0f+realPowerBuffer*0.03f);
+			CMBLIntensity = (CMBLIntensity/(sum+1.0f))*CM_current_full*(1.0f+realPowerBuffer*0.03f);
+			CMBRIntensity = (CMBRIntensity/(sum+1.0f))*CM_current_full*(1.0f+realPowerBuffer*0.03f);
+	}
+	//续原版功率限制算法
+	/*
 	float sum = (abs(CMFLIntensity) + abs(CMFRIntensity) + abs(CMBLIntensity) + abs(CMBRIntensity));
 	
 	if ((CMFLIntensity > CMFLIntensity_max))
@@ -190,7 +207,7 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		CMFRIntensity = (CM_current_max/sum)*CMFRIntensity;
 		CMBLIntensity = (CM_current_max/sum)*CMBLIntensity;
 		CMBRIntensity = (CM_current_max/sum)*CMBRIntensity;
-	}
+	}*/
 	
 	if(GetWorkState() == STOP_STATE || g_bInited != 1)
 	{
@@ -207,6 +224,7 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		AM2LIntensity = 0;
 		AM2RIntensity = 0;
 		AM3RIntensity = 0;
+		LANDIntensity = 0;
 	}
 
 	if(CMReady == 0xF)
@@ -301,17 +319,17 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		pData->Data[7] = 0;
 		IOPool_getNextWrite(AM1TxIOPool);
 		
-		pData = IOPool_pGetWriteData(AM23TxIOPool);
-		pData->StdId = AM23_TXID;
+		pData = IOPool_pGetWriteData(LANDTxIOPool);
+		pData->StdId = LAND_TXID;
 		pData->Data[0] = (uint8_t)(AM2LIntensity >> 8);
 		pData->Data[1] = (uint8_t)AM2LIntensity;
 		pData->Data[2] = (uint8_t)(AM2RIntensity >> 8);
 		pData->Data[3] = (uint8_t)AM2RIntensity;
-		pData->Data[4] = (uint8_t)(AM3RIntensity >> 8);
-		pData->Data[5] = (uint8_t)AM3RIntensity;
+		pData->Data[4] = (uint8_t)(LANDIntensity >> 8);
+		pData->Data[5] = (uint8_t)LANDIntensity;
 		pData->Data[6] = 0;
 		pData->Data[7] = 0;
-		IOPool_getNextWrite(AM23TxIOPool);
+		IOPool_getNextWrite(LANDTxIOPool);
 		
 		TransmitCAN2();
 		AMReady = 0;

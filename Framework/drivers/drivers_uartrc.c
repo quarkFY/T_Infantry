@@ -85,7 +85,7 @@ InputMode_e inputmode = REMOTE_INPUT;
 //取弹状态
 Get_Bullet_e GetBulletState = NO_GETBULLET;
 //云台底盘锁定状态
-GMMode_e GMMode = UNLOCK;
+GMMode_e GMMode = LOCK;
  //取弹任务状态
  extern HERO_Order_t HERO_Order;
  //底盘状态
@@ -98,6 +98,7 @@ unsigned int zyLeftPostion; //大符用左拨杆位置
 static uint32_t RotateCNT = 0;	//长按连发计数
 static uint16_t CNT_1s = 75;	//用于避免四连发模式下两秒内连射8发过于密集的情况
 static uint16_t CNT_250ms = 18;	//用于点射模式下射频限制
+
 
 //左上拨杆用于调试云台，记得要注释掉
 extern float yaw_zero, pitch_zero;
@@ -223,6 +224,8 @@ extern PID_Regulator_t PM2PositionPID;
 uint16_t remoteShootDelay = 500;
 void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val) 
 {
+	static uint16_t CNT_PM1_500ms = 0;	//用于检测PM1堵转
+	++CNT_PM1_500ms;
 	switch(g_friction_wheel_state)
 	{
 		case FRICTION_WHEEL_OFF:
@@ -312,13 +315,14 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 				if (remoteShootDelay == 0)
 				{
 					shootOneGolf();
+					CNT_PM1_500ms = 0;
 					remoteShootDelay = 50;
 				}
-				else if (remoteShootDelay == 25)
-				{
-					shootOneGolfConpensation();
-					--remoteShootDelay;
-				}
+//				else if (remoteShootDelay == 25)
+//				{
+//					shootOneGolfConpensation();
+//					--remoteShootDelay;
+//				}
 				else 
 				{
 					--remoteShootDelay;
@@ -331,13 +335,23 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 			}					 
 		} break;				
 	}
+	if(CNT_PM1_500ms > 30)
+	{
+			if(fabs(PM1AngleTarget-PM1RealAngle)>4) //pm1堵转归位
+			{
+				PM1AngleTarget = tmpPM1AngleTarget;
+			}
+	}
 }
 	 
 void MouseShootControl(Mouse *mouse)
 {
+	static uint16_t CNT_PM1_500ms = 0;	//用于检测PM1堵转
 	++CNT_1s;
 	++CNT_250ms;
-	static int16_t closeDelayCount = 0;   
+	++CNT_PM1_500ms;
+	static int16_t closeDelayCount = 0;
+	
 	switch(g_friction_wheel_state)
 	{
 		case FRICTION_WHEEL_OFF:
@@ -414,6 +428,7 @@ void MouseShootControl(Mouse *mouse)
 					{
 						CNT_250ms = 0;
 						shootOneGolf();
+						CNT_PM1_500ms = 0;
 					}
 				}
 			}
@@ -422,29 +437,37 @@ void MouseShootControl(Mouse *mouse)
 				SetShootState(NO_SHOOT);	
 				RotateCNT = 0;			
 			}			
-		  else if(mouse->last_press_l == 1 && mouse->press_l== 1 )
-			{
-				RotateCNT+=50;
-				if(RotateCNT>=OneShoot)
-				{
-					shootOneGolf();
-					RotateCNT = 0;
-				}
-				else if(RotateCNT == 400)
-				{
-					shootOneGolfConpensation();
-				}
-					
-			}
-			if(fabs(PM1AngleTarget-PM1RealAngle)>70) //pm1堵转归位
-			{
-				PM1AngleTarget = tmpPM1AngleTarget;
-			}
+//		  else if(mouse->last_press_l == 1 && mouse->press_l== 1 )
+//			{
+//				RotateCNT+=50;
+//				if(RotateCNT>=OneShoot)
+//				{
+//					shootOneGolf();
+//					CNT_PM1_500ms = 0;
+//					RotateCNT = 0;
+//				}
+//				else if(RotateCNT == 400)
+//				{
+//					shootOneGolfConpensation();
+//				}
+//					
+//			}
+//			if(fabs(PM1AngleTarget-PM1RealAngle)>40) //pm1堵转归位
+//			{
+//				PM1AngleTarget = tmpPM1AngleTarget;
+//			}
 				
 		} break;				
 	}	
 	mouse->last_press_r = mouse->press_r;
 	mouse->last_press_l = mouse->press_l;
+//	if(CNT_PM1_500ms == 50)
+//	{
+//			if(fabs(PM1AngleTarget-PM1RealAngle)>20) //pm1堵转归位
+//			{
+//				PM1AngleTarget = tmpPM1AngleTarget;
+//			}
+//	}
 }
 
 
@@ -528,13 +551,15 @@ void RemoteGetBulletControl(RemoteSwitch_t *sw, uint8_t val)
 	//以下没改
 	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)
 	{
-		SetGetBulletState(MANUAL_GETBULLET);
-		GRIP_SOV_ON();
+		//SetGetBulletState(MANUAL_GETBULLET);
+		//GRIP_SOV_ON();
+		HERO_Order = HERO_MANUL_RECOVER;
 	}
 	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_2TO3)
 	{
-		SetGetBulletState(MANUAL_GETBULLET);
-		GRIP_SOV_OFF();
+		//SetGetBulletState(MANUAL_GETBULLET);
+		//GRIP_SOV_OFF();
+		HERO_Order = HERO_AUTO_GET3BOX;
 	}
 	else if(sw->switch_value_raw == 3)
 	{

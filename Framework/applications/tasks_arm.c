@@ -39,11 +39,14 @@ fw_PID_Regulator_t AM1RPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 20000.0, 10000.
 fw_PID_Regulator_t AM2LPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
 fw_PID_Regulator_t AM2RPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
 fw_PID_Regulator_t AM3RPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
+fw_PID_Regulator_t LANDPositionPID = fw_PID_INIT(200.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
+
 fw_PID_Regulator_t AM1LSpeedPID = fw_PID_INIT(6.0, 0.0, 0.0, 20000.0, 10000.0, 10000.0, 16384.0);
 fw_PID_Regulator_t AM1RSpeedPID = fw_PID_INIT(6.0, 0.0, 0.0, 20000.0, 10000.0, 10000.0, 16384.0);
 fw_PID_Regulator_t AM2LSpeedPID = fw_PID_INIT(6.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 8000.0);
 fw_PID_Regulator_t AM2RSpeedPID = fw_PID_INIT(6.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 8000.0);
 fw_PID_Regulator_t AM3RSpeedPID = fw_PID_INIT(8.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 8000.0);
+fw_PID_Regulator_t LANDSpeedPID = fw_PID_INIT(8.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 8000.0);
 
 extern float PM1AngleTarget;
 extern Emergency_Flag emergency_Flag;
@@ -58,6 +61,7 @@ float AM1RAngleTarget = 0.0;
 float AM2LAngleTarget = 0.0;
 float AM2RAngleTarget = 0.0;
 float AM3RAngleTarget = 0.0;
+float LANDAngleTarget = 0.0;
 
 double Last_Arm_Horizontal_Position;
 double Last_Arm_Vertical_Position;
@@ -67,6 +71,7 @@ float LastAM1RAngleTarget;
 float LastAM2LAngleTarget;
 float LastAM2RAngleTarget;
 float LastAM3RAngleTarget;
+float LastLANDAngleTarget;
 
 //机械臂电机实际物理角度值
 float AM1LRealAngle = 0.0;
@@ -74,6 +79,7 @@ float AM1RRealAngle = 0.0;
 float AM2LRealAngle = 0.0;
 float AM2RRealAngle = 0.0;
 float AM3RRealAngle = 0.0;
+float LANDRealAngle = 0.0;
 
 
 //用于减小系统开销
@@ -82,6 +88,7 @@ static uint8_t s_AM1RCount = 0;
 static uint8_t s_AM2LCount = 0;
 static uint8_t s_AM2RCount = 0;
 static uint8_t s_AM3RCount = 0;
+static uint8_t s_LANDCount = 0;
 
 //推弹电机
 #define PM1ZeroAngle 0
@@ -102,9 +109,9 @@ uint16_t PM3ThisAngle = 0;
 uint16_t PM3LastAngle = 0;
 uint8_t isPM2FirstEnter = 1;
 uint8_t isPM3FirstEnter = 1;
-fw_PID_Regulator_t PM1PositionPID = fw_PID_INIT(100, 0.0, 200.0, 10000.0, 10000.0, 10000.0, 10000.0);
+fw_PID_Regulator_t PM1PositionPID = fw_PID_INIT(200.0, 0.0, 200.0, 10000.0, 10000.0, 10000.0, 8000.0);
 fw_PID_Regulator_t PM2PositionPID = fw_PID_INIT(100.0, 0.0, 200.0, 10000.0, 10000.0, 10000.0, 10000.0);
-fw_PID_Regulator_t PM1SpeedPID = fw_PID_INIT(15, 0.0, 40.0, 10000.0, 10000.0, 10000.0, 8000.0);
+fw_PID_Regulator_t PM1SpeedPID = fw_PID_INIT(150.0, 0.0, 40.0, 10000.0, 10000.0, 10000.0, 8000.0);
 fw_PID_Regulator_t PM2SpeedPID = fw_PID_INIT(15, 0.0, 40.0, 10000.0, 10000.0, 10000.0, 8000.0);
 fw_PID_Regulator_t PM3PositionPID = fw_PID_INIT(100.0, 0.0, 200.0, 10000.0, 10000.0, 10000.0, 10000.0);
 fw_PID_Regulator_t PM3SpeedPID = fw_PID_INIT(15, 0.0, 40.0, 10000.0, 10000.0, 10000.0, 8000.0);
@@ -124,9 +131,10 @@ void Can2ControlTask(void const * argument)
 		
 		ControlAM1L();
 		ControlAM1R();
-		ControlAM2L();
-		ControlAM2R();
-		ControlAM3R();
+		//ControlAM2L();
+		//ControlAM2R();
+		//ControlAM3R();
+//		ControlLAND();
 		
 		ControlPM1();
 		ControlPM2();
@@ -232,6 +240,57 @@ void ControlAM1R()
 		}
 	}
 }
+
+
+uint8_t isLANDFirstEnter = 1;
+uint16_t LANDThisAngle = 0;
+uint16_t LANDLastAngle = 0;
+void ControlLAND()
+{
+	if(IOPool_hasNextRead(LANDRxIOPool, 0))
+	{
+		if(s_LANDCount == 1)
+		{		
+			IOPool_getNextRead(LANDRxIOPool, 0);
+			LANDThisAngle = IOPool_pGetReadData(LANDRxIOPool, 0)->angle;
+			
+			if(isLANDFirstEnter==1) {LANDLastAngle = LANDThisAngle;isLANDFirstEnter = 0;return;}	//初始化时，记录下当前编码器的值
+			
+			if(LANDThisAngle<=LANDLastAngle)
+			{
+				if((LANDLastAngle-LANDThisAngle)>3000)//编码器上溢
+					LANDRealAngle = LANDRealAngle + (LANDThisAngle+8192-LANDLastAngle) * 360 / 8192.0 / LANDReduction;
+				else//反转
+					LANDRealAngle = LANDRealAngle - (LANDLastAngle - LANDThisAngle) * 360 / 8192.0 / LANDReduction;
+			}
+			else
+			{
+				if((LANDThisAngle-LANDLastAngle)>3000)//编码器下溢
+					LANDRealAngle = LANDRealAngle - (LANDLastAngle+8192-LANDThisAngle) *360 / 8192.0 / LANDReduction;
+				else//正转
+					LANDRealAngle = LANDRealAngle + (LANDThisAngle - LANDLastAngle) * 360 / 8192.0 / LANDReduction;
+			}
+			
+				
+			LANDPositionPID.target = LANDAngleTarget;
+			LANDPositionPID.feedback = LANDRealAngle;
+			LANDPositionPID.Calc(&LANDPositionPID);
+			
+			LANDSpeedPID.target = LANDPositionPID.output;
+			LANDSpeedPID.feedback = IOPool_pGetReadData(LANDRxIOPool, 0)->RotateSpeed;
+			LANDSpeedPID.Calc(&LANDSpeedPID);
+			
+			setMotor(LAND, LANDSpeedPID.output);
+			s_LANDCount = 0;
+			LANDLastAngle = LANDThisAngle;
+		}
+		else
+		{
+			s_LANDCount++;
+		}
+	}
+}
+
 
 uint8_t isAM2LFirstEnter = 1;
 uint16_t AM2LThisAngle = 0;
@@ -513,7 +572,7 @@ void shootOneGolfConpensation()
 		}
 		else
 		{
-	PM2AngleTarget = PM2AngleTarget - 30;
+	//PM2AngleTarget = PM2AngleTarget - 30;
 		}
 }
 
@@ -523,21 +582,21 @@ void shootLoad()
 {
 	PM1RotateFlag2 = 0;
 	uint16_t PM2tmp = PM2AngleTarget;
-	for(uint8_t i=0;i<100;i++)
-	{
-		if(fabs(PM2AngleTarget-PM2RealAngle)< 180 )
-		{
-			PM2AngleTarget += 20;
-			osDelay(20);
-		}
-//		PM2AngleTarget += 20;
-//		osDelay(10);
-	}
+//	for(uint8_t i=0;i<100;i++)
+//	{
+//		if(fabs(PM2AngleTarget-PM2RealAngle)< 180 )
+//		{
+//			PM2AngleTarget += 20;
+//			osDelay(20);
+//		}
+////		PM2AngleTarget += 20;
+////		osDelay(10);
+//	}
 	osDelay(100);
 	for(uint8_t i=0;i<bulletNum;i++)
 	{
 		shootOneGolf();
-		PM2AngleTarget += 240;
+		//PM2AngleTarget += 240;
 		osDelay(300);
 	}
 	PM1RotateFlag2 = 1;
@@ -551,19 +610,19 @@ void PMRotate()
 	{
 		if(PM1RotateFlag == 1)
 		{
-			switch(PMRotateDirection)
-			{
-				case CLOCKWISE:
-				{
-					PM2AngleTarget = PM2AngleTarget - 90;
-					PMRotateDirection = ANTICLOCKWISE;
-				}break;
-				case ANTICLOCKWISE:
-				{
-					PM2AngleTarget = PM2AngleTarget + 90;
-					PMRotateDirection = CLOCKWISE;
-				}break;
-			}
+//			switch(PMRotateDirection)
+//			{
+//				case CLOCKWISE:
+//				{
+//					PM2AngleTarget = PM2AngleTarget - 90;
+//					PMRotateDirection = ANTICLOCKWISE;
+//				}break;
+//				case ANTICLOCKWISE:
+//				{
+//					PM2AngleTarget = PM2AngleTarget + 90;
+//					PMRotateDirection = CLOCKWISE;
+//				}break;
+//			}
 			
 			PM1RotateFlag = 0;
 		}

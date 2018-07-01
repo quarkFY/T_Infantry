@@ -3,11 +3,23 @@
 
 #include "stdint.h"
 void HeroTask(void const * argument);
+
 void HERO_prepare(void);
 void HERO_recover(void);
-void HERO_step(float angle1,float angle2,float angle3);
-//void HERO_step_slow(float angle1,float angle2,float angle3);
+void HERO_standby(void);
 void HERO_load(void);
+
+void HERO_manul_prepare(void);
+void HERO_manul_recover(void);
+void HERO_manul_standby(void);
+void HERO_step(float angle1,float angle2,float angle3,uint16_t step);
+void HERO_getbullet_moveleft(uint8_t round,float angle1,uint16_t step);
+//void HERO_step_slow(float angle1,float angle2,float angle3);
+void HERO_manul_load(void);
+
+void HERO_auto_getOneBox(void);
+void HERO_auto_getThreeBox(void);
+
 uint8_t gapOK(float AngleTarget,float RealAngle);
 
 
@@ -22,6 +34,7 @@ typedef enum
 	HERO_MANUL_FETCH = 4,
 	HERO_SHOOT_LOAD = 5,
 	HERO_STEADY_ROTATE = 6,
+	HERO_AUTO_GET3BOX = 7,
 	
 	
 }HERO_Order_t;

@@ -54,8 +54,12 @@ extern FrictionWheelState_e g_friction_wheel_state ;
 extern GMMode_e GMMode;
 extern Chassis_Mode_e FrontWheel_Mode , Last_FrontWheel_Mode ,BehindWheel_Mode , Last_BehindWheel_Mode ;
 
-extern float AM1RAngleTarget,AM1LAngleTarget,AM2RAngleTarget,AM2LAngleTarget,AM3RAngleTarget;
-extern float AM1RRealAngle,AM1LRealAngle,AM2RRealAngle,AM2LRealAngle,AM3RRealAngle;
+extern float AM1RAngleTarget,AM1LAngleTarget,AM2RAngleTarget,AM2LAngleTarget,AM3RAngleTarget,LANDAngleTarget;
+extern float AM1RRealAngle,AM1LRealAngle,AM2RRealAngle,AM2LRealAngle,AM3RRealAngle,LANDRealAngle;
+
+extern float CMFRAngleTarget,CMFLAngleTarget,CMBRAngleTarget,CMBLAngleTarget;
+extern float CMFRRealAngle,CMFLRealAngle,CMBRRealAngle,CMBLRealAngle;
+
 extern uint16_t load_cnt;
 extern int ad1,ad2,ad3,ad4,ad5;
 
@@ -216,13 +220,13 @@ void RemoteControlProcess(Remote *rc)
 {
 	if(GetWorkState() == NORMAL_STATE)
 	{
-		ChassisSpeedRef.forward_back_ref = (RC_CtrlData.rc.ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_CHASSIS_SPEED_REF_FACT;
-		ChassisSpeedRef.left_right_ref   = (rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_CHASSIS_SPEED_REF_FACT; 
+		ChassisSpeedRef.forward_back_ref = (rc->ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_CHASSIS_SPEED_REF_FACT * 0.4;
+		ChassisSpeedRef.left_right_ref   = (rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_CHASSIS_SPEED_REF_FACT * 0.4; 
 		
  		pitchAngleTarget += (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_PITCH_ANGLE_INC_FACT;
-		yawAngleTarget   -= (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT; 
+		//yawAngleTarget   -= (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT; 
 		
-		ChassisSpeedRef.rotate_ref   = (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) *STICK_TO_CHASSIS_SPEED_REF_FACT ;
+		ChassisSpeedRef.rotate_ref   = -(rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) *STICK_TO_CHASSIS_SPEED_REF_FACT*0.2 ;
 	 
 	}
 	 RemoteShootControl(&g_switch1, rc->s1);
@@ -312,11 +316,11 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		}
 		if(key->v & 0x80)	//key:e  检测第8位是不是1
 		{
-			ChassisSpeedRef.rotate_ref=rotate_speed*RotSpeedRamp.Calc(&RotSpeedRamp);
+			ChassisSpeedRef.rotate_ref=-rotate_speed*RotSpeedRamp.Calc(&RotSpeedRamp);
 		}
 		else if(key->v & 0x40)	//key:q  
 		{
-			ChassisSpeedRef.rotate_ref=-rotate_speed*RotSpeedRamp.Calc(&RotSpeedRamp);
+			ChassisSpeedRef.rotate_ref=rotate_speed*RotSpeedRamp.Calc(&RotSpeedRamp);
 		}
 		else 
 		{
@@ -326,7 +330,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		//mouse x y control
 		if(GMMode == LOCK)
 		{
-			ChassisSpeedRef.rotate_ref += mouse->x/15.0*3000;
+			ChassisSpeedRef.rotate_ref -= mouse->x/27.0*3000;
 			yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
 		}
 		/*裁判系统离线时的功率限制方式*/
@@ -392,11 +396,6 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 		pitchAngleTarget += mouse->y* MOUSE_TO_PITCH_ANGLE_INC_FACT; 
 		if(key->v == 0x0400) GMMode = LOCK;    //锁定云台  G
 		if(key->v == 0x0420) GMMode = UNLOCK;  //解锁云台  G + Ctrl			
-		if(GMMode == LOCK)
-		{
-			ChassisSpeedRef.rotate_ref += mouse->x/15.0*3000;
-			yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
-		}
 		if(GMMode == UNLOCK) 
 		{
 			yawAngleTarget    -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
@@ -433,20 +432,33 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 		}
 		if(key->v & 0x80)	//key:e  检测第8位是不是1
 		{
-			ChassisSpeedRef.rotate_ref=rotate_speed*RotSpeedRamp.Calc(&RotSpeedRamp);
+			ChassisSpeedRef.rotate_ref=-rotate_speed*RotSpeedRamp.Calc(&RotSpeedRamp);
 		}
 		else if(key->v & 0x40)	//key:q  
 		{
-			ChassisSpeedRef.rotate_ref=-rotate_speed*RotSpeedRamp.Calc(&RotSpeedRamp);
+			ChassisSpeedRef.rotate_ref=rotate_speed*RotSpeedRamp.Calc(&RotSpeedRamp);
 		}
 		else 
 		{
 			ChassisSpeedRef.rotate_ref = 0;
 			RotSpeedRamp.ResetCounter(&RotSpeedRamp);
 		}
+		if(GMMode == LOCK)
+		{
+			ChassisSpeedRef.rotate_ref -= mouse->x/27.0*3000;
+			yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
+		}
 		
 		AM1RAngleTarget +=(rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT; //右侧电机 
+		if(AM1RAngleTarget>0) AM1RAngleTarget=0;
+		if(AM1RAngleTarget<-190) AM1RAngleTarget=-190;
 		AM1LAngleTarget -=(rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT; //左侧电机
+		if(AM1LAngleTarget<0) AM1LAngleTarget=0;
+		if(AM1LAngleTarget>190) AM1LAngleTarget=190;
+		
+		LANDAngleTarget +=(rc->ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_LAND_SPEED_REF_FACT; //登岛电机 
+		//if(LANDAngleTarget>0) AM1RAngleTarget=0;
+		//if(LANDAngleTarget<-190) AM1RAngleTarget=-190;
 		
 			//prepare
 			if(lastKey == 0x0000 && key->v == 0x0800)//z				
@@ -486,7 +498,15 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 			//up
 			else if(lastKey == 0x0000 && key->v == 0x2000)//c
 			{
-				FRONT_SOV1_ON();
+				HERO_Order = HERO_AUTO_GET3BOX;
+				CMFRRealAngle = 0.0;
+				CMFLRealAngle = 0.0;
+				CMBRRealAngle = 0.0;
+				CMBLRealAngle = 0.0;
+				CMFRAngleTarget = 0;
+				CMFLAngleTarget = 0;
+				CMBRAngleTarget = 0;
+				CMBLAngleTarget = 0;
 			}
 			//down
 			else if(key->v == 0x2010)//c+shift

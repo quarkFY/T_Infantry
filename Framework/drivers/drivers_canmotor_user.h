@@ -28,13 +28,16 @@
 #define AM1R_RXID 0x206u
 #define AM2L_RXID 0x201u
 #define AM2R_RXID 0x202u
-#define AM3R_RXID 0x203u
+//#define AM3R_RXID 0x203u
 //GM为云台电机
 #define GMYAW_RXID 0x20Au
 #define GMPITCH_RXID 0x209u
 //PM为推弹电机
 #define PM1_RXID 0x207u//改到can2
 #define PM2_RXID 0x204u//改到can2
+//升降电机
+#define LAND_RXID  0x203u
+
 //#define PM3_RXID 0x207u
 //SM为分弹电机
 //#define SM_RXID 0x204u
@@ -45,7 +48,8 @@
 #define CM_TXID 0x200u	//CAN1
 #define AM1_TXID 0x1FFu	//CAN2
 #define GM_TXID 0x2FFu	//CAN1
-#define AM23_TXID 0x200u//CAN2
+//#define AM23_TXID 0x200u//CAN2
+#define LAND_TXID 0x200u//CAN2
 #define PM1_TXID 0x1FFu	//CAN2
 #define PM2_TXID 0x200u //CAN2
 //#define PM3_TXID 0x200u	//CAN2
@@ -86,6 +90,7 @@ IOPoolDeclare(AM1RRxIOPool, MotorC620RxMsg_t);
 IOPoolDeclare(AM2LRxIOPool, Motor820RRxMsg_t);
 IOPoolDeclare(AM2RRxIOPool, Motor820RRxMsg_t);
 IOPoolDeclare(AM3RRxIOPool, Motor820RRxMsg_t);
+IOPoolDeclare(LANDRxIOPool, MotorC620RxMsg_t);
 
 IOPoolDeclare(PM1RxIOPool, Motor820RRxMsg_t);
 IOPoolDeclare(PM2RxIOPool, Motor820RRxMsg_t);
@@ -96,7 +101,8 @@ IOPoolDeclare(PM3RxIOPool, Motor820RRxMsg_t);
 IOPoolDeclare(CMTxIOPool, CanTxMsgTypeDef);
 IOPoolDeclare(GMTxIOPool, CanTxMsgTypeDef);
 IOPoolDeclare(AM1TxIOPool, CanTxMsgTypeDef);
-IOPoolDeclare(AM23TxIOPool, CanTxMsgTypeDef);
+//IOPoolDeclare(AM23TxIOPool, CanTxMsgTypeDef);
+IOPoolDeclare(LANDTxIOPool, CanTxMsgTypeDef);
 IOPoolDeclare(PM1TxIOPool, CanTxMsgTypeDef);
 IOPoolDeclare(PM2TxIOPool, CanTxMsgTypeDef);
 IOPoolDeclare(PM3TxIOPool, CanTxMsgTypeDef);
