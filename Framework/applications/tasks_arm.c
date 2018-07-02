@@ -53,6 +53,8 @@ extern Emergency_Flag emergency_Flag;
 #define LengthOfArm2 250
 #define PI 3.141592653589
 
+
+float am1rreal,am1lreal;
 //机械臂电机目标物理角度值
 float AM1LAngleTarget = 0.0;
 float AM1RAngleTarget = 0.0;
@@ -147,6 +149,7 @@ void ControlAM1L()
 		{		
 			IOPool_getNextRead(AM1LRxIOPool, 0);
 			AM1LThisAngle = IOPool_pGetReadData(AM1LRxIOPool, 0)->angle;
+			am1lreal = IOPool_pGetReadData(AM1LRxIOPool, 0)->realIntensity;
 			
 			if(isAM1LFirstEnter==1) {AM1LLastAngle = AM1LThisAngle;isAM1LFirstEnter = 0;return;}	//初始化时，记录下当前编码器的值
 			
@@ -196,6 +199,7 @@ void ControlAM1R()
 		{
 			IOPool_getNextRead(AM1RRxIOPool, 0);
 			AM1RThisAngle = IOPool_pGetReadData(AM1RRxIOPool, 0)->angle;
+			am1rreal = IOPool_pGetReadData(AM1RRxIOPool, 0)->realIntensity;
 			
 			if(isAM1RFirstEnter==1) {AM1RLastAngle = AM1RThisAngle;isAM1RFirstEnter = 0;return;}	//初始化时，记录下当前编码器的值
 			

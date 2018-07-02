@@ -388,6 +388,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 /////////////////////////取弹模式/////////////////////////////
 uint8_t MaybePrepare =0;
 uint16_t lastKey;
+uint8_t isAM1Init = 0;
 void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 {
 	if(GetWorkState() == NORMAL_STATE)
@@ -450,13 +451,17 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 		}
 		
 		AM1RAngleTarget +=(rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT; //右侧电机 
-		if(AM1RAngleTarget>0) AM1RAngleTarget=0;
-		if(AM1RAngleTarget<-190) AM1RAngleTarget=-190;
-		
+
 		AM1LAngleTarget =-AM1RAngleTarget; //左侧电机
-		if(AM1LAngleTarget<0) AM1LAngleTarget=0;
-		if(AM1LAngleTarget>190) AM1LAngleTarget=190;
 		
+		if(isAM1Init)
+		{
+			if(AM1RAngleTarget>0) AM1RAngleTarget=0;
+			if(AM1RAngleTarget<-190) AM1RAngleTarget=-190;
+		
+			if(AM1LAngleTarget<0) AM1LAngleTarget=0;
+			if(AM1LAngleTarget>190) AM1LAngleTarget=190;
+		}
 			//prepare
 			if(lastKey == 0x0000 && key->v == 0x0800)//z				
 			{

@@ -58,6 +58,7 @@ extern FrictionWheelState_e g_friction_wheel_state;
 void HeroTask(void const * argument)
 {
 	while(1)
+		
 	{
 	
 		switch(HERO_Order)
@@ -148,26 +149,26 @@ void HeroTask(void const * argument)
 	}
 }
 
-
+extern uint8_t isAM1Init;
 void HERO_init(void)
 {
 	uint8_t AMstack = 0;
 	uint16_t cnt;
 	while(!AMstack)
 	{
-		AM1RAngleTarget -= 0.5;
-		AM1LAngleTarget += 0.5;
-		if((fabs(AM1RRealAngle-AM1RAngleTarget)>3 || fabs(AM1LRealAngle-AM1LAngleTarget)>3) && cnt<1000)
+		if((fabs(AM1RRealAngle-AM1RAngleTarget)>8 || fabs(AM1LRealAngle-AM1LAngleTarget)>8) && cnt<50)
 		{
 			cnt++;
 		}
-		else if(cnt==1000)
+		else if(cnt==50)
 		{
 			cnt = 0;
 			AMstack = 1;
 		}
 		else
 		{
+			AM1RAngleTarget -= 1;
+		  AM1LAngleTarget += 1;
 			cnt = 0;
 		}
 		osDelay(30);
@@ -176,8 +177,8 @@ void HERO_init(void)
 	{
 		AM1RRealAngle = -190;
 		AM1LRealAngle = 190;
-		AM1RAngleTarget = 0;
-		AM1LAngleTarget = 0;
+		HERO_step(0,0,0,40);
+		isAM1Init = 1;
 	}
 	else
 	{

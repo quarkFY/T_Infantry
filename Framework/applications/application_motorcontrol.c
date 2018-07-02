@@ -31,6 +31,7 @@ extern extPowerHeatData_t PowerHeatData;
 extern uint8_t JUDGE_State;
 //extern uint8_t going;
 
+float am1lfordebug,am1rfordebug;
 extern bool g_bInited;
 
 void setMotor(MotorId motorId, int16_t Intensity){
@@ -86,10 +87,12 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		
 		case AM1L:
 			if(AMReady & 0x01){AMReady = 0x1F;}else{AMReady |= 0x01;}
-			AM1LIntensity = Intensity;break;
+			AM1LIntensity = Intensity;
+			am1lfordebug = AM1LIntensity;break;
 		case AM1R:
 			if(AMReady & 0x02){AMReady = 0x1F;}else{AMReady |= 0x02;}
-			AM1RIntensity = Intensity;break;
+			AM1RIntensity = Intensity;
+			am1rfordebug = AM1RIntensity;break;
 		case AM2L:
 			if(AMReady & 0x04){AMReady = 0x1F;}else{AMReady |= 0x04;}
 			AM2LIntensity = Intensity;break;
