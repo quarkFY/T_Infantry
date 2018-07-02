@@ -176,21 +176,21 @@ void ControlYaw(void)
 			if(GMYAWThisAngle <= GMYAWLastAngle)
 			{
 				if((GMYAWLastAngle-GMYAWThisAngle)>3000)//编码器上溢
-					yawRealAngle = yawRealAngle + (GMYAWThisAngle+8192-GMYAWLastAngle) * 360 * 1 / (8192.0 * 5) ;
+					yawRealAngle = yawRealAngle + (GMYAWThisAngle+8192-GMYAWLastAngle) * 360 * 1 / (8192.0f * 5) ;
 				else//反转
 				 yawRealAngle =  yawRealAngle + (GMYAWThisAngle - GMYAWLastAngle) * 360 * 1 / (8192.0f * 5) ;
 			}
 			else
 			{
 				if((GMYAWThisAngle-GMYAWLastAngle)>3000)//编码器下溢
-					yawRealAngle = yawRealAngle - (GMYAWLastAngle+8192-GMYAWThisAngle) * 360 * 1 / (8192.0 * 5)  ;
+					yawRealAngle = yawRealAngle - (GMYAWLastAngle+8192-GMYAWThisAngle) * 360 * 1 / (8192.0f * 5)  ;
 				else//正转
 					yawRealAngle = yawRealAngle + (GMYAWThisAngle - GMYAWLastAngle) * 360 * 1 / (8192.0f * 5) ;
 			}
 							
 			//NORMALIZE_ANGLE180(yawRealAngle);
 			//限位
-			MINMAX(yawAngleTarget, -8.0f, 8.0f);	
+			MINMAX(yawAngleTarget, -30.0f, 30.0f);	
 			yawIntensity = ProcessYawPID(yawAngleTarget, yawRealAngle, -gYroZs);
 			yawIntensityForDebug = yawIntensity;
 			GMYAWLastAngle = GMYAWThisAngle ;
@@ -258,7 +258,7 @@ void ControlPitch(void)
 			
 			//NORMALIZE_ANGLE180(pitchRealAngle);
 			//限位
-			MINMAX(pitchAngleTarget, -10.0f, 40.0f);	
+			MINMAX(pitchAngleTarget, 0.0f, 40.0f);	
 			
 //		  pitchMotorTarget = pitchAngleTarget - yawAngleTarget ;  //耦合
 			pitchIntensity = ProcessPitchPID(-pitchAngleTarget,pitchRealAngle,-gYroXs); 

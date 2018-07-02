@@ -219,9 +219,9 @@ void HERO_auto_getThreeBox()
 		CMBRRealAngle = 0.0;
 		CMBLRealAngle = 0.0;	
 		HERO_auto_getOneBox();
-		HERO_getbullet_moveleft(0,235,40);
+		HERO_getbullet_moveleft(0,247,42);
 		HERO_auto_getOneBox();
-		HERO_getbullet_moveleft(0,237,40);
+		HERO_getbullet_moveleft(0,260,42);
 		HERO_auto_getOneBox();
 }
 

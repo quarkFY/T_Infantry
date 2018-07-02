@@ -34,15 +34,15 @@
 //PID_INIT(Kp, Ki, Kd, KpMax, KiMax, KdMax, OutputMax)
 //机械臂电机PID
 
-fw_PID_Regulator_t AM1LPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 20000.0, 10000.0, 10000.0, 16384.0);
-fw_PID_Regulator_t AM1RPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 20000.0, 10000.0, 10000.0, 16384.0);
+fw_PID_Regulator_t AM1LPositionPID = fw_PID_INIT(110.0, 0.0, 0.0, 20000.0, 10000.0, 10000.0, 16384.0);
+fw_PID_Regulator_t AM1RPositionPID = fw_PID_INIT(110.0, 0.0, 0.0, 20000.0, 10000.0, 10000.0, 16384.0);
 fw_PID_Regulator_t AM2LPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
 fw_PID_Regulator_t AM2RPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
 fw_PID_Regulator_t AM3RPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
 fw_PID_Regulator_t LANDPositionPID = fw_PID_INIT(200.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
 
-fw_PID_Regulator_t AM1LSpeedPID = fw_PID_INIT(6.0, 0.0, 0.0, 20000.0, 10000.0, 10000.0, 16384.0);
-fw_PID_Regulator_t AM1RSpeedPID = fw_PID_INIT(6.0, 0.0, 0.0, 20000.0, 10000.0, 10000.0, 16384.0);
+fw_PID_Regulator_t AM1LSpeedPID = fw_PID_INIT(9.0, 0.0, 0.0, 20000.0, 10000.0, 10000.0, 16384.0);
+fw_PID_Regulator_t AM1RSpeedPID = fw_PID_INIT(9.0, 0.0, 0.0, 20000.0, 10000.0, 10000.0, 16384.0);
 fw_PID_Regulator_t AM2LSpeedPID = fw_PID_INIT(6.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 8000.0);
 fw_PID_Regulator_t AM2RSpeedPID = fw_PID_INIT(6.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 8000.0);
 fw_PID_Regulator_t AM3RSpeedPID = fw_PID_INIT(8.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 8000.0);
