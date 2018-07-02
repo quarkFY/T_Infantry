@@ -92,6 +92,7 @@ GMMode_e GMMode = LOCK;
 
 
 extern float PM2AngleTarget,PM2RealAngle;
+extern uint8_t stack_flag;
 
 unsigned int zyLeftPostion; //大符用左拨杆位置
  
@@ -243,6 +244,7 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 		{
 			if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)   
 			{
+				stack_flag = 0;
 				LASER_OFF();//zy0802
 				SetShootState(NO_SHOOT);
 				SetFrictionWheelSpeed(800);

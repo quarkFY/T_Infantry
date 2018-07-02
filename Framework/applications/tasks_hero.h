@@ -9,6 +9,7 @@ void HERO_recover(void);
 void HERO_standby(void);
 void HERO_load(void);
 
+void HERO_init(void);
 void HERO_manul_prepare(void);
 void HERO_manul_recover(void);
 void HERO_manul_standby(void);
@@ -35,6 +36,7 @@ typedef enum
 	HERO_SHOOT_LOAD = 5,
 	HERO_STEADY_ROTATE = 6,
 	HERO_AUTO_GET3BOX = 7,
+	HERO_INIT = 8,
 	
 	
 }HERO_Order_t;

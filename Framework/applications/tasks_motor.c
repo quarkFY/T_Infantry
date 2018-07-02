@@ -244,14 +244,14 @@ void ControlPitch(void)
 			if(GMPITCHThisAngle <= GMPITCHLastAngle)
 			{
 				if((GMPITCHLastAngle-GMPITCHThisAngle)>3000)//编码器上溢
-					pitchRealAngle = pitchRealAngle + (GMPITCHThisAngle+8192-GMPITCHLastAngle) * 360  / 8192.0  ;
+					pitchRealAngle = pitchRealAngle + (GMPITCHThisAngle+8192-GMPITCHLastAngle) * 360  / 8192.0f  ;
 				else//反转
 				 pitchRealAngle =  pitchRealAngle + (GMPITCHThisAngle - GMPITCHLastAngle) * 360  / 8192.0f  ;
 			}
 			else
 			{
 				if((GMPITCHThisAngle-GMPITCHLastAngle)>3000)//编码器下溢
-					pitchRealAngle = pitchRealAngle - (GMPITCHLastAngle+8192-GMPITCHThisAngle) * 360  / 8192.0  ;
+					pitchRealAngle = pitchRealAngle - (GMPITCHLastAngle+8192-GMPITCHThisAngle) * 360  / 8192.0f  ;
 				else//正转
 					pitchRealAngle = pitchRealAngle + (GMPITCHThisAngle - GMPITCHLastAngle) * 360  / 8192.0f  ;
 			}

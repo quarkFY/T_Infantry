@@ -50,7 +50,7 @@ uint16_t PM2RotateCounter = 0;
 //红外ADC配置
 extern uint32_t ADC_Value[60];
 //状态及命令枚举
-HERO_Order_t HERO_Order=HERO_MANUL_RECOVER;
+HERO_Order_t HERO_Order= HERO_INIT;
 HERO_Order_t Last_HERO_Order=HERO_STANDBY;
 extern FrictionWheelState_e g_friction_wheel_state; 
  Chassis_Mode_e FrontWheel_Mode = CHASSIS_NORMAL, Last_FrontWheel_Mode = CHASSIS_NORMAL,BehindWheel_Mode = CHASSIS_NORMAL, Last_BehindWheel_Mode = CHASSIS_NORMAL;
@@ -62,6 +62,10 @@ void HeroTask(void const * argument)
 	
 		switch(HERO_Order)
 			{
+				case HERO_INIT:
+				{
+					HERO_init();
+				}break;
 				case HERO_MANUL_PREPARE:
 				{
 					HERO_manul_prepare();
@@ -142,6 +146,44 @@ void HeroTask(void const * argument)
 			osDelay(2);
 
 	}
+}
+
+
+void HERO_init(void)
+{
+	uint8_t AMstack = 0;
+	uint16_t cnt;
+	while(!AMstack)
+	{
+		AM1RAngleTarget -= 0.5;
+		AM1LAngleTarget += 0.5;
+		if((fabs(AM1RRealAngle-AM1RAngleTarget)>3 || fabs(AM1LRealAngle-AM1LAngleTarget)>3) && cnt<1000)
+		{
+			cnt++;
+		}
+		else if(cnt==1000)
+		{
+			cnt = 0;
+			AMstack = 1;
+		}
+		else
+		{
+			cnt = 0;
+		}
+		osDelay(30);
+	}
+	if(AMstack)
+	{
+		AM1RRealAngle = -190;
+		AM1LRealAngle = 190;
+		AM1RAngleTarget = 0;
+		AM1LAngleTarget = 0;
+	}
+	else
+	{
+		
+	}
+	HERO_Order = HERO_MANUL_FETCH;
 }
 
 void HERO_prepare(void)
@@ -228,7 +270,6 @@ void HERO_auto_getThreeBox()
 void HERO_getbullet_moveleft(uint8_t round,float angle,uint16_t step)
 {
 	float step_length;
-	uint16_t cnt = 0;
 	step_length = (angle - 0)/step;
 	
 	for(uint8_t r=0;r<round;r++){
@@ -277,11 +318,7 @@ void HERO_getbullet_moveleft(uint8_t round,float angle,uint16_t step)
 		CMFLRealAngle = 0.0;
 		CMBRRealAngle = 0.0;
 		CMBLRealAngle = 0.0;
-	while((fabs(CMFLAngleTarget-CMFLRealAngle)>5 || fabs(CMFRAngleTarget-CMFRRealAngle)>5) && cnt < 1500)
-	{
-			cnt++;
-			osDelay(1);
-	}
+	
 }
 
 //给值时，AM1R,AM2L为正，AM3R为负

@@ -40,17 +40,16 @@ void setMotor(MotorId motorId, int16_t Intensity){
 	static int16_t GMYAWIntensity = 0, GMPITCHIntensity = 0;
 	static int8_t GMReady = 0;
 	
-	static int16_t PM1Intensity = 0, PM2Intensity = 0;
+	static int16_t PM1Intensity = 0, PM2Intensity = 0, PM3Intensity = 0;
 	static int8_t PM1Ready = 0;
 	static int8_t PM2Ready = 0;
-//	static int8_t PM3Ready = 0;
+	static int8_t PM3Ready = 0;
 	
 	static int16_t AM1LIntensity = 0;
 	static int16_t AM1RIntensity = 0;
 	static int16_t AM2LIntensity = 0;
 	static int16_t AM2RIntensity = 0;
 	static int16_t AM3RIntensity = 0;
-	static int16_t LANDIntensity = 0;
 	static int8_t AMReady = 0;
 	
 	switch(motorId)
@@ -77,16 +76,13 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		
 		case PM1:
 			if(PM1Ready & 0x1){PM1Ready = 0x1;}else{PM1Ready |= 0x1;}
-			PM1Intensity = Intensity;break;   
-//PM1Intensity = 1000;break;   			
+			PM1Intensity = Intensity;break;   			
 		case PM2:
 			if(PM2Ready & 0x1){PM2Ready = 0x1;}else{PM2Ready |= 0x1;}
-//			PM2Intensity = 1000;break;
-//			if(PMReady & 0x2){PMReady = 0x2;}else{PMReady |= 0x2;}
 			PM2Intensity = Intensity;break;
-//		case PM3:
-//			if(PM3Ready & 0x1){PM3Ready = 0x1;}else{PM3Ready |= 0x1;}
-//			PM3Intensity = Intensity;break;
+		case PM3:
+			if(PM3Ready & 0x1){PM3Ready = 0x1;}else{PM3Ready |= 0x1;}
+			PM3Intensity = Intensity;break;
 		
 		case AM1L:
 			if(AMReady & 0x01){AMReady = 0x1F;}else{AMReady |= 0x01;}
@@ -100,9 +96,6 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		case AM2R:
 			if(AMReady & 0x08){AMReady = 0x1F;}else{AMReady |= 0x08;}
 			AM2RIntensity = Intensity;break;
-		case LAND:
-			if(AMReady & 0x10){AMReady = 0x1F;}else{AMReady |= 0x10;}
-			LANDIntensity = Intensity;break;
 			
 		default:
 			fw_Error_Handler();
@@ -219,12 +212,12 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		GMPITCHIntensity = 0;
 		PM1Intensity = 0;
 		PM2Intensity = 0;
+	  PM3Intensity = 0;
 		AM1LIntensity = 0;
 		AM1RIntensity = 0;
 		AM2LIntensity = 0;
 		AM2RIntensity = 0;
 		AM3RIntensity = 0;
-		LANDIntensity = 0;
 	}
 
 	if(CMReady == 0xF)
@@ -305,6 +298,25 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		PM2Ready = 0;
 	}
 	
+	if(PM3Ready == 0x1)
+	{
+		CanTxMsgTypeDef *pData = IOPool_pGetWriteData(PM3TxIOPool);
+		pData->StdId = PM3_TXID;
+		pData->Data[0] = 0;
+		pData->Data[1] = 0;
+		pData->Data[2] = 0;
+		pData->Data[3] = 0;
+		pData->Data[4] = (uint8_t)(PM3Intensity >> 8);
+		pData->Data[5] = (uint8_t)PM3Intensity;
+		pData->Data[6] = 0;
+		pData->Data[7] = 0;
+		
+		IOPool_getNextWrite(PM3TxIOPool);
+		
+		TransmitCAN2();
+		PM3Ready = 0;
+	}
+	
 	if(AMReady == 0x1F)
 	{
 		CanTxMsgTypeDef *pData = IOPool_pGetWriteData(AM1TxIOPool);
@@ -319,17 +331,17 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		pData->Data[7] = 0;
 		IOPool_getNextWrite(AM1TxIOPool);
 		
-		pData = IOPool_pGetWriteData(LANDTxIOPool);
-		pData->StdId = LAND_TXID;
+		pData = IOPool_pGetWriteData(AM23TxIOPool);
+		pData->StdId = AM23_TXID;
 		pData->Data[0] = (uint8_t)(AM2LIntensity >> 8);
 		pData->Data[1] = (uint8_t)AM2LIntensity;
 		pData->Data[2] = (uint8_t)(AM2RIntensity >> 8);
 		pData->Data[3] = (uint8_t)AM2RIntensity;
-		pData->Data[4] = (uint8_t)(LANDIntensity >> 8);
-		pData->Data[5] = (uint8_t)LANDIntensity;
+		pData->Data[4] = 0;
+		pData->Data[5] = 0;
 		pData->Data[6] = 0;
 		pData->Data[7] = 0;
-		IOPool_getNextWrite(LANDTxIOPool);
+		IOPool_getNextWrite(AM23TxIOPool);
 		
 		TransmitCAN2();
 		AMReady = 0;

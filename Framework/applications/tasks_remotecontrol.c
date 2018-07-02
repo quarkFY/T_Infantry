@@ -54,8 +54,8 @@ extern FrictionWheelState_e g_friction_wheel_state ;
 extern GMMode_e GMMode;
 extern Chassis_Mode_e FrontWheel_Mode , Last_FrontWheel_Mode ,BehindWheel_Mode , Last_BehindWheel_Mode ;
 
-extern float AM1RAngleTarget,AM1LAngleTarget,AM2RAngleTarget,AM2LAngleTarget,AM3RAngleTarget,LANDAngleTarget;
-extern float AM1RRealAngle,AM1LRealAngle,AM2RRealAngle,AM2LRealAngle,AM3RRealAngle,LANDRealAngle;
+extern float AM1RAngleTarget,AM1LAngleTarget,AM2RAngleTarget,AM2LAngleTarget,AM3RAngleTarget;
+extern float AM1RRealAngle,AM1LRealAngle,AM2RRealAngle,AM2LRealAngle,AM3RRealAngle;
 
 extern float CMFRAngleTarget,CMFLAngleTarget,CMBRAngleTarget,CMBLAngleTarget;
 extern float CMFRRealAngle,CMFLRealAngle,CMBRRealAngle,CMBLRealAngle;
@@ -452,13 +452,10 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 		AM1RAngleTarget +=(rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT; //右侧电机 
 		if(AM1RAngleTarget>0) AM1RAngleTarget=0;
 		if(AM1RAngleTarget<-190) AM1RAngleTarget=-190;
-		AM1LAngleTarget -=(rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT; //左侧电机
+		
+		AM1LAngleTarget =-AM1RAngleTarget; //左侧电机
 		if(AM1LAngleTarget<0) AM1LAngleTarget=0;
 		if(AM1LAngleTarget>190) AM1LAngleTarget=190;
-		
-		LANDAngleTarget +=(rc->ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_LAND_SPEED_REF_FACT; //登岛电机 
-		//if(LANDAngleTarget>0) AM1RAngleTarget=0;
-		//if(LANDAngleTarget<-190) AM1RAngleTarget=-190;
 		
 			//prepare
 			if(lastKey == 0x0000 && key->v == 0x0800)//z				

@@ -47,6 +47,9 @@
 #include "tasks_hero.h"
 #include "peripheral_sov.h"
 
+#include <stdlib.h>
+#include <math.h>
+
 extern PID_Regulator_t CMRotatePID ; 
 extern PID_Regulator_t CM1SpeedPID;
 extern PID_Regulator_t CM2SpeedPID;
@@ -86,6 +89,7 @@ WorkState_e GetWorkState()
 /*2ms定时任务*/
 extern float yawAngleTarget;
 extern float pitchAngleTarget;
+extern float PM3AngleTarget;
 extern RampGen_t frictionRamp ;
 
 extern uint16_t PM1RotateCount;
@@ -97,7 +101,9 @@ uint16_t checkKeyTime=500;
 
  int ad1,ad2,ad3,ad4,ad5;
 extern uint32_t ADC_Value[100];
-
+uint8_t stack_flag=0;
+extern float PM3RealAngle;
+float PM3lastAngle;
 
 void Timer_2ms_lTask(void const * argument)
 {
@@ -126,13 +132,50 @@ void Timer_2ms_lTask(void const * argument)
 		{
 			checkKeyTime++;
 		}
+		////////////////////////////测试////////////////////////////
 
+//		if(fabs(PM3lastAngle-PM3RealAngle)>0.0000002&&stack_flag==0)
+//		{
+//			PM3AngleTarget+=1.2;
+//			PM3lastAngle = PM3RealAngle;
+//			
+//			
+//		}
+//		else if(stack_flag==0)
+//		{
+//			PM3AngleTarget-=10;
+//			PM3lastAngle = PM3RealAngle;
+//		}
+//		
+//		
+//		if(fabs(PM3AngleTarget-PM3RealAngle)>5)
+//		{
+//			stack_flag=1;
+//		}
+//		else
+//		{
+//			stack_flag =0;
+//		}
+		
+		
+		
+		if(fabs(PM3AngleTarget-PM3RealAngle)>50)
+		{
+			PM3AngleTarget=PM3RealAngle;
+			stack_flag = 1;
+		}
+		else if(stack_flag == 0 )
+		{
+			PM3AngleTarget+=1.2;
+		}
 
 //定时1s,发送调试信息		
 		if(s_countWhile >= 2000)//150 1000
 		{
 			s_countWhile = 0;
-
+        
+			
+		
 			/*
 			*****查看任务栈空间剩余示例*******
 			//		StackResidue = uxTaskGetStackHighWaterMark( GMControlTaskHandle );

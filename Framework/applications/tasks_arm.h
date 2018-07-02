@@ -20,7 +20,6 @@
 
 #define AM1Reduction 19.0
 #define AM23Reduction 19.0
-#define LANDReduction 19.0
 
 #define PM1Reduction 36.0
 #define PM2Reduction 36.0
@@ -32,10 +31,10 @@ void ControlAM1R(void);
 void ControlAM2L(void);
 void ControlAM2R(void);
 void ControlAM3R(void);
-void ControlLAND(void);
 
 void ControlPM1(void);
 void ControlPM2(void);
+void ControlPM3(void);
 		
 void shootOneGolf(void);
 void shootOneGolfConpensation(void);

@@ -740,11 +740,6 @@
               <FilePath>..\Framework\drivers\drivers_imu.c</FilePath>
             </File>
             <File>
-              <FileName>drivers_canmotor_user.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Framework\drivers\drivers_canmotor_user.h</FilePath>
-            </File>
-            <File>
               <FileName>drivers_imu_mpu6500_reg.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Framework\drivers\drivers_imu_mpu6500_reg.h</FilePath>
@@ -788,6 +783,11 @@
               <FileName>drivers_canmotor.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Framework\drivers\drivers_canmotor.c</FilePath>
+            </File>
+            <File>
+              <FileName>drivers_canmotor_user.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Framework\drivers\drivers_canmotor_user.h</FilePath>
             </File>
             <File>
               <FileName>drivers_canmotor_low.h</FileName>
