@@ -93,6 +93,11 @@ void HeroTask(void const * argument)
 					//HERO_auto_getOneBox();
 					HERO_Order = HERO_MANUL_FETCH;
 				}break;
+				case HERO_AUTO_GETBOX:
+				{
+					HERO_auto_getOneBox();
+					HERO_Order = HERO_MANUL_FETCH;
+				}break;			
 				case HERO_SHOOT_LOAD:
 				{
 					shootLoad();
@@ -156,19 +161,19 @@ void HERO_init(void)
 	uint16_t cnt;
 	while(!AMstack)
 	{
-		if((fabs(AM1RRealAngle-AM1RAngleTarget)>8 || fabs(AM1LRealAngle-AM1LAngleTarget)>8) && cnt<50)
+		if((fabs(AM1RRealAngle-AM1RAngleTarget)>16 || fabs(AM1LRealAngle-AM1LAngleTarget)>16) && cnt<30)
 		{
 			cnt++;
 		}
-		else if(cnt==50)
+		else if(cnt==30)
 		{
 			cnt = 0;
 			AMstack = 1;
 		}
 		else
 		{
-			AM1RAngleTarget -= 1;
-		  AM1LAngleTarget += 1;
+			AM1RAngleTarget -= 2;
+		  AM1LAngleTarget += 2;
 			cnt = 0;
 		}
 		osDelay(30);
@@ -236,17 +241,23 @@ void HERO_manul_recover()
 	HERO_Order = HERO_MANUL_FETCH;
 }
 
-
 void HERO_auto_getOneBox()
 {
+		if(HERO_Order == HERO_MANUL_FETCH) return;
 		HERO_prepare();
 		osDelay(500);
+		if(HERO_Order == HERO_MANUL_FETCH) return;
 		GRIP_SOV_ON();
 		osDelay(500);
+	  if(HERO_Order == HERO_MANUL_FETCH) return;
 		HERO_load();
 		osDelay(500);
+		PM2AngleTarget = PM2AngleTarget - 150;
+	  if(HERO_Order == HERO_MANUL_FETCH) return;
 		GRIP_SOV_OFF();
 		osDelay(500);
+		PM2AngleTarget = PM2AngleTarget - 200;
+	  if(HERO_Order == HERO_MANUL_FETCH) return;
 		HERO_standby();
 }
 
@@ -304,6 +315,7 @@ void HERO_getbullet_moveleft(uint8_t round,float angle,uint16_t step)
 			CMFLAngleTarget += step_length;
 			CMBRAngleTarget -= step_length;
 			CMBLAngleTarget -= step_length;
+		  if(HERO_Order == HERO_MANUL_FETCH) return;
 			osDelay(20);
 	}
 		CMFRAngleTarget = angle;

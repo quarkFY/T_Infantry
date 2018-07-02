@@ -237,6 +237,7 @@ extern uint8_t JUDGE_State;
 uint16_t forward_back_speed = 0;
 uint16_t left_right_speed = 0;
 uint16_t rotate_speed=0;
+uint16_t lastKey;
 ///////////////////////////键鼠模式//////////////////////////
 //调整鼠标灵敏度
 #define MOUSE_TO_PITCH_ANGLE_INC_FACT 		0.025f * 2
@@ -327,6 +328,23 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 			ChassisSpeedRef.rotate_ref = 0;
 			RotSpeedRamp.ResetCounter(&RotSpeedRamp);
 		}
+		if(lastKey == 0x0000 && key->v & 0x1000)//x
+		{
+			HERO_Order = HERO_AUTO_GET3BOX;
+		}
+		if(key->v == 0x2000)//c
+		{
+			HERO_Order = HERO_AUTO_GETBOX;
+		}
+		if(key->v & 0x4000)//v
+		{
+			HERO_Order = HERO_MANUL_FETCH;
+		}
+		if(key->v == 0x0800)//z lastKey == 0x0000 && 
+		{
+			HERO_Order = HERO_MANUL_RECOVER;
+		}
+
 		//mouse x y control
 		if(GMMode == LOCK)
 		{
@@ -382,12 +400,11 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		MouseShootControl(mouse);
 	}
 	
-
+	lastKey = key->v;
 }
 
 /////////////////////////取弹模式/////////////////////////////
 uint8_t MaybePrepare =0;
-uint16_t lastKey;
 uint8_t isAM1Init = 0;
 void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 {

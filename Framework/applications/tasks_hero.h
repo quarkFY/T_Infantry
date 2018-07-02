@@ -37,6 +37,7 @@ typedef enum
 	HERO_STEADY_ROTATE = 6,
 	HERO_AUTO_GET3BOX = 7,
 	HERO_INIT = 8,
+	HERO_AUTO_GETBOX =9,
 	
 	
 }HERO_Order_t;
