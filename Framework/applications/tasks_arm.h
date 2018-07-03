@@ -29,8 +29,8 @@ void Can2ControlTask(void const * argument);
 void ControlAM1L(void);
 void ControlAM1R(void);
 void ControlAM2L(void);
-void ControlAM2R(void);
-void ControlAM3R(void);
+
+
 
 void ControlPM1(void);
 void ControlPM2(void);
@@ -40,5 +40,10 @@ void shootOneGolf(void);
 void shootOneGolfConpensation(void);
 void PMRotate(void);
 void shootLoad(void);
+
+#define PIR_R_Ready  (HAL_GPIO_ReadPin(PIR_R_GPIO_Port,GPIO_PIN_5))
+					
+#define PIR_L_Ready  (HAL_GPIO_ReadPin(PIR_L_GPIO_Port,GPIO_PIN_6))
+		
 
 #endif

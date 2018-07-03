@@ -59,10 +59,10 @@
 
 #define LASER_Pin GPIO_PIN_13
 #define LASER_GPIO_Port GPIOG
-#define FRONT_SOV1_Pin GPIO_PIN_5
-#define FRONT_SOV1_GPIO_Port GPIOE
-#define FRONT_SOV2_Pin GPIO_PIN_6
-#define FRONT_SOV2_GPIO_Port GPIOE
+#define PIR_R_Pin GPIO_PIN_5
+#define PIR_R_GPIO_Port GPIOE
+#define PIR_L_Pin GPIO_PIN_6
+#define PIR_L_GPIO_Port GPIOE
 #define LASER2_Pin GPIO_PIN_0
 #define LASER2_GPIO_Port GPIOI
 #define GRIP_SOV_Pin GPIO_PIN_1
@@ -75,8 +75,6 @@
 #define BEHIND_SOV2_GPIO_Port GPIOC
 #define BEHIND_SOV1_Pin GPIO_PIN_2
 #define BEHIND_SOV1_GPIO_Port GPIOC
-#define GM_RST_Pin GPIO_PIN_4
-#define GM_RST_GPIO_Port GPIOC
 #define PM_Ctrl_Pin GPIO_PIN_12
 #define PM_Ctrl_GPIO_Port GPIOD
 

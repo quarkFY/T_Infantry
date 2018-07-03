@@ -19,19 +19,19 @@
 uint8_t HERO_task_on=0;
 extern Get_Bullet_e GetBulletState;
 extern float AM1RAngleTarget ;
-extern float AM2RAngleTarget ;
+
 extern float AM3RAngleTarget ;
 extern float AM1LAngleTarget ;
-extern float AM2LAngleTarget ;
+
 extern float AM1LRealAngle ;
 extern float AM1RRealAngle ;
-extern float AM2LRealAngle ;
-extern float AM2RRealAngle ;
+
+
 extern float AM3RRealAngle ;
 extern float LastAM1LAngleTarget;
 extern float LastAM1RAngleTarget;
-extern float LastAM2LAngleTarget;
-extern float LastAM2RAngleTarget;
+
+
 extern float LastAM3RAngleTarget;
 
 extern float CMFRAngleTarget ;
@@ -172,11 +172,11 @@ void HERO_init(void)
 		}
 		else
 		{
-			AM1RAngleTarget -= 2;
-		  AM1LAngleTarget += 2;
+			AM1RAngleTarget -= 1;
+		  AM1LAngleTarget += 1;
 			cnt = 0;
 		}
-		osDelay(30);
+		osDelay(12);
 	}
 	if(AMstack)
 	{
@@ -184,7 +184,7 @@ void HERO_init(void)
 		AM1LRealAngle = 190;
 		AM1RAngleTarget = -190;
 		AM1LAngleTarget = 190;
-		HERO_step(0,0,0,40);
+		HERO_step(0,0,0,80);
 		isAM1Init = 1;
 	}
 	else
@@ -196,26 +196,26 @@ void HERO_init(void)
 
 void HERO_prepare(void)
 {
-	HERO_step(175,0,0,20);
+	HERO_step(150,0,0,40);
 }
 
 void HERO_standby(void)
 {
-	HERO_step(150,0,0,2);
+	HERO_step(125,0,0,4);
 }
 
 void HERO_load(void)
 {
-	HERO_step(160,0,0,15);
-	HERO_step(30,0,0,15);
+	HERO_step(135,0,0,30);
+	HERO_step(5,0,0,30);
 	osDelay(500);
-	HERO_step(160,0,0,20);
+	HERO_step(135,0,0,40);
 }
 
 
 void HERO_recover()
 {
-	HERO_step(10,0,0,20);
+	HERO_step(0,0,0,20);
 }
 
 void HERO_manul_prepare(void)
@@ -336,7 +336,7 @@ void HERO_getbullet_moveleft(uint8_t round,float angle,uint16_t step)
 	
 }
 
-//给值时，AM1R,AM2L为正，AM3R为负
+//给值时，AM1R为正，AM3R为负
 void HERO_step(float angle1,float angle2,float angle3,uint16_t step)
 {
 	float step_length1;
@@ -347,7 +347,7 @@ void HERO_step(float angle1,float angle2,float angle3,uint16_t step)
 				{
 					AM1RAngleTarget -= step_length1;
 					AM1LAngleTarget += step_length1;
-					osDelay(30);
+					osDelay(15);
 				}
 				AM1RAngleTarget = -angle1;
 				AM1LAngleTarget = angle1;

@@ -52,9 +52,9 @@ uint8_t print_data=0;
 extern float yawAngleTarget, pitchAngleTarget;
 extern float angles[3];
 extern PID_Regulator_t CMFLSpeedPID,CMFRSpeedPID,CMBLSpeedPID,CMBRSpeedPID;
-extern fw_PID_Regulator_t AM1RPositionPID,AM1RSpeedPID,AM2RPositionPID,AM2RSpeedPID;
+extern fw_PID_Regulator_t AM1RPositionPID,AM1RSpeedPID;
 extern IMUDataTypedef imu_data;
-extern float AM2RRealAngle,AM1RRealAngle;
+extern float AM1RRealAngle;
 extern double aux_motor34_position_target;
 extern float q0,q1,q2,q3;
 extern float gx, gy, gz, ax, ay, az, mx, my, mz;
@@ -150,38 +150,38 @@ void zykProcessData()
 		else if(ComProtocal(buf,"#GMPPP","$","@",data))
 		{
 			float p=atof(data[0]);
-			AM2RPositionPID.kp=p;
-			fw_printf("Pitch position P change to %f\r\n",AM2RPositionPID.kp);
+			AM1RPositionPID.kp=p;
+			fw_printf("Pitch position P change to %f\r\n",AM1RPositionPID.kp);
 		}
 		else if(ComProtocal(buf,"#GMPPI","$","@",data))
 		{
 			float p=atof(data[0]);
-			AM2RPositionPID.ki=p;
-			fw_printf("Pitch position I change to %f\r\n",AM2RPositionPID.ki);
+			AM1RPositionPID.ki=p;
+			fw_printf("Pitch position I change to %f\r\n",AM1RPositionPID.ki);
 		}
 		else if(ComProtocal(buf,"#GMPPD","$","@",data))
 		{
 			float p=atof(data[0]);
-			AM2RPositionPID.kd=p;
-			fw_printf("Pitch position D change to %f\r\n",AM2RPositionPID.kd);
+			AM1RPositionPID.kd=p;
+			fw_printf("Pitch position D change to %f\r\n",AM1RPositionPID.kd);
 		}
 		else if(ComProtocal(buf,"#GMPSP","$","@",data))
 		{
 			float p=atof(data[0]);
-			AM2RSpeedPID.kp=p;
-			fw_printf("Pitch speed P change to %f\r\n",AM2RSpeedPID.kp);
+			AM1RSpeedPID.kp=p;
+			fw_printf("Pitch speed P change to %f\r\n",AM1RSpeedPID.kp);
 		}
 		else if(ComProtocal(buf,"#GMPSI","$","@",data))
 		{
 			float p=atof(data[0]);
-			AM2RSpeedPID.ki=p;
-			fw_printf("Pitch speed I change to %f\r\n",AM2RSpeedPID.ki);
+			AM1RSpeedPID.ki=p;
+			fw_printf("Pitch speed I change to %f\r\n",AM1RSpeedPID.ki);
 		}
 		else if(ComProtocal(buf,"#GMPSD","$","@",data))
 		{
 			float p=atof(data[0]);
-			AM2RSpeedPID.kd=p;
-			fw_printf("Pitch speed D change to %f\r\n",AM2RSpeedPID.kd);
+			AM1RSpeedPID.kd=p;
+			fw_printf("Pitch speed D change to %f\r\n",AM1RSpeedPID.kd);
 		}
 		///////////////////UPPER
 		else if(strcmp(buf,"RD1")==0)
@@ -201,7 +201,7 @@ void zykProcessData()
 		{
 			//speed
 			float realSpeed2=-imu_data.gx/32.8;
-			fw_printf("#DATA%.2f@%.2f@%.2f$",AM2RPositionPID.output,realSpeed2,AM2RRealAngle);
+			fw_printf("#DATA%.2f@%.2f@%.2f$",AM1RPositionPID.output,realSpeed2,AM1RRealAngle);
 //			if(print_data==2)
 //			{
 //				print_data=0;
@@ -228,7 +228,7 @@ void wave_task(void const * argument){
 		else if(print_data==2)
 		{
 			float realSpeed2=-imu_data.gy/32.8;
-			fw_printf("#DATA%.2f@%.2f@%.2f$",AM2RPositionPID.output,realSpeed2,AM2RRealAngle);
+			fw_printf("#DATA%.2f@%.2f@%.2f$",AM1RPositionPID.output,realSpeed2,AM1RRealAngle);
 		}
 		osDelay(20);
 	}

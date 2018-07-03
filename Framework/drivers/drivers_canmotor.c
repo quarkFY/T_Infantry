@@ -32,8 +32,8 @@ NaiveIOPoolDefine(CMBRRxIOPool, {0});
 
 NaiveIOPoolDefine(AM1LRxIOPool, {0});
 NaiveIOPoolDefine(AM1RRxIOPool, {0});
-NaiveIOPoolDefine(AM2LRxIOPool, {0});
-NaiveIOPoolDefine(AM2RRxIOPool, {0});
+//NaiveIOPoolDefine(AM2LRxIOPool, {0});
+//NaiveIOPoolDefine(AM2RRxIOPool, {0});
 NaiveIOPoolDefine(AM3RRxIOPool, {0});
 
 NaiveIOPoolDefine(PM1RxIOPool, {0});
@@ -72,41 +72,23 @@ NaiveIOPoolDefine(GMTxIOPool, DataPoolInit);
 NaiveIOPoolDefine(AM1TxIOPool, DataPoolInit);
 #undef DataPoolInit 
 	
-#define DataPoolInit \
-	{ \
-		{AM23_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}}, \
-		{AM23_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}}, \
-		{AM23_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}} \
-}
-NaiveIOPoolDefine(AM23TxIOPool, DataPoolInit);
-#undef DataPoolInit 
+//#define DataPoolInit \
+//	{ \
+//		{AM23_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}}, \
+//		{AM23_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}}, \
+//		{AM23_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}} \
+//}
+//NaiveIOPoolDefine(AM23TxIOPool, DataPoolInit);
+//#undef DataPoolInit 
 
 
 #define DataPoolInit \
 	{ \
-		{PM1_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}}, \
-		{PM1_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}}, \
-		{PM1_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}} \
+		{PM_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}}, \
+		{PM_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}}, \
+		{PM_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}} \
 }
-NaiveIOPoolDefine(PM1TxIOPool, DataPoolInit);
-#undef DataPoolInit 
-
-#define DataPoolInit \
-	{ \
-		{PM2_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}}, \
-		{PM2_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}}, \
-		{PM2_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}} \
-}
-NaiveIOPoolDefine(PM2TxIOPool, DataPoolInit);
-#undef DataPoolInit 
-
-#define DataPoolInit \
-	{ \
-		{PM3_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}}, \
-		{PM3_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}}, \
-		{PM3_TXID, 0, CAN_ID_STD, CAN_RTR_DATA, 8, {0}} \
-}
-NaiveIOPoolDefine(PM3TxIOPool, DataPoolInit);
+NaiveIOPoolDefine(PMTxIOPool, DataPoolInit);
 #undef DataPoolInit 
 
  
@@ -245,21 +227,6 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan){
 			  IOPool_pGetWriteData(AM1RRxIOPool)->realIntensity = CanRxGetU16(Can2RxMsg, 2);
 				IOPool_getNextWrite(AM1RRxIOPool);
 				break;
-			case AM2L_RXID:
-				IOPool_pGetWriteData(AM2LRxIOPool)->angle = CanRxGetU16(Can2RxMsg, 0);
-				IOPool_pGetWriteData(AM2LRxIOPool)->RotateSpeed = CanRxGetU16(Can2RxMsg, 1);
-				IOPool_getNextWrite(AM2LRxIOPool);
-				break;
-			case AM2R_RXID:
-				IOPool_pGetWriteData(AM2RRxIOPool)->angle = CanRxGetU16(Can2RxMsg, 0);
-				IOPool_pGetWriteData(AM2RRxIOPool)->RotateSpeed = CanRxGetU16(Can2RxMsg, 1);
-				IOPool_getNextWrite(AM2RRxIOPool);
-				break;
-//			case AM3R_RXID:
-//				IOPool_pGetWriteData(AM3RRxIOPool)->angle = CanRxGetU16(Can2RxMsg, 0);
-//				IOPool_pGetWriteData(AM3RRxIOPool)->RotateSpeed = CanRxGetU16(Can2RxMsg, 1);
-//				IOPool_getNextWrite(AM3RRxIOPool);
-//				break;
 			case PM3_RXID:
 				IOPool_pGetWriteData(PM3RxIOPool)->angle = CanRxGetU16(Can2RxMsg, 0);
 				IOPool_pGetWriteData(PM3RxIOPool)->RotateSpeed = CanRxGetU16(Can2RxMsg, 1);
@@ -275,11 +242,6 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan){
 				IOPool_pGetWriteData(PM1RxIOPool)->RotateSpeed = CanRxGetU16(Can2RxMsg, 1);
 				IOPool_getNextWrite(PM1RxIOPool);
 				break;
-//			case SM_RXID:
-//				IOPool_pGetWriteData(SMRxIOPool)->angle = CanRxGetU16(Can1RxMsg, 0);
-//				IOPool_pGetWriteData(SMRxIOPool)->RotateSpeed = CanRxGetU16(Can1RxMsg, 1);
-//				IOPool_getNextWrite(SMRxIOPool);
-//				break;
 //			case ZGYRO_RXID:
 //			 {
 //				//单轴陀螺仪没有datasheet，完全参照官方程序
@@ -379,38 +341,13 @@ void TransmitCAN2(void){
 			taskEXIT_CRITICAL();
 	}
 	
-	if(IOPool_hasNextRead(PM3TxIOPool, 0))
-	{
-			osSemaphoreWait(Can2TransmitSemaphoreHandle, osWaitForever);
-			
-			IOPool_getNextRead(PM3TxIOPool, 0);
-			hcan2.pTxMsg = IOPool_pGetReadData(PM3TxIOPool, 0);
-			
-			taskENTER_CRITICAL();
-			if(HAL_CAN_Transmit_IT(&hcan2) != HAL_OK){
-				fw_Warning();
-			}
-			taskEXIT_CRITICAL();
-	}
-			if(IOPool_hasNextRead(PM2TxIOPool, 0))
+
+			if(IOPool_hasNextRead(PMTxIOPool, 0))
 		{
 			osSemaphoreWait(Can2TransmitSemaphoreHandle, osWaitForever);
 			
-			IOPool_getNextRead(PM2TxIOPool, 0);
-			hcan2.pTxMsg = IOPool_pGetReadData(PM2TxIOPool, 0);
-			
-			taskENTER_CRITICAL();
-			if(HAL_CAN_Transmit_IT(&hcan2) != HAL_OK){
-				fw_Warning();
-			}
-			taskEXIT_CRITICAL();
-		}
-			if(IOPool_hasNextRead(PM1TxIOPool, 0))
-		{
-			osSemaphoreWait(Can2TransmitSemaphoreHandle, osWaitForever);
-			
-			IOPool_getNextRead(PM1TxIOPool, 0);
-			hcan2.pTxMsg = IOPool_pGetReadData(PM1TxIOPool, 0);
+			IOPool_getNextRead(PMTxIOPool, 0);
+			hcan2.pTxMsg = IOPool_pGetReadData(PMTxIOPool, 0);
 			
 			taskENTER_CRITICAL();
 			if(HAL_CAN_Transmit_IT(&hcan2) != HAL_OK){

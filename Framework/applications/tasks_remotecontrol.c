@@ -54,8 +54,8 @@ extern FrictionWheelState_e g_friction_wheel_state ;
 extern GMMode_e GMMode;
 extern Chassis_Mode_e FrontWheel_Mode , Last_FrontWheel_Mode ,BehindWheel_Mode , Last_BehindWheel_Mode ;
 
-extern float AM1RAngleTarget,AM1LAngleTarget,AM2RAngleTarget,AM2LAngleTarget,AM3RAngleTarget;
-extern float AM1RRealAngle,AM1LRealAngle,AM2RRealAngle,AM2LRealAngle,AM3RRealAngle;
+extern float AM1RAngleTarget,AM1LAngleTarget,AM3RAngleTarget;
+extern float AM1RRealAngle,AM1LRealAngle,AM3RRealAngle;
 
 extern float CMFRAngleTarget,CMFLAngleTarget,CMBRAngleTarget,CMBLAngleTarget;
 extern float CMFRRealAngle,CMFLRealAngle,CMBRRealAngle,CMBLRealAngle;
@@ -244,6 +244,7 @@ uint16_t lastKey;
 #define MOUSE_TO_YAW_ANGLE_INC_FACT 		0.025f * 2
 
 int keyDebug;
+uint8_t detect,going;
 //遥控器模式下机器人无级变速  键鼠模式下机器人速度为固定档位
 void MouseKeyControlProcess(Mouse *mouse, Key *key)
 {
@@ -264,7 +265,10 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		{
 			yawAngleTarget    -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
 		}
-
+		
+		forward_back_speed =  NORMAL_FORWARD_BACK_SPEED;
+		left_right_speed = NORMAL_LEFT_RIGHT_SPEED;
+		rotate_speed = NORMAL_ROTATE_SPEED;
 		//speed mode: normal speed/high speed 
 		if(key->v & 0x10)//Shift
 		{
@@ -272,17 +276,16 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 			left_right_speed = LOW_LEFT_RIGHT_SPEED;
 			rotate_speed = LOW_ROTATE_SPEED;
 		}
-		else if(key->v == 0x20)//Ctrl
+		if(key->v == 0x20)//Ctrl
+			
 		{	
-			forward_back_speed =  MIDDLE_FORWARD_BACK_SPEED;
-			left_right_speed = MIDDLE_LEFT_RIGHT_SPEED;
-			rotate_speed = MIDDLE_ROTATE_SPEED;
-		}
-		else
-		{
-			forward_back_speed =  NORMAL_FORWARD_BACK_SPEED;
-			left_right_speed = NORMAL_LEFT_RIGHT_SPEED;
-			rotate_speed = NORMAL_ROTATE_SPEED;
+			forward_back_speed =  LOW_FORWARD_BACK_SPEED;
+			left_right_speed = LOW_LEFT_RIGHT_SPEED;
+			rotate_speed = LOW_ROTATE_SPEED;
+			if(PIR_R_Ready && PIR_L_Ready)
+			{
+				HERO_Order = HERO_MANUL_PREPARE;
+			}
 		}
 		//movement process
 		if(key->v & 0x01)  // key: w
@@ -527,15 +530,9 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 				CMBRAngleTarget = 0;
 				CMBLAngleTarget = 0;
 			}
-			//down
-			else if(key->v == 0x2010)//c+shift
-			{
-				FRONT_SOV1_OFF();
-			}
-			//next
 			if(key->v == 0x8000)//b
 			{//待标定
-				if(ad1>100 && ad2>100)
+				if(PIR_R_Ready && PIR_L_Ready)
 				{
 					HERO_Order = HERO_MANUL_PREPARE;
 				}

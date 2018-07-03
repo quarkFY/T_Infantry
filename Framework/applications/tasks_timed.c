@@ -132,32 +132,7 @@ void Timer_2ms_lTask(void const * argument)
 		{
 			checkKeyTime++;
 		}
-		////////////////////////////测试////////////////////////////
-
-//		if(fabs(PM3lastAngle-PM3RealAngle)>0.0000002&&stack_flag==0)
-//		{
-//			PM3AngleTarget+=1.2;
-//			PM3lastAngle = PM3RealAngle;
-//			
-//			
-//		}
-//		else if(stack_flag==0)
-//		{
-//			PM3AngleTarget-=10;
-//			PM3lastAngle = PM3RealAngle;
-//		}
-//		
-//		
-//		if(fabs(PM3AngleTarget-PM3RealAngle)>5)
-//		{
-//			stack_flag=1;
-//		}
-//		else
-//		{
-//			stack_flag =0;
-//		}
-		
-		
+			
 		
 		if(fabs(PM3AngleTarget-PM3RealAngle)>50)
 		{
@@ -169,6 +144,7 @@ void Timer_2ms_lTask(void const * argument)
 			PM3AngleTarget+=1.2;
 		}
 
+		
 //定时1s,发送调试信息		
 		if(s_countWhile >= 2000)//150 1000
 		{

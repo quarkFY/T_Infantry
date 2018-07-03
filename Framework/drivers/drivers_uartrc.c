@@ -96,7 +96,6 @@ extern uint8_t stack_flag;
 
 unsigned int zyLeftPostion; //大符用左拨杆位置
  
-static uint32_t RotateCNT = 0;	//长按连发计数
 static uint16_t CNT_1s = 75;	//用于避免四连发模式下两秒内连射8发过于密集的情况
 static uint16_t CNT_250ms = 18;	//用于点射模式下射频限制
 
@@ -236,8 +235,7 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 				SetShootState(NO_SHOOT);
 				frictionRamp.ResetCounter(&frictionRamp);
 				g_friction_wheel_state = FRICTION_WHEEL_START_TURNNING;	 
-				LASER_ON(); 
-				FRONT_SOV1_OFF();		}
+				LASER_ON(); 		}
 				PMRotate();
 		}break;
 		case FRICTION_WHEEL_START_TURNNING:
@@ -436,24 +434,9 @@ void MouseShootControl(Mouse *mouse)
 			}
 			else if(mouse->last_press_l == 0 && mouse->press_l== 0)	//松开鼠标左键的状态
 			{
-				SetShootState(NO_SHOOT);	
-				RotateCNT = 0;			
+				SetShootState(NO_SHOOT);		
 			}			
-//		  else if(mouse->last_press_l == 1 && mouse->press_l== 1 )
-//			{
-//				RotateCNT+=50;
-//				if(RotateCNT>=OneShoot)
-//				{
-//					shootOneGolf();
-//					CNT_PM1_500ms = 0;
-//					RotateCNT = 0;
-//				}
-//				else if(RotateCNT == 400)
-//				{
-//					shootOneGolfConpensation();
-//				}
-//					
-//			}
+
 //			if(fabs(PM1AngleTarget-PM1RealAngle)>40) //pm1堵转归位
 //			{
 //				PM1AngleTarget = tmpPM1AngleTarget;

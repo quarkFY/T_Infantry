@@ -69,7 +69,6 @@ float CMBLRealAngle = 0.0;
 float CMBRRealAngle = 0.0;
 
 int GMPITCHCurrent,GMYAWCurrent;
-uint8_t This_GM_RST,Last_GM_RST;
 
 int isGMYAWFirstEnter = 1;
 int isGMPITCHFirstEnter = 1;
@@ -316,7 +315,7 @@ void ControlCMFL(void)
 			setMotor(CMFR, CHASSIS_SPEED_ATTENUATION * CM2SpeedPID.output);
 //			setMotor(CMFR,1000);
 			
-			CMFLreal = IOPool_pGetReadData(CMFLRxIOPool, 0)->realIntensity;
+//			CMFLreal = IOPool_pGetReadData(CMFLRxIOPool, 0)->realIntensity;
 			s_CMFLCount = 0;
 		}
 		else
@@ -346,7 +345,7 @@ void ControlCMFR(void)
 			
 			setMotor(CMFL, CHASSIS_SPEED_ATTENUATION * CM1SpeedPID.output);
 //			setMotor(CMFL,1000);
-			CMFRreal = IOPool_pGetReadData(CMFRRxIOPool, 0)->realIntensity;
+//			CMFRreal = IOPool_pGetReadData(CMFRRxIOPool, 0)->realIntensity;
 			
 			s_CMFRCount = 0;
 		}
@@ -378,7 +377,7 @@ void ControlCMBL(void)
 			setMotor(CMBL, CHASSIS_SPEED_ATTENUATION * CM3SpeedPID.output);
 //			setMotor(CMBL,1000);
 			
-			CMBLreal = IOPool_pGetReadData(CMBLRxIOPool, 0)->realIntensity;
+//			CMBLreal = IOPool_pGetReadData(CMBLRxIOPool, 0)->realIntensity;
 			
 			s_CMBLCount = 0;
 		}
@@ -409,7 +408,7 @@ void ControlCMBR()
 			
 			setMotor(CMBR, CHASSIS_SPEED_ATTENUATION * CM4SpeedPID.output);
 //			setMotor(CMBR, 1000);
-			CMBRreal = IOPool_pGetReadData(CMBRRxIOPool, 0)->realIntensity;
+//			CMBRreal = IOPool_pGetReadData(CMBRRxIOPool, 0)->realIntensity;
 			s_CMBRCount = 0;
 		}
 		else

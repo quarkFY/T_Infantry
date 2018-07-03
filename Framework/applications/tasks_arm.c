@@ -36,14 +36,14 @@
 
 fw_PID_Regulator_t AM1LPositionPID = fw_PID_INIT(160.0, 0.0, 0.0, 20000.0, 10000.0, 10000.0, 16384.0);
 fw_PID_Regulator_t AM1RPositionPID = fw_PID_INIT(160.0, 0.0, 0.0, 20000.0, 10000.0, 10000.0, 16384.0);
-fw_PID_Regulator_t AM2LPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
-fw_PID_Regulator_t AM2RPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
+
+
 fw_PID_Regulator_t AM3RPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
 
 fw_PID_Regulator_t AM1LSpeedPID = fw_PID_INIT(12.0, 0.0, 0.0, 20000.0, 10000.0, 10000.0, 16384.0);
 fw_PID_Regulator_t AM1RSpeedPID = fw_PID_INIT(12.0, 0.0, 0.0, 20000.0, 10000.0, 10000.0, 16384.0);
-fw_PID_Regulator_t AM2LSpeedPID = fw_PID_INIT(6.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 8000.0);
-fw_PID_Regulator_t AM2RSpeedPID = fw_PID_INIT(6.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 8000.0);
+
+
 fw_PID_Regulator_t AM3RSpeedPID = fw_PID_INIT(8.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 8000.0);
 
 extern float PM1AngleTarget;
@@ -58,8 +58,8 @@ float am1rreal,am1lreal;
 //机械臂电机目标物理角度值
 float AM1LAngleTarget = 0.0;
 float AM1RAngleTarget = 0.0;
-float AM2LAngleTarget = 0.0;
-float AM2RAngleTarget = 0.0;
+
+
 float AM3RAngleTarget = 0.0;
 
 double Last_Arm_Horizontal_Position;
@@ -67,23 +67,23 @@ double Last_Arm_Vertical_Position;
 
 float LastAM1LAngleTarget;
 float LastAM1RAngleTarget;
-float LastAM2LAngleTarget;
-float LastAM2RAngleTarget;
+
+
 float LastAM3RAngleTarget;
 
 //机械臂电机实际物理角度值
 float AM1LRealAngle = 0.0;
 float AM1RRealAngle = 0.0;
-float AM2LRealAngle = 0.0;
-float AM2RRealAngle = 0.0;
+
+
 float AM3RRealAngle = 0.0;
 
 
 //用于减小系统开销
 static uint8_t s_AM1LCount = 0;
 static uint8_t s_AM1RCount = 0;
-static uint8_t s_AM2LCount = 0;
-static uint8_t s_AM2RCount = 0;
+
+
 static uint8_t s_AM3RCount = 0;
 
 //推弹电机
@@ -127,9 +127,6 @@ void Can2ControlTask(void const * argument)
 		
 		ControlAM1L();
 		ControlAM1R();
-		//ControlAM2L();
-		//ControlAM2R();
-		//ControlAM3R();
 		
 		ControlPM1();
 		ControlPM2();
@@ -238,105 +235,6 @@ void ControlAM1R()
 	}
 }
 
-
-
-uint8_t isAM2LFirstEnter = 1;
-uint16_t AM2LThisAngle = 0;
-uint16_t AM2LLastAngle = 0;
-void ControlAM2L()
-{
-	if(IOPool_hasNextRead(AM2LRxIOPool, 0))
-	{
-		if(s_AM2LCount == 1)
-		{
-			IOPool_getNextRead(AM2LRxIOPool, 0);
-			AM2LThisAngle = IOPool_pGetReadData(AM2LRxIOPool, 0)->angle;
-			
-			if(isAM2LFirstEnter==1) {AM2LLastAngle = AM2LThisAngle;isAM2LFirstEnter = 0;return;}	//初始化时，记录下当前编码器的值
-			
-			if(AM2LThisAngle<=AM2LLastAngle)
-			{
-				if((AM2LLastAngle-AM2LThisAngle)>3000)//编码器上溢
-					AM2LRealAngle = AM2LRealAngle + (AM2LThisAngle+8192-AM2LLastAngle) * 360 / 8192.0 / AM23Reduction;
-				else//反转
-					AM2LRealAngle = AM2LRealAngle - (AM2LLastAngle - AM2LThisAngle) * 360 / 8192.0 / AM23Reduction;
-			}
-			else
-			{
-				if((AM2LThisAngle-AM2LLastAngle)>3000)//编码器下溢
-					AM2LRealAngle = AM2LRealAngle - (AM2LLastAngle+8192-AM2LThisAngle) *360 / 8192.0 / AM23Reduction;
-				else//正转
-					AM2LRealAngle = AM2LRealAngle + (AM2LThisAngle - AM2LLastAngle) * 360 / 8192.0 / AM23Reduction;
-			}
-			
-			
-			AM2LPositionPID.target = AM2LAngleTarget;
-			AM2LPositionPID.feedback = AM2LRealAngle;
-			AM2LPositionPID.Calc(&AM2LPositionPID);
-			
-			AM2LSpeedPID.target = AM2LPositionPID.output;
-			AM2LSpeedPID.feedback = IOPool_pGetReadData(AM2LRxIOPool, 0)->RotateSpeed;
-			AM2LSpeedPID.Calc(&AM2LSpeedPID);
-			
-			setMotor(AM2L, AM2LSpeedPID.output);
-			s_AM2LCount = 0;
-			AM2LLastAngle = AM2LThisAngle;
-		}
-		else
-		{
-			s_AM2LCount++;
-		}
-	}
-}
-
-uint8_t isAM2RFirstEnter = 1;
-uint16_t AM2RThisAngle = 0;
-uint16_t AM2RLastAngle = 0;
-void ControlAM2R()
-{
-	if(IOPool_hasNextRead(AM2RRxIOPool, 0))
-	{
-		if(s_AM2RCount == 1)
-		{
-			IOPool_getNextRead(AM2RRxIOPool, 0);
-			AM2RThisAngle = IOPool_pGetReadData(AM2RRxIOPool, 0)->angle;
-			
-			if(isAM2RFirstEnter==1) {AM2RLastAngle = AM2RThisAngle;isAM2RFirstEnter = 0;return;}	//初始化时，记录下当前编码器的值
-			
-			if(AM2RThisAngle<=AM2RLastAngle)
-			{
-				if((AM2RLastAngle-AM2RThisAngle)>3000)//编码器上溢
-					AM2RRealAngle = AM2RRealAngle + (AM2RThisAngle+8192-AM2RLastAngle) * 360 / 8192.0 / AM23Reduction;
-				else//反转
-					AM2RRealAngle = AM2RRealAngle - (AM2RLastAngle - AM2RThisAngle) * 360 / 8192.0 / AM23Reduction;
-			}
-			else
-			{
-				if((AM2RThisAngle-AM2RLastAngle)>3000)//编码器下溢
-					AM2RRealAngle = AM2RRealAngle - (AM2RLastAngle+8192-AM2RThisAngle) *360 / 8192.0 / AM23Reduction;
-				else//正转
-					AM2RRealAngle = AM2RRealAngle + (AM2RThisAngle - AM2RLastAngle) * 360 / 8192.0 / AM23Reduction;
-			}
-			
-			
-			AM2RPositionPID.target = AM2RAngleTarget;
-			AM2RPositionPID.feedback = AM2RRealAngle;
-			AM2RPositionPID.Calc(&AM2RPositionPID);
-			
-			AM2RSpeedPID.target = AM2RPositionPID.output;
-			AM2RSpeedPID.feedback = IOPool_pGetReadData(AM2RRxIOPool, 0)->RotateSpeed;
-			AM2RSpeedPID.Calc(&AM2RSpeedPID);
-			
-			setMotor(AM2R, AM2RSpeedPID.output);
-			s_AM1RCount = 0;
-			AM2RLastAngle = AM2RThisAngle;
-		}
-		else
-		{
-			s_AM2RCount++;
-		}
-	}
-}
 float AM3intensity;
 uint8_t isAM3RFirstEnter = 1;
 uint16_t AM3RThisAngle = 0;
