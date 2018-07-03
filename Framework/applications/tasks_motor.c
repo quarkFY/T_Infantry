@@ -36,6 +36,8 @@
 #include "drivers_uartupper_user.h"
 #include "tasks_hero.h"
 
+float 	CMBLreal,CMBRreal,CMFLreal,CMFRreal;
+
 fw_PID_Regulator_t CMFLPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 20000.0, 10000.0, 10000.0, 16384.0);
 fw_PID_Regulator_t CMFRPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 20000.0, 10000.0, 10000.0, 16384.0);
 fw_PID_Regulator_t CMBLPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
@@ -84,8 +86,6 @@ PID_Regulator_t CM1SpeedPID = CHASSIS_MOTOR_SPEED_PID_DEFAULT;
 PID_Regulator_t CM2SpeedPID = CHASSIS_MOTOR_SPEED_PID_DEFAULT;
 PID_Regulator_t CM3SpeedPID = CHASSIS_MOTOR_SPEED_PID_DEFAULT;
 PID_Regulator_t CM4SpeedPID = CHASSIS_MOTOR_SPEED_PID_DEFAULT;
-
-
 
 //陀螺仪角速度（板载）
 extern float gYroXs, gYroYs, gYroZs;
@@ -314,7 +314,9 @@ void ControlCMFL(void)
 			CM2SpeedPID.Calc(&CM2SpeedPID);
 			
 			setMotor(CMFR, CHASSIS_SPEED_ATTENUATION * CM2SpeedPID.output);
+//			setMotor(CMFR,1000);
 			
+			CMFLreal = IOPool_pGetReadData(CMFLRxIOPool, 0)->realIntensity;
 			s_CMFLCount = 0;
 		}
 		else
@@ -343,6 +345,8 @@ void ControlCMFR(void)
 			CM1SpeedPID.Calc(&CM1SpeedPID);
 			
 			setMotor(CMFL, CHASSIS_SPEED_ATTENUATION * CM1SpeedPID.output);
+//			setMotor(CMFL,1000);
+			CMFRreal = IOPool_pGetReadData(CMFRRxIOPool, 0)->realIntensity;
 			
 			s_CMFRCount = 0;
 		}
@@ -372,6 +376,9 @@ void ControlCMBL(void)
 			CM3SpeedPID.Calc(&CM3SpeedPID);
 			
 			setMotor(CMBL, CHASSIS_SPEED_ATTENUATION * CM3SpeedPID.output);
+//			setMotor(CMBL,1000);
+			
+			CMBLreal = IOPool_pGetReadData(CMBLRxIOPool, 0)->realIntensity;
 			
 			s_CMBLCount = 0;
 		}
@@ -401,7 +408,8 @@ void ControlCMBR()
 			CM4SpeedPID.Calc(&CM4SpeedPID);
 			
 			setMotor(CMBR, CHASSIS_SPEED_ATTENUATION * CM4SpeedPID.output);
-			
+//			setMotor(CMBR, 1000);
+			CMBRreal = IOPool_pGetReadData(CMBRRxIOPool, 0)->realIntensity;
 			s_CMBRCount = 0;
 		}
 		else

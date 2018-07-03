@@ -197,207 +197,142 @@
         <Ww>
           <count>0</count>
           <WinNumber>1</WinNumber>
-          <ItemText>AM1RAngleTarget</ItemText>
+          <ItemText>FrontWheel_Mode</ItemText>
         </Ww>
         <Ww>
           <count>1</count>
           <WinNumber>1</WinNumber>
-          <ItemText>AM3RAngleTarget</ItemText>
+          <ItemText>BehindWheel_Mode</ItemText>
         </Ww>
         <Ww>
           <count>2</count>
           <WinNumber>1</WinNumber>
-          <ItemText>AM2RAngleTarget</ItemText>
+          <ItemText>keyDebug</ItemText>
         </Ww>
         <Ww>
           <count>3</count>
           <WinNumber>1</WinNumber>
-          <ItemText>AM3RThisAngle,0x0A</ItemText>
+          <ItemText>CMF</ItemText>
         </Ww>
         <Ww>
           <count>4</count>
           <WinNumber>1</WinNumber>
-          <ItemText>AM3RRealAngle</ItemText>
+          <ItemText>GMYAWThisAngle</ItemText>
         </Ww>
         <Ww>
           <count>5</count>
           <WinNumber>1</WinNumber>
-          <ItemText>(uint8_t)((0x02u &lt;&lt; 2) | 0x03u)</ItemText>
+          <ItemText>GMPITCHThisAngle</ItemText>
         </Ww>
         <Ww>
           <count>6</count>
           <WinNumber>1</WinNumber>
-          <ItemText>(uint8_t)((0x01u &lt;&lt; 2) | 0x03u)</ItemText>
+          <ItemText>pitchEncoder</ItemText>
         </Ww>
         <Ww>
           <count>7</count>
           <WinNumber>1</WinNumber>
-          <ItemText>GetBulletState</ItemText>
+          <ItemText>GMMode</ItemText>
         </Ww>
         <Ww>
           <count>8</count>
           <WinNumber>1</WinNumber>
-          <ItemText>tmp_judge</ItemText>
+          <ItemText>ChassisSpeedRef.forward_back_ref,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>9</count>
           <WinNumber>1</WinNumber>
-          <ItemText>realPower</ItemText>
+          <ItemText>ChassisSpeedRef.left_right_ref,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>10</count>
           <WinNumber>1</WinNumber>
-          <ItemText>pitchAngleTarget</ItemText>
+          <ItemText>ChassisSpeedRef.rotate_ref,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>11</count>
           <WinNumber>1</WinNumber>
-          <ItemText>yawAngleTarget</ItemText>
+          <ItemText>inputmode</ItemText>
         </Ww>
         <Ww>
           <count>12</count>
           <WinNumber>1</WinNumber>
-          <ItemText>ChassisSpeedRef.forward_back_ref,0x0A</ItemText>
+          <ItemText>ad2,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>13</count>
           <WinNumber>1</WinNumber>
-          <ItemText>ChassisSpeedRef.left_right_ref,0x0A</ItemText>
+          <ItemText>ad1,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>14</count>
           <WinNumber>1</WinNumber>
-          <ItemText>ChassisSpeedRef,0x0A</ItemText>
+          <ItemText>ad3,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>15</count>
           <WinNumber>1</WinNumber>
-          <ItemText>key-&gt;v</ItemText>
+          <ItemText>PM2AngleTarget</ItemText>
         </Ww>
         <Ww>
           <count>16</count>
           <WinNumber>1</WinNumber>
-          <ItemText>FrontWheel_Mode</ItemText>
+          <ItemText>g_friction_wheel_state</ItemText>
         </Ww>
         <Ww>
           <count>17</count>
           <WinNumber>1</WinNumber>
-          <ItemText>BehindWheel_Mode</ItemText>
+          <ItemText>HERO_Order</ItemText>
         </Ww>
         <Ww>
           <count>18</count>
           <WinNumber>1</WinNumber>
-          <ItemText>keyDebug</ItemText>
+          <ItemText>am1rreal</ItemText>
         </Ww>
         <Ww>
           <count>19</count>
           <WinNumber>1</WinNumber>
-          <ItemText>CMF</ItemText>
+          <ItemText>am1lreal</ItemText>
         </Ww>
         <Ww>
           <count>20</count>
           <WinNumber>1</WinNumber>
-          <ItemText>GMYAWThisAngle</ItemText>
+          <ItemText>am1rfordebug</ItemText>
         </Ww>
         <Ww>
           <count>21</count>
           <WinNumber>1</WinNumber>
-          <ItemText>GMPITCHThisAngle</ItemText>
+          <ItemText>am1lfordebug</ItemText>
         </Ww>
         <Ww>
           <count>22</count>
           <WinNumber>1</WinNumber>
-          <ItemText>pitchEncoder</ItemText>
+          <ItemText>AM1RThisAngle,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>23</count>
           <WinNumber>1</WinNumber>
-          <ItemText>GMMode</ItemText>
+          <ItemText>CMreal</ItemText>
         </Ww>
         <Ww>
           <count>24</count>
           <WinNumber>1</WinNumber>
-          <ItemText>ChassisSpeedRef.forward_back_ref,0x0A</ItemText>
+          <ItemText>CMBLreal</ItemText>
         </Ww>
         <Ww>
           <count>25</count>
           <WinNumber>1</WinNumber>
-          <ItemText>ChassisSpeedRef.left_right_ref,0x0A</ItemText>
+          <ItemText>CMBRreal</ItemText>
         </Ww>
         <Ww>
           <count>26</count>
           <WinNumber>1</WinNumber>
-          <ItemText>ChassisSpeedRef.rotate_ref,0x0A</ItemText>
+          <ItemText>CMFLreal</ItemText>
         </Ww>
         <Ww>
           <count>27</count>
           <WinNumber>1</WinNumber>
-          <ItemText>inputmode</ItemText>
-        </Ww>
-        <Ww>
-          <count>28</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>ad2,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>29</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>ad1,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>30</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>ad3,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>31</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>PM2AngleTarget</ItemText>
-        </Ww>
-        <Ww>
-          <count>32</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>PM2RotateEnale</ItemText>
-        </Ww>
-        <Ww>
-          <count>33</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>g_friction_wheel_state</ItemText>
-        </Ww>
-        <Ww>
-          <count>34</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>HERO_Order</ItemText>
-        </Ww>
-        <Ww>
-          <count>35</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>PM1AngleTarget</ItemText>
-        </Ww>
-        <Ww>
-          <count>36</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>am1rreal</ItemText>
-        </Ww>
-        <Ww>
-          <count>37</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>am1lreal</ItemText>
-        </Ww>
-        <Ww>
-          <count>38</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>am1rfordebug</ItemText>
-        </Ww>
-        <Ww>
-          <count>39</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>am1lfordebug</ItemText>
-        </Ww>
-        <Ww>
-          <count>40</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>AM1RThisAngle,0x0A</ItemText>
+          <ItemText>CMFRreal</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>

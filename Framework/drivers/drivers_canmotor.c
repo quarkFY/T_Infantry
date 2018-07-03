@@ -175,21 +175,25 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan){
 				//读取0 1字节为角度，2 3字节为速度
 				IOPool_pGetWriteData(CMFLRxIOPool)->angle = CanRxGetU16(Can1RxMsg, 0);
 				IOPool_pGetWriteData(CMFLRxIOPool)->RotateSpeed = CanRxGetU16(Can1RxMsg, 1);
+			IOPool_pGetWriteData(CMFLRxIOPool)->realIntensity = CanRxGetU16(Can1RxMsg, 2);
 				IOPool_getNextWrite(CMFLRxIOPool);
 				break;
 			case CMFR_RXID:
 				IOPool_pGetWriteData(CMFRRxIOPool)->angle = CanRxGetU16(Can1RxMsg, 0);
 				IOPool_pGetWriteData(CMFRRxIOPool)->RotateSpeed = CanRxGetU16(Can1RxMsg, 1);
+			IOPool_pGetWriteData(CMFRRxIOPool)->realIntensity = CanRxGetU16(Can1RxMsg, 2);
 				IOPool_getNextWrite(CMFRRxIOPool);
 				break;
 			case CMBL_RXID:
 				IOPool_pGetWriteData(CMBLRxIOPool)->angle = CanRxGetU16(Can1RxMsg, 0);
 				IOPool_pGetWriteData(CMBLRxIOPool)->RotateSpeed = CanRxGetU16(Can1RxMsg, 1);
+			IOPool_pGetWriteData(CMBLRxIOPool)->realIntensity = CanRxGetU16(Can1RxMsg, 2);
 				IOPool_getNextWrite(CMBLRxIOPool);
 				break;
 			case CMBR_RXID:
 				IOPool_pGetWriteData(CMBRRxIOPool)->angle = CanRxGetU16(Can1RxMsg, 0);
 				IOPool_pGetWriteData(CMBRRxIOPool)->RotateSpeed = CanRxGetU16(Can1RxMsg, 1);
+			IOPool_pGetWriteData(CMBRRxIOPool)->realIntensity = CanRxGetU16(Can1RxMsg, 2);
 				IOPool_getNextWrite(CMBRRxIOPool);
 				break;
 

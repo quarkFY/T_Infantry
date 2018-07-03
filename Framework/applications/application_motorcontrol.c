@@ -25,6 +25,7 @@
 #include "tasks_motor.h"
 #include "drivers_uartjudge_low.h"
 #include "drivers_cmpower.h"
+#include "pid_regulator.h"
 #include <stdbool.h>
 
 extern extPowerHeatData_t PowerHeatData;
@@ -33,6 +34,13 @@ extern uint8_t JUDGE_State;
 
 float am1lfordebug,am1rfordebug;
 extern bool g_bInited;
+
+fw_PID_Regulator_t CMFLIntensityPID = fw_PID_INIT(0.08, 0.002, 0.2, 16384.0, 1000.0, 16384.0, 16384.0);
+fw_PID_Regulator_t CMFRIntensityPID = fw_PID_INIT(0.08, 0.002, 0.2, 16384.0, 1000.0, 16384.0, 16384.0);
+fw_PID_Regulator_t CMBLIntensityPID = fw_PID_INIT(0.0, 0.0, 0.0, 16384.0, 1000.0, 16384.0, 16384.0);
+fw_PID_Regulator_t CMBRIntensityPID = fw_PID_INIT(0.0, 0.0, 0.0, 16384.0, 1000.0, 16384.0, 16384.0);
+
+float CMFLCompensate = 0,CMFRCompensate = 0,CMBLCompensate = 0,CMBRCompensate = 0;
 
 void setMotor(MotorId motorId, int16_t Intensity){
 	static int16_t CMFLIntensity = 0, CMFRIntensity = 0, CMBLIntensity = 0, CMBRIntensity = 0;
@@ -52,6 +60,8 @@ void setMotor(MotorId motorId, int16_t Intensity){
 	static int16_t AM2RIntensity = 0;
 	static int16_t AM3RIntensity = 0;
 	static int8_t AMReady = 0;
+	
+
 	
 	switch(motorId)
 	{
@@ -151,6 +161,7 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		 CMBLIntensity_max = 4500;
 		 CMBRIntensity_max = 4500;
 	}
+	
 	//林炳辉仿桂电功率控制策略
 	else if(PowerHeatData.chassisPowerBuffer-PowerHeatData.chassisPower*0.26f < 7.0f)
 	{
@@ -162,6 +173,47 @@ void setMotor(MotorId motorId, int16_t Intensity){
 			CMBLIntensity = (CMBLIntensity/(sum+1.0f))*CM_current_full*(1.0f+realPowerBuffer*0.03f);
 			CMBRIntensity = (CMBRIntensity/(sum+1.0f))*CM_current_full*(1.0f+realPowerBuffer*0.03f);
 	}
+	
+	
+	    MotorC620RxMsg_t *pData = IOPool_pGetReadData(CMFLRxIOPool, 0);
+	
+		  CMFLIntensityPID.target = CMFLIntensity;
+			CMFLIntensityPID.feedback = pData->realIntensity;
+			CMFLIntensityPID.Calc(&CMFLIntensityPID);
+	    CMFLCompensate = CMFLIntensityPID.output;
+	
+	    CMFLIntensity += CMFLCompensate;
+	
+	    pData = IOPool_pGetReadData(CMFRRxIOPool, 0);
+	
+		  CMFRIntensityPID.target = CMFRIntensity;
+			CMFRIntensityPID.feedback = pData->realIntensity;
+			CMFRIntensityPID.Calc(&CMFRIntensityPID);
+	    CMFRCompensate = CMFRIntensityPID.output;
+	
+	    CMFRIntensity += CMFRCompensate;
+	
+	    pData = IOPool_pGetReadData(CMBLRxIOPool, 0);
+	
+		  CMBLIntensityPID.target = CMBLIntensity;
+			CMBLIntensityPID.feedback = pData->realIntensity;
+			CMBLIntensityPID.Calc(&CMBLIntensityPID);
+	    CMBLCompensate = CMBLIntensityPID.output;
+	
+	    CMBLIntensity += CMBLCompensate;
+			
+			pData = IOPool_pGetReadData(CMBRRxIOPool, 0);
+	
+		  CMBRIntensityPID.target = CMBRIntensity;
+			CMBRIntensityPID.feedback = pData->realIntensity;
+			CMBRIntensityPID.Calc(&CMBRIntensityPID);
+	    CMBRCompensate = CMBRIntensityPID.output;
+	
+	    CMBRIntensity += CMBRCompensate;
+			
+			
+			
+			
 	//续原版功率限制算法
 	/*
 	float sum = (abs(CMFLIntensity) + abs(CMFRIntensity) + abs(CMBLIntensity) + abs(CMBRIntensity));
