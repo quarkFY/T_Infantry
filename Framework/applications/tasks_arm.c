@@ -146,7 +146,7 @@ void ControlAM1L()
 		{		
 			IOPool_getNextRead(AM1LRxIOPool, 0);
 			AM1LThisAngle = IOPool_pGetReadData(AM1LRxIOPool, 0)->angle;
-//			am1lreal = IOPool_pGetReadData(AM1LRxIOPool, 0)->realIntensity;
+			am1lreal = IOPool_pGetReadData(AM1LRxIOPool, 0)->realIntensity;
 			
 			if(isAM1LFirstEnter==1) {AM1LLastAngle = AM1LThisAngle;isAM1LFirstEnter = 0;return;}	//初始化时，记录下当前编码器的值
 			
@@ -196,7 +196,7 @@ void ControlAM1R()
 		{
 			IOPool_getNextRead(AM1RRxIOPool, 0);
 			AM1RThisAngle = IOPool_pGetReadData(AM1RRxIOPool, 0)->angle;
-//			am1rreal = IOPool_pGetReadData(AM1RRxIOPool, 0)->realIntensity;
+			am1rreal = IOPool_pGetReadData(AM1RRxIOPool, 0)->realIntensity;
 			
 			if(isAM1RFirstEnter==1) {AM1RLastAngle = AM1RThisAngle;isAM1RFirstEnter = 0;return;}	//初始化时，记录下当前编码器的值
 			
@@ -335,7 +335,7 @@ void ControlPM1()
 	}
 }
 
-float PM2realintensity;
+
 void ControlPM2()
 {
 	if(IOPool_hasNextRead(PM2RxIOPool, 0))
@@ -346,8 +346,6 @@ void ControlPM2()
 			Motor820RRxMsg_t *pData = IOPool_pGetReadData(PM2RxIOPool, 0);
 			
 			PM2ThisAngle = pData->angle;
-			PM2realintensity = pData->realIntensity;
-			
 			if(isPM2FirstEnter) {PM2LastAngle = PM2ThisAngle;isPM2FirstEnter = 0;}
 			
 			if(PM2ThisAngle<=PM2LastAngle)

@@ -218,13 +218,13 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan){
 			case AM1L_RXID:
 				IOPool_pGetWriteData(AM1LRxIOPool)->angle = CanRxGetU16(Can2RxMsg, 0);
 				IOPool_pGetWriteData(AM1LRxIOPool)->RotateSpeed = CanRxGetU16(Can2RxMsg, 1);
-//			  IOPool_pGetWriteData(AM1LRxIOPool)->realIntensity = CanRxGetU16(Can2RxMsg, 2);
+			  IOPool_pGetWriteData(AM1LRxIOPool)->realIntensity = CanRxGetU16(Can2RxMsg, 2);
 				IOPool_getNextWrite(AM1LRxIOPool);
 				break;
 			case AM1R_RXID:
 				IOPool_pGetWriteData(AM1RRxIOPool)->angle = CanRxGetU16(Can2RxMsg, 0);
 				IOPool_pGetWriteData(AM1RRxIOPool)->RotateSpeed = CanRxGetU16(Can2RxMsg, 1);
-//			  IOPool_pGetWriteData(AM1RRxIOPool)->realIntensity = CanRxGetU16(Can2RxMsg, 2);
+			  IOPool_pGetWriteData(AM1RRxIOPool)->realIntensity = CanRxGetU16(Can2RxMsg, 2);
 				IOPool_getNextWrite(AM1RRxIOPool);
 				break;
 			case PM3_RXID:
@@ -235,7 +235,6 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan){
 			case PM2_RXID:
 				IOPool_pGetWriteData(PM2RxIOPool)->angle = CanRxGetU16(Can2RxMsg, 0);
 				IOPool_pGetWriteData(PM2RxIOPool)->RotateSpeed = CanRxGetU16(Can2RxMsg, 1);
-			  IOPool_pGetWriteData(PM2RxIOPool)->realIntensity = CanRxGetU16(Can2RxMsg, 2);
 				IOPool_getNextWrite(PM2RxIOPool);
 				break;
 			case PM1_RXID:
