@@ -75,8 +75,12 @@
 #define BEHIND_SOV2_GPIO_Port GPIOC
 #define BEHIND_SOV1_Pin GPIO_PIN_2
 #define BEHIND_SOV1_GPIO_Port GPIOC
+#define SDA_Pin GPIO_PIN_4
+#define SDA_GPIO_Port GPIOA
 #define PM_Ctrl_Pin GPIO_PIN_12
 #define PM_Ctrl_GPIO_Port GPIOD
+#define SCL_Pin GPIO_PIN_5
+#define SCL_GPIO_Port GPIOA
 
 /* ########################## Assert Selection ############################## */
 /**
