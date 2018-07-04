@@ -23,6 +23,8 @@
 
 uint16_t reciveBuffer[8];
 
+//uint8_t tmpFlag;
+
 void set_SDA(uint8_t x)
 {
 	if(x) SDAHigh();
@@ -35,9 +37,9 @@ void i2c_start()
 	for(uint8_t i=0;i<4;i++)
 	{
 		SCLHigh();
-		osDelay(100);
+		osDelay(1000);
 		SCLLow();
-		osDelay(100);
+		osDelay(1000);
 	}
 }
 	
@@ -48,9 +50,9 @@ void i2c_write_byte(unsigned char b)
 	for (uint8_t i=7; i>=0; i--) {  
 		set_SDA(b & (1<<i));
 		SCLHigh();
-		osDelay(100);
+		osDelay(1000);
 		SCLLow();
-		osDelay(100);
+		osDelay(1000);
 //	SCLLow();             // SCL??  
 //	osDelay(100);  
 //	set_SDA(b & (1<<i));        //????????????????  

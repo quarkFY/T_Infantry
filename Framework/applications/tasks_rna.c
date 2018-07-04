@@ -17,12 +17,15 @@
 #include <stdlib.h>
 #include <math.h>
 
-
+uint8_t tmpFlag = 0;
 void RnaTask(void const * argument)
 {
-	while(1)
-		
+	while(1)		
 	{
-
+		if(tmpFlag)
+		{
+			i2c_write_byte(8);
+			tmpFlag = 0;
+		}
 	}
 }
