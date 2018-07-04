@@ -161,19 +161,19 @@ void HERO_init(void)
 	uint16_t cnt;
 	while(!AMstack)
 	{
-		if((fabs(AM1RRealAngle-AM1RAngleTarget)>16 || fabs(AM1LRealAngle-AM1LAngleTarget)>16) && cnt<30)
+		if((fabs(AM1RRealAngle-AM1RAngleTarget)>16 || fabs(AM1LRealAngle-AM1LAngleTarget)>16) && cnt<20)
 		{
 			cnt++;
 		}
-		else if(cnt==30)
+		else if(cnt==20)
 		{
 			cnt = 0;
 			AMstack = 1;
 		}
 		else
 		{
-			AM1RAngleTarget -= 1;
-		  AM1LAngleTarget += 1;
+			AM1RAngleTarget -= 1.5;
+		  AM1LAngleTarget += 1.5;
 			cnt = 0;
 		}
 		osDelay(12);
@@ -347,7 +347,7 @@ void HERO_step(float angle1,float angle2,float angle3,uint16_t step)
 				{
 					AM1RAngleTarget -= step_length1;
 					AM1LAngleTarget += step_length1;
-					osDelay(15);
+					osDelay(12);
 				}
 				AM1RAngleTarget = -angle1;
 				AM1LAngleTarget = angle1;
