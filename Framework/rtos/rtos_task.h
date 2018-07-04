@@ -35,5 +35,6 @@ extern osThreadId sonarTaskHandle;
 
 extern osThreadId HeroTaskHandle;
 
+extern osThreadId RnaTaskHandle;
 
 #endif

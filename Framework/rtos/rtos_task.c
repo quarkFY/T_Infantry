@@ -35,6 +35,7 @@
 #include "tasks_platemotor.h"
 #include "utilities_debug.h"
 #include "tasks_hero.h"
+#include "tasks_rna.h"
 
 //#include "drivers_mpu6050_low.h"
 //#include "tasks_mpu6050.h"
@@ -63,6 +64,8 @@ osThreadId sonarTaskHandle;
 osThreadId visualScopeTaskHandle;
 
 osThreadId HeroTaskHandle;
+
+osThreadId RnaTaskHandle;
 
 //extern osThreadId testFlashTaskHandle;
 //#include "drivers_flash.h"
@@ -119,6 +122,8 @@ void rtos_AddThreads()
 	//英雄取弹
   osThreadDef(Hero_Task, HeroTask, osPriorityNormal, 0, 256);
 	HeroTaskHandle = osThreadCreate(osThread(Hero_Task), NULL);
-
+	//通信
+  osThreadDef(Rna_Task, RnaTask , osPriorityNormal, 0, 256);
+	RnaTaskHandle = osThreadCreate(osThread(Rna_Task), NULL);
 
 }
