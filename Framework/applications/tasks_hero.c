@@ -15,6 +15,8 @@
 
 #include <stdlib.h>
 #include <math.h>
+
+
 //参考工程车，增加英雄取弹模块
 uint8_t HERO_task_on=0;
 extern Get_Bullet_e GetBulletState;
@@ -60,7 +62,6 @@ void HeroTask(void const * argument)
 	while(1)
 		
 	{
-	
 		switch(HERO_Order)
 			{
 				case HERO_INIT:

@@ -35,7 +35,6 @@
 #include "peripheral_laser.h"
 #include "peripheral_sov.h"
 #include "tasks_hero.h"
-#include "tasks_rna.h"
 
 #define VAL_LIMIT(val, min, max)\
 if(val<=min)\
@@ -239,7 +238,6 @@ uint16_t forward_back_speed = 0;
 uint16_t left_right_speed = 0;
 uint16_t rotate_speed=0;
 uint16_t lastKey;
-extern uint8_t tmpFlag;
 ///////////////////////////键鼠模式//////////////////////////
 //调整鼠标灵敏度
 #define MOUSE_TO_PITCH_ANGLE_INC_FACT 		0.025f * 2
@@ -247,6 +245,7 @@ extern uint8_t tmpFlag;
 
 int keyDebug;
 uint8_t detect,going;
+extern uint8_t tmpFlag;
 //遥控器模式下机器人无级变速  键鼠模式下机器人速度为固定档位
 void MouseKeyControlProcess(Mouse *mouse, Key *key)
 {
@@ -336,7 +335,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		if(lastKey == 0x0000 && key->v & 0x1000)//x
 		{
 			//HERO_Order = HERO_AUTO_GET3BOX;
-			tmpFlag =1;
+			tmpFlag = 1;
 		}
 		if(key->v == 0x2000)//c
 		{
