@@ -23,6 +23,7 @@
 
 uint16_t reciveBuffer[8];
 
+//uint8_t tmpFlag;
 
 void set_SDA(uint8_t x)
 {

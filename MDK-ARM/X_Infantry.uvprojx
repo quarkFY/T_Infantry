@@ -10,8 +10,7 @@
       <TargetName>X_Infantry</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>5050106::V5.05 update 1 (build 106)::ARMCC</pCCUsed>
-      <uAC6>0</uAC6>
+      <pCCUsed>5060300::V5.06 update 3 (build 300)::ARMCC</pCCUsed>
       <TargetOption>
         <TargetCommonOption>
           <Device>STM32F427IIHx</Device>
@@ -1016,14 +1015,14 @@
               <FilePath>..\Framework\applications\tasks_hero.h</FilePath>
             </File>
             <File>
-              <FileName>tasks_transfer.c</FileName>
+              <FileName>tasks_rna.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Framework\applications\tasks_transfer.c</FilePath>
+              <FilePath>..\Framework\applications\tasks_rna.c</FilePath>
             </File>
             <File>
-              <FileName>tasks_transfer.h</FileName>
+              <FileName>tasks_rna.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\Framework\applications\tasks_transfer.h</FilePath>
+              <FilePath>..\Framework\applications\tasks_rna.h</FilePath>
             </File>
           </Files>
         </Group>
