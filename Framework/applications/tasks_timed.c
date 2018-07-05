@@ -105,6 +105,10 @@ uint8_t stack_flag=0;
 extern float PM3RealAngle;
 float PM3lastAngle;
 
+////////////陀螺仪////////////
+float zeroGyro;
+extern float gyroZAngle;
+
 void Timer_2ms_lTask(void const * argument)
 {
 	//RTOS提供，用来做2ms精确定时
@@ -122,6 +126,13 @@ void Timer_2ms_lTask(void const * argument)
 		WorkStateFSM();//状态机
 	  WorkStateSwitchProcess();//状态机动作
 		
+		//陀螺仪复位计时
+    if(s_time_tick_2ms == 2000)
+		{
+			//GYRO_RST();//给单轴陀螺仪将当前位置写零，注意需要一定的稳定时间
+			zeroGyro = gyroZAngle;
+		}            //在从STOP切换到其他状态时，s_time_tick_2ms清零重加，会重新复位陀螺仪
+
 		getJudgeState();
 		
 		if(checkRecTime<65534)

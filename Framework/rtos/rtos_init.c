@@ -26,6 +26,9 @@
 #include "utilities_tim.h"
 #include "drivers_buzzer_low.h"
 #include "drivers_uartjudge_low.h"
+#include "drivers_uartupper_low.h"
+#include "drivers_uartrc_low.h"
+#include "drivers_uartgyro_low.h"
 
 bool g_bInited = 0;//匈牙利命名法,g_表示全局变量，b表示布尔型，Inited是否初始化完成
 void rtos_InitInfantry()
@@ -44,6 +47,7 @@ void rtos_InitInfantry()
 	
 	//plateMotorInit();//初始化拨盘电机(电机PWM，编码器计数)
   InitUserTimer();//初始化用户定时器：摩擦轮PWM，舵机PWM
+	InitGyroUart();//初始化外接陀螺仪读取串口
 
 	fw_printfln("init success");//串口发送成功初始化成功 printf line
 }

@@ -24,6 +24,7 @@
 #define MANIFOLD_UART huart3//关于妙算的删掉了
 #define JUDGE_UART huart6
 #define CTRL_UART huart3
+#define GYRO_UART huart2
 
 #define CMGMMOTOR_CAN hcan1
 //#define ZGYRO_CAN hcan2

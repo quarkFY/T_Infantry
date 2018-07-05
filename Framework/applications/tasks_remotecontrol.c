@@ -216,8 +216,10 @@ void RemoteDataProcess(uint8_t *pData)
 
 /////////////////////////遥控器模式//////////////////////////
 float forward_kp = 1.0 ;
+extern float yawMotorAngle;
 void RemoteControlProcess(Remote *rc)
 {
+	static float AngleTarget_temp = 0;
 	if(GetWorkState() == NORMAL_STATE)
 	{
 		ChassisSpeedRef.forward_back_ref = (rc->ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_CHASSIS_SPEED_REF_FACT * 0.4;
@@ -225,8 +227,20 @@ void RemoteControlProcess(Remote *rc)
 		
  		pitchAngleTarget += (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_PITCH_ANGLE_INC_FACT;
 		//yawAngleTarget   -= (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT; 
-		
-		ChassisSpeedRef.rotate_ref   = -(rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) *STICK_TO_CHASSIS_SPEED_REF_FACT*0.2 ;
+		if(fabs(yawMotorAngle) <= 40)
+		{
+				yawAngleTarget   -= (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT;
+		}
+			
+		AngleTarget_temp = yawAngleTarget;
+			
+		if(fabs(yawMotorAngle) > 40 )
+		{
+				AngleTarget_temp   -= (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT;
+				if(fabs(AngleTarget_temp)<fabs(yawAngleTarget))
+					yawAngleTarget = AngleTarget_temp;
+		}
+		//ChassisSpeedRef.rotate_ref   = -(rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) *STICK_TO_CHASSIS_SPEED_REF_FACT*0.2 ;
 	 
 	}
 	 RemoteShootControl(&g_switch1, rc->s1);
