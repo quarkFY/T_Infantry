@@ -74,11 +74,6 @@ int isGMYAWFirstEnter = 1;
 int isGMPITCHFirstEnter = 1;
 int isGMSet;
 
-extern float gyroZAngle;
-extern float gyroXspeed,gyroYspeed,gyroZspeed;
-extern float zeroGyro;
-float deltaGyro;
-
 fw_PID_Regulator_t pitchPositionPID = fw_PID_INIT(100, 0.0, 10.0, 4000.0, 10000.0, 10000.0, 10000.0);
 fw_PID_Regulator_t yawPositionPID = fw_PID_INIT(100.0, 0.0, 0.0, 4000.0, 10000.0, 10000.0, 10000.0);//等幅振荡P37.3 I11.9 D3.75  原26.1 8.0 1.1
 fw_PID_Regulator_t pitchSpeedPID = fw_PID_INIT(150.0, 0.0, 0.0, 3000.0, 10000.0, 10000.0, 5000);
@@ -163,8 +158,8 @@ void ControlYaw(void)
 			
 			/*从IOPool读编码器*/
 			IOPool_getNextRead(GMYAWRxIOPool, 0); 
-			/********************************陀螺仪定角度**********************************/
-			//yawRealAngle = (IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle- yawZeroAngle) * 360 * 1 / (8192.0f * 5);
+			//fw_printfln("yaw%d",IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle);
+			//yawRealAngle = (IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle- yawZeroAngle) * 360 * 11 / (8192.0f * 50);
 			
 			GMYAWThisAngle = IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle;
 			GMYAWCurrent = IOPool_pGetWriteData(GMYAWRxIOPool)->realIntensity;
@@ -191,20 +186,11 @@ void ControlYaw(void)
 				else//正转
 					yawRealAngle = yawRealAngle + (GMYAWThisAngle - GMYAWLastAngle) * 360 * 1 / (8192.0f * 5) ;
 			}
-			
-//			if(GetWorkState() == NORMAL_STATE) 
-//			{
-//				//yawRealAngle = -ZGyroModuleAngle;//yawrealangle的值改为复位后陀螺仪的绝对值，进行yaw轴运动设定
-//				deltaGyro = gyroZAngle - zeroGyro;
-//				yawRealAngle = NORMALIZE_ANGLE180(deltaGyro);
-//			}		
-			
+							
 			//NORMALIZE_ANGLE180(yawRealAngle);
 			//限位
 			MINMAX(yawAngleTarget, -30.0f, 30.0f);	
-			
-			yawIntensity = ProcessYawPID(yawAngleTarget, yawRealAngle, -gyroZspeed);
-//			yawIntensity = ProcessYawPID(yawAngleTarget, yawRealAngle, -gYroZs);
+			yawIntensity = ProcessYawPID(yawAngleTarget, yawRealAngle, -gYroZs);
 			yawIntensityForDebug = yawIntensity;
 			GMYAWLastAngle = GMYAWThisAngle ;
 			
@@ -274,7 +260,7 @@ void ControlPitch(void)
 			MINMAX(pitchAngleTarget, 0.0f, 40.0f);	
 			
 //		  pitchMotorTarget = pitchAngleTarget - yawAngleTarget ;  //耦合
-			pitchIntensity = ProcessPitchPID(-pitchAngleTarget,pitchRealAngle,-gyroYspeed); 
+			pitchIntensity = ProcessPitchPID(-pitchAngleTarget,pitchRealAngle,-gYroXs); 
 			GMPITCHLastAngle = GMPITCHThisAngle;
 	
 //		  if (isGMSet == 1)
