@@ -45,8 +45,8 @@ fw_PID_Regulator_t CMBRPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.
 
 //PID_INIT(Kp, Ki, Kd, KpMax, KiMax, KdMax, OutputMax)
 //云台
-#define yaw_zero  6000
-#define yaw_zero_revise 6000
+#define yaw_zero  6200
+#define yaw_zero_revise 6200
 #define pitch_zero  5500
 float yawEncoder = 0;
 float GMYAWThisAngle, GMYAWLastAngle;
@@ -74,10 +74,10 @@ int isGMYAWFirstEnter = 1;
 int isGMPITCHFirstEnter = 1;
 int isGMSet;
 
-fw_PID_Regulator_t pitchPositionPID = fw_PID_INIT(100, 0.0, 10.0, 4000.0, 10000.0, 10000.0, 10000.0);
-fw_PID_Regulator_t yawPositionPID = fw_PID_INIT(100.0, 0.0, 0.0, 4000.0, 10000.0, 10000.0, 10000.0);//等幅振荡P37.3 I11.9 D3.75  原26.1 8.0 1.1
-fw_PID_Regulator_t pitchSpeedPID = fw_PID_INIT(150.0, 0.0, 0.0, 3000.0, 10000.0, 10000.0, 5000);
-fw_PID_Regulator_t yawSpeedPID = fw_PID_INIT(130.0, 0.0, 5.0, 3000.0, 10000.0, 10000.0, 5000.0);
+fw_PID_Regulator_t pitchPositionPID = fw_PID_INIT(80, 0.0, 0.4, 4000.0, 10000.0, 10000.0, 10000.0);
+fw_PID_Regulator_t yawPositionPID = fw_PID_INIT(70.0, 0.0, 0.0, 4000.0, 10000.0, 10000.0, 10000.0);//等幅振荡P37.3 I11.9 D3.75  原26.1 8.0 1.1
+fw_PID_Regulator_t pitchSpeedPID = fw_PID_INIT(3, 0.0, 0.0, 3000.0, 10000.0, 10000.0, 5000); //6.5
+fw_PID_Regulator_t yawSpeedPID = fw_PID_INIT(3, 0.0, 0.5, 3000.0, 10000.0, 10000.0, 5000.0); //4
 
 //底盘
 PID_Regulator_t CMRotatePID = CHASSIS_MOTOR_ROTATE_PID_DEFAULT; 
@@ -216,10 +216,10 @@ void ControlYaw(void)
 						yawRealAngle = gyroZAngle - zeroGyro;
 						isGMYawGyroFirstEnter = 0;
 					}
-				else if(GetWorkState() == PREPARE_STATE)
-				{
-					yawRealAngle = yawMotorAngle;
-				}
+//				else if(GetWorkState() == PREPARE_STATE)
+//				{
+//					yawRealAngle = yawMotorAngle;
+//				}
 				if(GMYAWGyroThisAngle <= GMYAWGyroLastAngle)
 					{
 							if((GMYAWGyroLastAngle-GMYAWGyroThisAngle) > 180)
@@ -235,16 +235,21 @@ void ControlYaw(void)
 								 yawRealAngle = yawRealAngle + (GMYAWGyroThisAngle - GMYAWGyroLastAngle);
 					}
 				GMYAWGyroLastAngle = GMYAWGyroThisAngle ;
+				if(GetWorkState() == PREPARE_STATE)
+				{
+					yawRealAngle = yawMotorAngle;
+				}
 				}
 			//限位
 			//MINMAX(yawAngleTarget, -30.0f, 30.0f);	
 			yawIntensity = ProcessYawPID(yawAngleTarget, yawRealAngle, -gyroZspeed);
+			//yawIntensity = 0;
 			yawIntensityForDebug = yawIntensity;
 
 			
 //			if (isGMSet == 1)
 //			{
-	//			setMotor(GMYAW, -yawIntensity);
+			setMotor(GMYAW, -yawIntensity);
 //			}
 
 
@@ -313,7 +318,7 @@ void ControlPitch(void)
 	
 //		  if (isGMSet == 1)
 //			{
-	//			setMotor(GMPITCH, -pitchIntensity);
+				setMotor(GMPITCH, -pitchIntensity);
 //			}
 
 			s_pitchCount = 0;
@@ -328,9 +333,23 @@ float raw_gap = 0.0;
 /*底盘转动控制：跟随云台/扭腰等*/
 void ControlRotate(void)
 {
-	raw_gap  = (IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle - yaw_zero) * 360 / (8192.0f*5);
+//			if(GMYAWThisAngle <= GMYAWLastAngle)
+//		{
+//			if((GMYAWLastAngle-GMYAWThisAngle)>4000)//编码器上溢
+//				yawMotorAngle = yawMotorAngle + (GMYAWThisAngle+8192-GMYAWLastAngle) * 360 * 1 / (8192.0f * 5) ;
+//			else//反转
+//			 yawMotorAngle =  yawMotorAngle + (GMYAWThisAngle - GMYAWLastAngle) * 360 * 1 / (8192.0f * 5) ;
+//		}
+//		else
+//		{
+//			if((GMYAWThisAngle-GMYAWLastAngle)>4000)//编码器下溢
+//				yawMotorAngle = yawMotorAngle - (GMYAWLastAngle+8192-GMYAWThisAngle) * 360 * 1 / (8192.0f * 5)  ;
+//			else//正转
+//				yawMotorAngle = yawMotorAngle + (GMYAWThisAngle - GMYAWLastAngle) * 360 * 1 / (8192.0f * 5) ;
+//		}
+//	raw_gap  = (yawMotorAngle - yaw_zero) * 360 / (8192.0f*5);
 
-	gap_angle = raw_gap;
+	gap_angle = yawMotorAngle;
  // NORMALIZE_ANGLE180(gap_angle);	
 	
 	
@@ -339,8 +358,10 @@ void ControlRotate(void)
 	{
 		/*扭腰*/
 		//试图用PID
-			 CMRotatePID.Calc(&CMRotatePID);   
-			 ChassisSpeedRef.rotate_ref = CMRotatePID.output;
+		CMRotatePID.ref = 0;
+		CMRotatePID.fdb = gap_angle;
+		CMRotatePID.Calc(&CMRotatePID);   
+		ChassisSpeedRef.rotate_ref = -CMRotatePID.output;
 	}
 }
 /*底盘转动控制：跟随云台等,英雄没有*/
@@ -434,7 +455,7 @@ void ControlCMBL(void)
 			
 			CM3SpeedPID.ref = -ChassisSpeedRef.forward_back_ref*0.075 
 											 + ChassisSpeedRef.left_right_ref*0.075 
-											 - ChassisSpeedRef.rotate_ref*0.075
+											 - ChassisSpeedRef.rotate_ref*0.075*(1/2.75)
 			                 ;
 			CM3SpeedPID.ref = 160 * CM3SpeedPID.ref;
 			CM3SpeedPID.fdb = pData->RotateSpeed;
@@ -466,7 +487,7 @@ void ControlCMBR()
 			
 			CM4SpeedPID.ref = ChassisSpeedRef.forward_back_ref*0.075 
 											 + ChassisSpeedRef.left_right_ref*0.075 
-											 - ChassisSpeedRef.rotate_ref*0.075
+											 - ChassisSpeedRef.rotate_ref*0.075*(1/2.75)
 			                 ;
 			CM4SpeedPID.ref = 160 * CM4SpeedPID.ref;
 			CM4SpeedPID.fdb = pData->RotateSpeed;

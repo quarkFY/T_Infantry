@@ -227,14 +227,14 @@ void RemoteControlProcess(Remote *rc)
 		
  		pitchAngleTarget += (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_PITCH_ANGLE_INC_FACT;
 		//yawAngleTarget   -= (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT; 
-		if(fabs(yawMotorAngle) <= 40)
+		if(fabs(yawMotorAngle) <= 15)
 		{
 				yawAngleTarget   -= (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT;
 		}
 			
 		AngleTarget_temp = yawAngleTarget;
 			
-		if(fabs(yawMotorAngle) > 40 )
+		if(fabs(yawMotorAngle) > 15 )
 		{
 				AngleTarget_temp   -= (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT;
 				if(fabs(AngleTarget_temp)<fabs(yawAngleTarget))

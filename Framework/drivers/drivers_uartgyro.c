@@ -31,7 +31,7 @@ void InitGyroUart(void){
 /*
 角速度输出
 0x55 0x52 wxL wxH wyL wyH wzL wzH TL TH SUM
-SUM = 0x55 + 0x52 + RollL + RollH + PitchL + PitchH + YawL + yawH + TL + TH
+
 角度输出
 0x55 0x53 RollL RollH PitchL PitchH YawL yawH TL TH SUM
 SUM = 0x55 + 0x53 + RollL + RollH + PitchL + PitchH + YawL + yawH + TL + TH
