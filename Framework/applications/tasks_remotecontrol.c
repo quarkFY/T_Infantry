@@ -80,6 +80,8 @@ extern WorkState_e g_workState;//张雁大符
 extern InputMode_e inputmode;
 extern Get_Bullet_e GetBulletState;
 
+extern int twist_state ;//扭腰
+
 void RControlTask(void const * argument){
 	uint8_t data[18];
 	static TickType_t lastcount_rc;
@@ -262,6 +264,7 @@ uint8_t detect,going;
 //遥控器模式下机器人无级变速  键鼠模式下机器人速度为固定档位
 void MouseKeyControlProcess(Mouse *mouse, Key *key)
 {
+	static float AngleTarget_temp = 0;
 	keyDebug = key ->v;
 	if(GetWorkState() == NORMAL_STATE)
 	{
@@ -269,15 +272,28 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		VAL_LIMIT(mouse->y, -150, 150); 
 	
 		pitchAngleTarget -= mouse->y* MOUSE_TO_PITCH_ANGLE_INC_FACT; 
-		if(key->v == 0x0400) GMMode = LOCK;    //锁定云台  G
-		if(key->v == 0x0420) GMMode = UNLOCK;  //解锁云台  G + Ctrl		
+//		if(key->v == 0x0400) GMMode = LOCK;    //锁定云台  G
+//		if(key->v == 0x0420) GMMode = UNLOCK;  //解锁云台  G + Ctrl		
 		if(key->v == 0x8000)//b
 		{
 			HERO_Order = HERO_SHOOT_LOAD;
 		}				
-		if(GMMode == UNLOCK) 
+//		if(GMMode == UNLOCK) 
+//		{
+//			yawAngleTarget    -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
+//		}
+		if(fabs(yawMotorAngle) <= 15)
 		{
-			yawAngleTarget    -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
+				yawAngleTarget   -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
+		}
+			
+		AngleTarget_temp = yawAngleTarget;
+			
+		if(fabs(yawMotorAngle) > 15 )
+		{
+				AngleTarget_temp   -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
+				if(fabs(AngleTarget_temp)<fabs(yawAngleTarget))
+				yawAngleTarget = AngleTarget_temp;
 		}
 		
 		forward_back_speed =  NORMAL_FORWARD_BACK_SPEED;
@@ -305,12 +321,12 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		if(key->v & 0x01)  // key: w
 		{
 			ChassisSpeedRef.forward_back_ref = forward_back_speed* FBSpeedRamp.Calc(&FBSpeedRamp);
-			
+			twist_state = 0;
 		}
 		else if(key->v & 0x02) //key: s
 		{
 			ChassisSpeedRef.forward_back_ref = -forward_back_speed* FBSpeedRamp.Calc(&FBSpeedRamp);
-			
+			twist_state = 0;
 		}
 		else
 		{
@@ -320,12 +336,12 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		if(key->v & 0x04)  // key: d
 		{
 			ChassisSpeedRef.left_right_ref = -left_right_speed* LRSpeedRamp.Calc(&LRSpeedRamp);
-			
+			twist_state = 0;
 		}
 		else if(key->v & 0x08) //key: a
 		{
 			ChassisSpeedRef.left_right_ref = left_right_speed* LRSpeedRamp.Calc(&LRSpeedRamp);
-			
+			twist_state = 0;
 		}
 		else
 		{
@@ -362,6 +378,15 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 			HERO_Order = HERO_MANUL_RECOVER;
 		}
 
+		if(key->v == 256)  // key: r
+		{
+			twist_state = 1;
+		}
+//		else
+//		{
+//			twist_state = 0;
+//		}
+		
 		//mouse x y control
 		if(GMMode == LOCK)
 		{

@@ -45,8 +45,8 @@ fw_PID_Regulator_t CMBRPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.
 
 //PID_INIT(Kp, Ki, Kd, KpMax, KiMax, KdMax, OutputMax)
 //云台
-#define yaw_zero  6200
-#define yaw_zero_revise 6200
+#define yaw_zero  617
+#define yaw_zero_revise 617
 #define pitch_zero  5500
 float yawEncoder = 0;
 float GMYAWThisAngle, GMYAWLastAngle;
@@ -110,7 +110,11 @@ static uint8_t s_CMFRCount = 0;
 static uint8_t s_CMBLCount = 0;
 static uint8_t s_CMBRCount = 0;
 
-
+int twist_state = 0;
+int twist_count = 0;
+int twist =0;
+float mm =0;
+float nn =0;
 
 void Can1ControlTask(void const * argument)
 {
@@ -177,8 +181,8 @@ void ControlYaw(void)
 			if(isGMYAWFirstEnter==1) 
 			{
 				GMYAWLastAngle = GMYAWThisAngle;
-    		yawMotorAngle = (IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle- yawZeroAngle) * 360 * 1 / (8192.0f * 5);//初始化复位
-				//yawMotorAngle = 0;
+    		//yawMotorAngle = (IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle- yawZeroAngle) * 360 * 1 / (8192.0f * 5);//初始化复位
+				yawMotorAngle = 0;
 				isGMYAWFirstEnter = 0;
 			}	//初始化时，记录下当前编码器的值
 			
@@ -266,9 +270,10 @@ void ControlYaw(void)
 
 
 /*Pitch电机*/
+int16_t pitchIntensity = 0;
 void ControlPitch(void)
 {
-	int16_t pitchIntensity = 0;
+	//int16_t pitchIntensity = 0;
 	if(IOPool_hasNextRead(GMPITCHRxIOPool, 0))
 	{
 		if(s_pitchCount == 1)
@@ -288,8 +293,8 @@ void ControlPitch(void)
 			if(isGMPITCHFirstEnter==1) 
 			{
 				GMPITCHLastAngle = GMPITCHThisAngle;
-				pitchRealAngle = (IOPool_pGetReadData(GMPITCHRxIOPool, 0)->angle- pitchZeroAngle) * 360  / 8192.0f ; //初始化复位
-				//pitchRealAngle = 0;
+				//pitchRealAngle = (IOPool_pGetReadData(GMPITCHRxIOPool, 0)->angle- pitchZeroAngle) * 360  / 8192.0f ; //初始化复位
+				pitchRealAngle = 0;
 				isGMPITCHFirstEnter = 0;
 			}	//初始化时，记录下当前编码器的值
 			
@@ -358,10 +363,38 @@ void ControlRotate(void)
 	{
 		/*扭腰*/
 		//试图用PID
-		CMRotatePID.ref = 0;
-		CMRotatePID.fdb = gap_angle;
-		CMRotatePID.Calc(&CMRotatePID);   
-		ChassisSpeedRef.rotate_ref = -CMRotatePID.output;
+		
+		if (twist_state == 1)
+		{
+			CMRotatePID.output = 0; //一定角度之间进行扭腰
+			twist = (twist_count / 600)%2 ;	
+			if (twist == nn){
+				CMRotatePID.output = -10;
+				twist_count = twist_count + 1;
+			}
+			if (twist == (1-nn)){
+				CMRotatePID.output = 10;
+				twist_count = twist_count + 1;
+			}
+			 ChassisSpeedRef.rotate_ref = -CMRotatePID.output;
+		}
+		else
+		{
+			/*产生扭腰随机数*/  
+			 srand(xTaskGetTickCount());
+			 mm = (1.0f*rand()/RAND_MAX);//产生随机方向
+			 nn = floor(2.0f*mm);
+					
+			/*底盘跟随编码器旋转PID计算*/		
+			 CMRotatePID.ref = 0;
+			 CMRotatePID.fdb = gap_angle;
+//			if(cancel_chassis_rotate) // key: r
+//			{
+//			if(gap_angle<10&&gap_angle>-10) CMRotatePID.fdb = 0;
+//			}
+			 CMRotatePID.Calc(&CMRotatePID);   
+			 ChassisSpeedRef.rotate_ref = -CMRotatePID.output;
+		}
 	}
 }
 /*底盘转动控制：跟随云台等,英雄没有*/

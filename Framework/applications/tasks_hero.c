@@ -15,6 +15,8 @@
 
 #include <stdlib.h>
 #include <math.h>
+
+
 //参考工程车，增加英雄取弹模块
 uint8_t HERO_task_on=0;
 extern Get_Bullet_e GetBulletState;
@@ -44,6 +46,7 @@ extern float CMBLRealAngle ;
 extern float CMBRRealAngle ;
 
 extern float PM2AngleTarget,PM2RealAngle;
+extern int16_t PM2ThisTorque;
 uint8_t PM2RotateEnable = 1;
 uint16_t PM2RotateCounter = 0;
 
@@ -60,7 +63,6 @@ void HeroTask(void const * argument)
 	while(1)
 		
 	{
-	
 		switch(HERO_Order)
 			{
 				case HERO_INIT:
@@ -127,12 +129,17 @@ void HeroTask(void const * argument)
 								PM2RotateEnable = 0;
 						}
 						//回转到位
-						else if(fabs(PM2AngleTarget-PM2RealAngle)<5)
+						else if(fabs(PM2AngleTarget-PM2RealAngle)<5 && PM2RotateEnable == 0)
+						{
+								PM2RotateEnable = 1;
+						}
+						//回转堵转
+						else if(PM2ThisTorque>7000 && PM2RotateEnable == 0)
 						{
 								PM2RotateEnable = 1;
 						}
 						//堵转检测
-						if(fabs(PM2AngleTarget-PM2RealAngle)>200 && PM2RotateEnable == 1)
+						if((fabs(PM2AngleTarget-PM2RealAngle)>200 || 1) && PM2RotateEnable == 1 && PM2ThisTorque<-7000)
 						{
 							PM2AngleTarget=PM2RealAngle;
 							PM2RotateEnable = 2;
@@ -158,7 +165,7 @@ extern uint8_t isAM1Init;
 void HERO_init(void)
 {
 	uint8_t AMstack = 0;
-	uint16_t cnt;
+	uint16_t cnt = 0;
 	while(!AMstack)
 	{
 		if((fabs(AM1RRealAngle-AM1RAngleTarget)>16 || fabs(AM1LRealAngle-AM1LAngleTarget)>16) && cnt<30)

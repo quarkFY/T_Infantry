@@ -92,8 +92,8 @@ WorkState_e GetWorkState(void);
 	0,\
 	0,\
 	{0,0},\
-	1.0f,\
-	0.0f,\
+	1.2f,\
+	0.3f,\
 	10.0f,\
 	0,\
 	0,\
@@ -102,7 +102,7 @@ WorkState_e GetWorkState(void);
 	10000,\
 	10000,\
 	0,\
-	10000,\
+	6000,\
 	0,\
 	0,\
 	0,\

@@ -98,9 +98,11 @@ float PM2AngleTarget = 0.0;
 float PM3AngleTarget = 0.0;
 uint16_t PM1ThisAngle = 0;
 uint16_t PM1LastAngle = 0;
+int16_t PM1ThisTorque = 0;
 uint8_t isPM1FirstEnter = 1;
 uint16_t PM2ThisAngle = 0;
 uint16_t PM2LastAngle = 0;
+int16_t PM2ThisTorque = 0;
 uint16_t PM3ThisAngle = 0;
 uint16_t PM3LastAngle = 0;
 uint8_t isPM2FirstEnter = 1;
@@ -295,6 +297,7 @@ void ControlPM1()
 			IOPool_getNextRead(PM1RxIOPool, 0);
 			Motor820RRxMsg_t *pData = IOPool_pGetReadData(PM1RxIOPool, 0);
 			PM1ThisAngle = pData->angle;
+			PM1ThisTorque = pData->realIntensity;
 			
 			if(isPM1FirstEnter) {PM1LastAngle = PM1ThisAngle;isPM1FirstEnter = 0;}
 			
@@ -346,6 +349,7 @@ void ControlPM2()
 			Motor820RRxMsg_t *pData = IOPool_pGetReadData(PM2RxIOPool, 0);
 			
 			PM2ThisAngle = pData->angle;
+			PM2ThisTorque = pData->realIntensity;
 			if(isPM2FirstEnter) {PM2LastAngle = PM2ThisAngle;isPM2FirstEnter = 0;}
 			
 			if(PM2ThisAngle<=PM2LastAngle)
