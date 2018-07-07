@@ -217,10 +217,9 @@ void RemoteDataProcess(uint8_t *pData)
 /////////////////////////遥控器模式//////////////////////////
 float forward_kp = 1.0 ;
 extern float yawMotorAngle;
-float AngleTarget_temp = 0;
 void RemoteControlProcess(Remote *rc)
 {
-	//static float AngleTarget_temp = 0;
+	static float AngleTarget_temp = 0;
 	if(GetWorkState() == NORMAL_STATE)
 	{
 		ChassisSpeedRef.forward_back_ref = (rc->ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_CHASSIS_SPEED_REF_FACT * 0.4;
