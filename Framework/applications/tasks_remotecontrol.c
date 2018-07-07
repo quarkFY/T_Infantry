@@ -219,6 +219,20 @@ void RemoteDataProcess(uint8_t *pData)
 /////////////////////////遥控器模式//////////////////////////
 float forward_kp = 1.0 ;
 extern float yawMotorAngle;
+extern uint8_t waitRuneMSG[4];
+extern uint8_t littleRuneMSG[4];
+extern uint8_t bigRuneMSG[4];
+uint16_t fbss;
+float auto_kpx = 0.006f;
+float auto_kpy = 0.006f;
+extern uint8_t auto_getting;
+extern uint16_t autoBuffer[10];
+uint16_t tmpx,tmpy;
+uint16_t auto_x_default = 320;
+uint16_t auto_y_default = 380;
+extern float friction_speed;
+extern float now_friction_speed;
+extern float realBulletSpeed;
 void RemoteControlProcess(Remote *rc)
 {
 	static float AngleTarget_temp = 0;
@@ -381,20 +395,29 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 			ChassisSpeedRef.rotate_ref -= mouse->x/27.0*3000;
 			yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
 		}
-		
-		if(fabs(yawMotorAngle) <= 15)
+		tmpx = (0x0000 | autoBuffer[2] | autoBuffer[1]<<8);
+		tmpy = (0x0000 | autoBuffer[5] | autoBuffer[4]<<8);
+		if((autoBuffer[3] == 0xA6 || autoBuffer[3] == 0xA8) && (key->v&256))
 		{
-				yawAngleTarget   -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
+			pitchAngleTarget -= (tmpy - auto_y_default) * auto_kpy;
+			yawAngleTarget -= (tmpx - auto_x_default) * auto_kpx;
 		}
-			
-		AngleTarget_temp = yawAngleTarget;
-			
-		if(fabs(yawMotorAngle) > 15 )
+		else
 		{
-				AngleTarget_temp   -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
-				if(fabs(AngleTarget_temp)<fabs(yawAngleTarget))
-				yawAngleTarget = AngleTarget_temp;
-		}
+			if(fabs(yawMotorAngle) <= 15)
+			{
+					yawAngleTarget   -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
+			}
+				
+			AngleTarget_temp = yawAngleTarget;
+				
+			if(fabs(yawMotorAngle) > 15 )
+			{
+					AngleTarget_temp   -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
+					if(fabs(AngleTarget_temp)<fabs(yawAngleTarget))
+					yawAngleTarget = AngleTarget_temp;
+			}
+	  }
 		
 		/*裁判系统离线时的功率限制方式*/
 		if(JUDGE_State == OFFLINE)
