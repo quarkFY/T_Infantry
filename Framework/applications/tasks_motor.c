@@ -45,9 +45,9 @@ fw_PID_Regulator_t CMBRPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.
 
 //PID_INIT(Kp, Ki, Kd, KpMax, KiMax, KdMax, OutputMax)
 //云台
-#define yaw_zero  6200
-#define yaw_zero_revise 6200
-#define pitch_zero  5500
+#define yaw_zero  3220
+#define yaw_zero_revise 3220
+#define pitch_zero  5570
 float yawEncoder = 0;
 float GMYAWThisAngle, GMYAWLastAngle;
 float yawRealAngle = 0.0;
@@ -455,7 +455,7 @@ void ControlCMBL(void)
 			
 			CM3SpeedPID.ref = -ChassisSpeedRef.forward_back_ref*0.075 
 											 + ChassisSpeedRef.left_right_ref*0.075 
-											 - ChassisSpeedRef.rotate_ref*0.075*(1/2.75)
+											 - ChassisSpeedRef.rotate_ref*0.075*0.42
 			                 ;
 			CM3SpeedPID.ref = 160 * CM3SpeedPID.ref;
 			CM3SpeedPID.fdb = pData->RotateSpeed;
@@ -487,7 +487,7 @@ void ControlCMBR()
 			
 			CM4SpeedPID.ref = ChassisSpeedRef.forward_back_ref*0.075 
 											 + ChassisSpeedRef.left_right_ref*0.075 
-											 - ChassisSpeedRef.rotate_ref*0.075*(1/2.75)
+											 - ChassisSpeedRef.rotate_ref*0.075*0.42
 			                 ;
 			CM4SpeedPID.ref = 160 * CM4SpeedPID.ref;
 			CM4SpeedPID.fdb = pData->RotateSpeed;
