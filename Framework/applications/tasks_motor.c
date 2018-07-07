@@ -369,11 +369,11 @@ void ControlRotate(void)
 			CMRotatePID.output = 0; //一定角度之间进行扭腰
 			twist = (twist_count / 600)%2 ;	
 			if (twist == nn){
-				CMRotatePID.output = -10;
+				CMRotatePID.output = -80;
 				twist_count = twist_count + 1;
 			}
 			if (twist == (1-nn)){
-				CMRotatePID.output = 10;
+				CMRotatePID.output = 80;
 				twist_count = twist_count + 1;
 			}
 			 ChassisSpeedRef.rotate_ref = -CMRotatePID.output;
@@ -488,7 +488,7 @@ void ControlCMBL(void)
 			
 			CM3SpeedPID.ref = -ChassisSpeedRef.forward_back_ref*0.075 
 											 + ChassisSpeedRef.left_right_ref*0.075 
-											 - ChassisSpeedRef.rotate_ref*0.075*(1/2.75)
+											 - ChassisSpeedRef.rotate_ref*0.075*0.42
 			                 ;
 			CM3SpeedPID.ref = 160 * CM3SpeedPID.ref;
 			CM3SpeedPID.fdb = pData->RotateSpeed;
@@ -520,7 +520,7 @@ void ControlCMBR()
 			
 			CM4SpeedPID.ref = ChassisSpeedRef.forward_back_ref*0.075 
 											 + ChassisSpeedRef.left_right_ref*0.075 
-											 - ChassisSpeedRef.rotate_ref*0.075*(1/2.75)
+											 - ChassisSpeedRef.rotate_ref*0.075*0.42
 			                 ;
 			CM4SpeedPID.ref = 160 * CM4SpeedPID.ref;
 			CM4SpeedPID.fdb = pData->RotateSpeed;

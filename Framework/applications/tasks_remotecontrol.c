@@ -282,19 +282,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 //		{
 //			yawAngleTarget    -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
 //		}
-		if(fabs(yawMotorAngle) <= 15)
-		{
-				yawAngleTarget   -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
-		}
-			
-		AngleTarget_temp = yawAngleTarget;
-			
-		if(fabs(yawMotorAngle) > 15 )
-		{
-				AngleTarget_temp   -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
-				if(fabs(AngleTarget_temp)<fabs(yawAngleTarget))
-				yawAngleTarget = AngleTarget_temp;
-		}
+
 		
 		forward_back_speed =  NORMAL_FORWARD_BACK_SPEED;
 		left_right_speed = NORMAL_LEFT_RIGHT_SPEED;
@@ -393,6 +381,21 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 			ChassisSpeedRef.rotate_ref -= mouse->x/27.0*3000;
 			yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
 		}
+		
+		if(fabs(yawMotorAngle) <= 15)
+		{
+				yawAngleTarget   -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
+		}
+			
+		AngleTarget_temp = yawAngleTarget;
+			
+		if(fabs(yawMotorAngle) > 15 )
+		{
+				AngleTarget_temp   -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
+				if(fabs(AngleTarget_temp)<fabs(yawAngleTarget))
+				yawAngleTarget = AngleTarget_temp;
+		}
+		
 		/*裁判系统离线时的功率限制方式*/
 		if(JUDGE_State == OFFLINE)
 		{
