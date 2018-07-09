@@ -75,10 +75,10 @@ int isGMPITCHFirstEnter = 1;
 int isGMSet;
 extern GMMode_e GMMode;
 
-fw_PID_Regulator_t pitchPositionPID = fw_PID_INIT(80, 0.0, 0.4, 4000.0, 10000.0, 10000.0, 10000.0);
-fw_PID_Regulator_t yawPositionPID = fw_PID_INIT(70.0, 0.0, 0.0, 4000.0, 10000.0, 10000.0, 10000.0);//等幅振荡P37.3 I11.9 D3.75  原26.1 8.0 1.1
-fw_PID_Regulator_t pitchSpeedPID = fw_PID_INIT(3, 0.0, 0.0, 3000.0, 10000.0, 10000.0, 5000); //6.5
-fw_PID_Regulator_t yawSpeedPID = fw_PID_INIT(3, 0.0, 0.5, 3000.0, 10000.0, 10000.0, 5000.0); //4
+fw_PID_Regulator_t pitchPositionPID = fw_PID_INIT(70, 0.0, 0.4, 4000.0, 10000.0, 10000.0, 10000.0);
+fw_PID_Regulator_t yawPositionPID = fw_PID_INIT(60.0, 0.0, 0.1, 4000.0, 10000.0, 10000.0, 10000.0);//等幅振荡P37.3 I11.9 D3.75  原26.1 8.0 1.1
+fw_PID_Regulator_t pitchSpeedPID = fw_PID_INIT(6, 0.0, 0.5, 3000.0, 10000.0, 10000.0, 5000); //6.5
+fw_PID_Regulator_t yawSpeedPID = fw_PID_INIT(2.8, 0, 0.6, 3000.0, 10000.0, 10000.0, 5000.0); //4
 
 //底盘
 PID_Regulator_t CMRotatePID = CHASSIS_MOTOR_ROTATE_PID_DEFAULT; 
@@ -326,7 +326,7 @@ void ControlPitch(void)
 	
 //		  if (isGMSet == 1)
 //			{
-				setMotor(GMPITCH, -pitchIntensity);
+			setMotor(GMPITCH, -pitchIntensity);
 //			}
 
 			s_pitchCount = 0;
