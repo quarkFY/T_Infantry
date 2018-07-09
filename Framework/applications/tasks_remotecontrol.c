@@ -35,6 +35,8 @@
 #include "peripheral_laser.h"
 #include "peripheral_sov.h"
 #include "tasks_hero.h"
+#include <math.h>
+
 
 #define VAL_LIMIT(val, min, max)\
 if(val<=min)\
@@ -229,7 +231,7 @@ extern uint8_t auto_getting;
 extern uint16_t autoBuffer[10];
 uint16_t tmpx,tmpy;
 uint16_t auto_x_default = 320;
-uint16_t auto_y_default = 260;
+uint16_t auto_y_default = 340;
 extern float friction_speed;
 extern float now_friction_speed;
 extern float realBulletSpeed;
@@ -410,11 +412,14 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		}
 		tmpx = (0x0000 | autoBuffer[2] | autoBuffer[1]<<8);
 		tmpy = (0x0000 | autoBuffer[5] | autoBuffer[4]<<8);
-		
-		if((autoBuffer[3] == 0xA6 || autoBuffer[3] == 0xA8) && (key->v&0x10)) //shift
+
+		if((autoBuffer[3] == 0xA6 || autoBuffer[3] == 0xA8) && (key->v& 0x10)) //shift
 		{
-			pitchAngleTarget -= (tmpy - auto_y_default) * auto_kpy;
-			yawAngleTarget -= (tmpx - auto_x_default) * auto_kpx;
+			if(tmpy <700 && tmpx < 700)
+			{
+				pitchAngleTarget -= (tmpy - auto_y_default) * auto_kpy;
+				yawAngleTarget -= (tmpx - auto_x_default) * auto_kpx;
+			}
 		}
 		else
 		{
