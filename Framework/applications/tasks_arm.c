@@ -48,6 +48,7 @@ fw_PID_Regulator_t AM3RSpeedPID = fw_PID_INIT(8.0, 0.0, 0.0, 10000.0, 10000.0, 1
 
 extern float PM1AngleTarget;
 extern Emergency_Flag emergency_Flag;
+extern int16_t PM2ThisTorque;
 
 #define LengthOfArm1 500
 #define LengthOfArm2 250
@@ -516,12 +517,18 @@ void PMRotate()
 			{
 				case CLOCKWISE:
 				{
-					PM2AngleTarget = PM2AngleTarget - 150;
+					if(abs(PM2ThisTorque) < 7000)
+						PM2AngleTarget = PM2AngleTarget - 150;
+					else
+						PM2AngleTarget = PM2RealAngle;
 					PMRotateDirection = ANTICLOCKWISE;
 				}break;
 				case ANTICLOCKWISE:
 				{
-					PM2AngleTarget = PM2AngleTarget + 30;
+					if(abs(PM2ThisTorque) < 7000)
+						PM2AngleTarget = PM2AngleTarget + 30;
+					else
+						PM2AngleTarget = PM2RealAngle;
 					PMRotateDirection = CLOCKWISE;
 				}break;
 			}

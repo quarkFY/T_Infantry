@@ -289,8 +289,8 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		VAL_LIMIT(mouse->y, -150, 150); 
 	
 		pitchAngleTarget -= mouse->y* MOUSE_TO_PITCH_ANGLE_INC_FACT; 
-//		if(key->v == 0x0400) GMMode = LOCK;    //锁定云台  G
-//		if(key->v == 0x0420) GMMode = UNLOCK;  //解锁云台  G + Ctrl		
+		if(key->v == 0x0400) GMMode = LOCK;    //锁定云台  G
+		if(key->v == 0x0420) GMMode = UNLOCK;  //解锁云台  G + Ctrl		
 		if(key->v == 0x8000)//b
 		{
 			HERO_Order = HERO_SHOOT_LOAD;
@@ -405,38 +405,43 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 //		}
 		
 		//mouse x y control
-		if(GMMode == LOCK)
+		tmpx = (0x0000 | autoBuffer[2] | autoBuffer[1]<<8);
+		tmpy = (0x0000 | autoBuffer[5] | autoBuffer[4]<<8);
+		
+		if(GMMode == UNLOCK)
 		{
 			ChassisSpeedRef.rotate_ref -= mouse->x/27.0*3000;
 			yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
 		}
-		tmpx = (0x0000 | autoBuffer[2] | autoBuffer[1]<<8);
-		tmpy = (0x0000 | autoBuffer[5] | autoBuffer[4]<<8);
-
-		if((autoBuffer[3] == 0xA6 || autoBuffer[3] == 0xA8) && (key->v& 0x10)) //shift
-		{
-			if(tmpy <700 && tmpx < 700)
-			{
-				pitchAngleTarget -= (tmpy - auto_y_default) * auto_kpy;
-				yawAngleTarget -= (tmpx - auto_x_default) * auto_kpx;
-			}
-		}
 		else
 		{
-			if(fabs(yawMotorAngle) <= 15)
+
+
+			if((autoBuffer[3] == 0xA6 || autoBuffer[3] == 0xA8) && (key->v& 0x10)) //shift
 			{
-					yawAngleTarget   -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
+				if(tmpy <700 && tmpx < 700)
+				{
+					pitchAngleTarget -= (tmpy - auto_y_default) * auto_kpy;
+					yawAngleTarget -= (tmpx - auto_x_default) * auto_kpx;
+				}
 			}
-				
-			AngleTarget_temp = yawAngleTarget;
-				
-			if(fabs(yawMotorAngle) > 15 )
+			else
 			{
-					AngleTarget_temp   -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
-					if(fabs(AngleTarget_temp)<fabs(yawAngleTarget))
-					yawAngleTarget = AngleTarget_temp;
+				if(fabs(yawMotorAngle) <= 15)
+				{
+						yawAngleTarget   -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
+				}
+					
+				AngleTarget_temp = yawAngleTarget;
+					
+				if(fabs(yawMotorAngle) > 15 )
+				{
+						AngleTarget_temp   -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
+						if(fabs(AngleTarget_temp)<fabs(yawAngleTarget))
+						yawAngleTarget = AngleTarget_temp;
+				}
 			}
-	  }
+		}
 		
 		/*裁判系统离线时的功率限制方式*/
 		if(JUDGE_State == OFFLINE)
