@@ -191,7 +191,7 @@ void HERO_init(void)
 		AM1LRealAngle = 190;
 		AM1RAngleTarget = -190;
 		AM1LAngleTarget = 190;
-		HERO_step(0,0,0,80);
+		HERO_step(15,0,0,80);
 		isAM1Init = 1;
 	}
 	else
@@ -203,7 +203,7 @@ void HERO_init(void)
 
 void HERO_prepare(void)
 {
-	HERO_step(150,0,0,40);
+	HERO_step(180,0,0,40);
 }
 
 void HERO_standby(void)
@@ -222,7 +222,7 @@ void HERO_load(void)
 
 void HERO_recover()
 {
-	HERO_step(0,0,0,20);
+	HERO_step(15,0,0,50);
 }
 
 void HERO_manul_prepare(void)

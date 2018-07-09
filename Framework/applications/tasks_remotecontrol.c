@@ -275,6 +275,7 @@ uint16_t lastKey;
 
 int keyDebug;
 uint8_t detect,going;
+uint8_t detectCnt;
 //遥控器模式下机器人无级变速  键鼠模式下机器人速度为固定档位
 void MouseKeyControlProcess(Mouse *mouse, Key *key)
 {
@@ -302,23 +303,31 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		left_right_speed = NORMAL_LEFT_RIGHT_SPEED;
 		rotate_speed = NORMAL_ROTATE_SPEED;
 		//speed mode: normal speed/high speed 
+		if(key->v & 0x20)//Ctrl
+		{	
+			detectCnt++;
+			forward_back_speed =  LOW_FORWARD_BACK_SPEED;
+			left_right_speed = LOW_LEFT_RIGHT_SPEED;
+			rotate_speed = LOW_ROTATE_SPEED;
+			if(PIR_R_Ready && PIR_L_Ready && detectCnt>70)
+			{
+				HERO_Order = HERO_MANUL_PREPARE;
+				forward_back_speed =  50;
+				left_right_speed = 50;
+				rotate_speed = 50;
+			}
+		}
+		else
+		{
+			detectCnt=0;
+		}
 		if(key->v & 0x10)//Shift
 		{
 			forward_back_speed =  LOW_FORWARD_BACK_SPEED;
 			left_right_speed = LOW_LEFT_RIGHT_SPEED;
 			rotate_speed = LOW_ROTATE_SPEED;
 		}
-		if(key->v == 0x20)//Ctrl
-			
-		{	
-			forward_back_speed =  LOW_FORWARD_BACK_SPEED;
-			left_right_speed = LOW_LEFT_RIGHT_SPEED;
-			rotate_speed = LOW_ROTATE_SPEED;
-			if(PIR_R_Ready && PIR_L_Ready)
-			{
-				HERO_Order = HERO_MANUL_PREPARE;
-			}
-		}
+
 		//movement process
 		if(key->v & 0x01)  // key: w
 		{
@@ -373,17 +382,21 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		}
 		if(key->v & 0x4000)//v
 		{
-			HERO_Order = HERO_MANUL_FETCH;
+
 		}
 		if(key->v == 0x0800)//z lastKey == 0x0000 && 
 		{
 			HERO_Order = HERO_MANUL_RECOVER;
 		}
-
-		if(key->v == 256)  // key: r
+		if(key->v == 0x8000)//b 暂停
 		{
-			twist_state = 1;
+			HERO_Order = HERO_MANUL_FETCH;
 		}
+//		if(key->v == 256)  // key: r 扭腰
+//		{
+//			twist_state = 1;
+//		}
+		
 //		else
 //		{
 //			twist_state = 0;
