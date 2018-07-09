@@ -12,6 +12,7 @@
 #include "tasks_arm.h"
 #include "peripheral_sov.h"
 #include "tasks_motor.h"
+#include "tasks_remotecontrol.h"
 
 #include <stdlib.h>
 #include <math.h>
@@ -225,10 +226,13 @@ void HERO_recover()
 	HERO_step(15,0,0,50);
 }
 
+extern uint16_t left_right_speed;
 void HERO_manul_prepare(void)
 {
-	HERO_step(176,0,0,17);
+	HERO_step(155,0,0,17);
 	//HERO_prepare();
+	left_right_speed = 0;
+	osDelay(50);
 	HERO_Order = HERO_MANUL_FETCH;
 }
 
@@ -261,8 +265,8 @@ void HERO_auto_getOneBox()
 		osDelay(500);
 	  if(HERO_Order == HERO_MANUL_FETCH) return;
 		//HERO_load
-		HERO_step(140,0,0,30);
-		HERO_step(-5,0,0,42);
+		HERO_step(140,0,0,20);
+		HERO_step(-5,0,0,37);
 		osDelay(700);
 		PM2AngleTarget = PM2AngleTarget - 150;
 	  if(HERO_Order == HERO_MANUL_FETCH) return;

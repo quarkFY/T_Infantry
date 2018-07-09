@@ -225,6 +225,9 @@ extern uint8_t waitRuneMSG[4];
 extern uint8_t littleRuneMSG[4];
 extern uint8_t bigRuneMSG[4];
 uint16_t fbss;
+//自瞄
+fw_PID_Regulator_t yawAutoSpeedPID = fw_PID_INIT(0.007, 0.0, 0.0, 30.0, 10.0, 10.0, 50); //6.5
+fw_PID_Regulator_t pitchAutoSpeedPID = fw_PID_INIT(0.007,0.0, 0.0, 30.0, 10.0, 10.0, 50.0); //4
 float auto_kpx = 0.007f;
 float auto_kpy = 0.007f;
 extern uint8_t auto_getting;
@@ -313,9 +316,11 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 			rotate_speed = LOW_ROTATE_SPEED;
 			if(PIR_R_Ready && PIR_L_Ready && detectCnt>70)
 			{
-				HERO_Order = HERO_MANUL_PREPARE;
+				left_right_speed = 0;				
+				//HERO_Order = HERO_MANUL_PREPARE;
+				HERO_Order = HERO_AUTO_GETBOX;
 				forward_back_speed =  20;
-				left_right_speed = 15;
+				left_right_speed = 2;
 				rotate_speed = 20;
 			}
 		}
@@ -393,7 +398,9 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		if(key->v == 0x8000)//b 暂停
 		{
 			HERO_Order = HERO_MANUL_FETCH;
+			GRIP_SOV_OFF();
 		}
+
 //		if(key->v == 256)  // key: r 扭腰
 //		{
 //			twist_state = 1;
@@ -416,13 +423,23 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		else
 		{
 
-
 			if((autoBuffer[3] == 0xA6 || autoBuffer[3] == 0xA8) && (key->v& 0x10)) //shift
 			{
 				if(tmpy <700 && tmpx < 700)
 				{
-					pitchAngleTarget -= (tmpy - auto_y_default) * auto_kpy;
-					yawAngleTarget -= (tmpx - auto_x_default) * auto_kpx;
+					yawAutoSpeedPID.target = tmpx;
+					yawAutoSpeedPID.feedback =  auto_x_default;
+					yawAutoSpeedPID.Calc(&yawAutoSpeedPID);
+					
+					yawAngleTarget -= yawAutoSpeedPID.output;
+					
+					pitchAutoSpeedPID.target = tmpy;
+					pitchAutoSpeedPID.feedback =  auto_y_default;
+					pitchAutoSpeedPID.Calc(&pitchAutoSpeedPID);
+					
+					pitchAngleTarget -= pitchAutoSpeedPID.output;
+//					pitchAngleTarget -= (tmpy - auto_y_default) * auto_kpy;
+//					yawAngleTarget -= (tmpx - auto_x_default) * auto_kpx;
 				}
 			}
 			else
