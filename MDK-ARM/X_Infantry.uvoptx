@@ -250,6 +250,26 @@
           <WinNumber>1</WinNumber>
           <ItemText>pitchEncoder</ItemText>
         </Ww>
+        <Ww>
+          <count>11</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>tmpx,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>12</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>tmpy,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>13</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>pitchAngleTarget</ItemText>
+        </Ww>
+        <Ww>
+          <count>14</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>yawAngleTarget</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>

@@ -229,7 +229,7 @@ extern uint8_t auto_getting;
 extern uint16_t autoBuffer[10];
 uint16_t tmpx,tmpy;
 uint16_t auto_x_default = 320;
-uint16_t auto_y_default = 380;
+uint16_t auto_y_default = 260;
 extern float friction_speed;
 extern float now_friction_speed;
 extern float realBulletSpeed;
@@ -321,12 +321,12 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		{
 			detectCnt=0;
 		}
-		if(key->v & 0x10)//Shift
-		{
-			forward_back_speed =  LOW_FORWARD_BACK_SPEED;
-			left_right_speed = LOW_LEFT_RIGHT_SPEED;
-			rotate_speed = LOW_ROTATE_SPEED;
-		}
+//		if(key->v & 0x10)//Shift
+//		{
+//			forward_back_speed =  LOW_FORWARD_BACK_SPEED;
+//			left_right_speed = LOW_LEFT_RIGHT_SPEED;
+//			rotate_speed = LOW_ROTATE_SPEED;
+//		}
 
 		//movement process
 		if(key->v & 0x01)  // key: w
@@ -410,7 +410,8 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		}
 		tmpx = (0x0000 | autoBuffer[2] | autoBuffer[1]<<8);
 		tmpy = (0x0000 | autoBuffer[5] | autoBuffer[4]<<8);
-		if((autoBuffer[3] == 0xA6 || autoBuffer[3] == 0xA8) && (key->v&256))
+		
+		if((autoBuffer[3] == 0xA6 || autoBuffer[3] == 0xA8) && (key->v&0x10)) //shift
 		{
 			pitchAngleTarget -= (tmpy - auto_y_default) * auto_kpy;
 			yawAngleTarget -= (tmpx - auto_x_default) * auto_kpx;

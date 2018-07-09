@@ -456,8 +456,12 @@ uint8_t DirOfRotate = 1;
 float tmpPM1AngleTarget;
 void shootOneGolf()
 {
-	tmpPM1AngleTarget = PM1AngleTarget;
-	PM1AngleTarget = PM1AngleTarget + 72;
+	heatJudge();
+	if(heatFlag == 1)
+	{
+		tmpPM1AngleTarget = PM1AngleTarget;
+		PM1AngleTarget = PM1AngleTarget + 72;
+	}
 				//PM2AngleTarget = PM2AngleTarget + 240;
 }
 
