@@ -312,9 +312,9 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 			if(PIR_R_Ready && PIR_L_Ready && detectCnt>70)
 			{
 				HERO_Order = HERO_MANUL_PREPARE;
-				forward_back_speed =  50;
-				left_right_speed = 50;
-				rotate_speed = 50;
+				forward_back_speed =  20;
+				left_right_speed = 15;
+				rotate_speed = 20;
 			}
 		}
 		else

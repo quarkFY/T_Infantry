@@ -25,11 +25,11 @@
 #define  	 CMBLIntensity_lower   1024.f
 #define	   CMBRIntensity_lower   1024.f
 
-#define    CM_current_MAX      18000.f
-#define    CMFLIntensity_MAX   5900.f
-#define    CMFRIntensity_MAX   5900.f
-#define    CMBLIntensity_MAX   5900.f
-#define    CMBRIntensity_MAX   5900.f
+#define    CM_current_MAX      24000.0f       //CM_current_MAX对应的电流值*24V*100ms<=60J
+#define    CMFLIntensity_MAX   6000.0f
+#define    CMFRIntensity_MAX   6000.0f
+#define    CMBLIntensity_MAX   6000.0f
+#define    CMBRIntensity_MAX   6000.0f
 
 #define			CM_current_full			4096.0f
 

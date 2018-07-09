@@ -203,7 +203,7 @@ void HERO_init(void)
 
 void HERO_prepare(void)
 {
-	HERO_step(180,0,0,40);
+	HERO_step(177,0,0,40);
 }
 
 void HERO_standby(void)
@@ -227,7 +227,8 @@ void HERO_recover()
 
 void HERO_manul_prepare(void)
 {
-	HERO_prepare();
+	HERO_step(176,0,0,17);
+	//HERO_prepare();
 	HERO_Order = HERO_MANUL_FETCH;
 }
 

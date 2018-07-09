@@ -112,7 +112,7 @@ void setMotor(MotorId motorId, int16_t Intensity){
 			fw_Error_Handler();
 	}
 
-	//底盘功率限制，80W，能量槽满60，低于0掉血
+	//底盘功率限制，120W，能量槽满60，低于0掉血
 //    RestrictPower(&CMFLIntensity, &CMFRIntensity, &CMBLIntensity, &CMBRIntensity);
 	float CM_current_max = CM_current_MAX;
 	float CMFLIntensity_max = CMFLIntensity_MAX;
@@ -161,15 +161,26 @@ void setMotor(MotorId motorId, int16_t Intensity){
 	}
 	
 	//林炳辉仿桂电功率控制策略
-	else if(PowerHeatData.chassisPowerBuffer-PowerHeatData.chassisPower*0.26f < 7.0f)
+	else if(PowerHeatData.chassisPowerBuffer-PowerHeatData.chassisPower*0.3 < 7.0f)
 	{
 			sum = (abs(CMFLIntensity) + abs(CMFRIntensity) + abs(CMBLIntensity) + abs(CMBRIntensity));
 			float realPowerBuffer = PowerHeatData.chassisPowerBuffer;
 			//float realPower = PowerHeatData.chassisPower;
-			CMFLIntensity = (CMFLIntensity/(sum+1.0f))*CM_current_full*(1.0f+realPowerBuffer*0.03f);
-			CMFRIntensity = (CMFRIntensity/(sum+1.0f))*CM_current_full*(1.0f+realPowerBuffer*0.03f);
-			CMBLIntensity = (CMBLIntensity/(sum+1.0f))*CM_current_full*(1.0f+realPowerBuffer*0.03f);
-			CMBRIntensity = (CMBRIntensity/(sum+1.0f))*CM_current_full*(1.0f+realPowerBuffer*0.03f);
+			CMFLIntensity = (CMFLIntensity/(sum+1.0f))*CM_current_full*(1.0f+realPowerBuffer*0.05f);
+			CMFRIntensity = (CMFRIntensity/(sum+1.0f))*CM_current_full*(1.0f+realPowerBuffer*0.05f);
+			CMBLIntensity = (CMBLIntensity/(sum+1.0f))*CM_current_full*(1.0f+realPowerBuffer*0.05f);
+			CMBRIntensity = (CMBRIntensity/(sum+1.0f))*CM_current_full*(1.0f+realPowerBuffer*0.05f);
+	}
+	else
+	{
+			sum = (abs(CMFLIntensity) + abs(CMFRIntensity) + abs(CMBLIntensity) + abs(CMBRIntensity));
+			if(sum > CM_current_max)
+			{
+				CMFLIntensity = (CMFLIntensity/(sum+1.0f))*CM_current_max;
+				CMFRIntensity = (CMFRIntensity/(sum+1.0f))*CM_current_max;
+				CMBLIntensity = (CMBLIntensity/(sum+1.0f))*CM_current_max;
+				CMBRIntensity = (CMBRIntensity/(sum+1.0f))*CM_current_max;
+			}
 	}
 	
 	
