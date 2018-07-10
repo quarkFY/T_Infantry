@@ -77,12 +77,14 @@ extern xSemaphoreHandle xSemaphore_rcuart;
 extern float yawAngleTarget, pitchAngleTarget;
 extern float rotateSpeed;
 extern uint8_t g_isGYRO_Rested ;
+extern float yawRealAngle;
 
 extern WorkState_e g_workState;//张雁大符
 extern InputMode_e inputmode;
 extern Get_Bullet_e GetBulletState;
 
 extern int twist_state ;//扭腰
+extern float gap_angle;
 
 void RControlTask(void const * argument){
 	uint8_t data[18];
@@ -238,29 +240,56 @@ uint16_t auto_y_default = 272;
 extern float friction_speed;
 extern float now_friction_speed;
 extern float realBulletSpeed;
+float AngleTarget_temp = 0;
 void RemoteControlProcess(Remote *rc)
 {
-	static float AngleTarget_temp = 0;
+
 	if(GetWorkState() == NORMAL_STATE)
 	{
 		ChassisSpeedRef.forward_back_ref = (rc->ch1 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_CHASSIS_SPEED_REF_FACT * 0.4;
 		ChassisSpeedRef.left_right_ref   = (rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_CHASSIS_SPEED_REF_FACT * 0.4; 
 		
  		pitchAngleTarget += (rc->ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_PITCH_ANGLE_INC_FACT;
-		//yawAngleTarget   -= (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT; 
-		if(fabs(yawMotorAngle) <= 15)
-		{
-				yawAngleTarget   -= (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT;
-		}
-			
-		AngleTarget_temp = yawAngleTarget;
-			
-		if(fabs(yawMotorAngle) > 15 )
-		{
+//		//yawAngleTarget   -= (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT; 
+//		if(fabs(yawMotorAngle) <= 15)
+//		{
 				AngleTarget_temp   -= (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT;
-				if(fabs(AngleTarget_temp)<fabs(yawAngleTarget))
-					yawAngleTarget = AngleTarget_temp;
-		}
+//		}
+//			
+//		AngleTarget_temp = yawAngleTarget;
+//			
+//		if(fabs(yawMotorAngle) > 15 )
+//		{
+//				AngleTarget_temp   -= (rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT;
+//				if(fabs(AngleTarget_temp)<fabs(yawAngleTarget))
+//					yawAngleTarget = AngleTarget_temp;
+//		}
+				//目前假设云台相对车身偏左gap为正，已知陀螺仪逆时针为正
+				//逆时针旋转
+				if(AngleTarget_temp >= yawRealAngle)
+				{
+					//gap_angle >= 0||<0
+					if((AngleTarget_temp - yawRealAngle)>(20-gap_angle))
+						yawAngleTarget = 20 - gap_angle + yawRealAngle;
+					else
+					{
+						yawAngleTarget = AngleTarget_temp;
+					}
+					AngleTarget_temp = yawAngleTarget;
+				}
+				//顺时针
+				else if(AngleTarget_temp < yawRealAngle)
+				{
+					//gap_angle <= 0||>0
+					if((yawRealAngle - AngleTarget_temp)>(gap_angle + 20))
+						yawAngleTarget = -20 - gap_angle + yawRealAngle;
+					else
+					{
+						yawAngleTarget = AngleTarget_temp;
+					}
+					AngleTarget_temp = yawAngleTarget;
+				}
+				
 		//ChassisSpeedRef.rotate_ref   = -(rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) *STICK_TO_CHASSIS_SPEED_REF_FACT*0.2 ;
 	 
 	}
@@ -278,13 +307,19 @@ uint16_t lastKey;
 #define MOUSE_TO_PITCH_ANGLE_INC_FACT 		0.025f * 2
 #define MOUSE_TO_YAW_ANGLE_INC_FACT 		0.025f * 2
 
+
 int keyDebug;
 uint8_t detect,going;
 uint8_t detectCnt;
 //遥控器模式下机器人无级变速  键鼠模式下机器人速度为固定档位
 void MouseKeyControlProcess(Mouse *mouse, Key *key)
 {
-	static float AngleTarget_temp = 0;
+	static float lastYawAngleTarget = 0;
+	static float lastPitchAngleTarget = 0;
+	
+	lastYawAngleTarget = yawAngleTarget;
+	lastPitchAngleTarget = pitchAngleTarget;
+	
 	keyDebug = key ->v;
 	if(GetWorkState() == NORMAL_STATE)
 	{
@@ -292,6 +327,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		VAL_LIMIT(mouse->y, -150, 150); 
 	
 		pitchAngleTarget -= mouse->y* MOUSE_TO_PITCH_ANGLE_INC_FACT; 
+		
 		if(key->v == 0x0400) GMMode = LOCK;    //锁定云台  G
 		if(key->v == 0x0420) GMMode = UNLOCK;  //解锁云台  G + Ctrl		
 		if(key->v == 0x8000)//b
@@ -444,19 +480,47 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 			}
 			else
 			{
-				if(fabs(yawMotorAngle) <= 15)
-				{
-						yawAngleTarget   -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
-				}
-					
-				AngleTarget_temp = yawAngleTarget;
-					
-				if(fabs(yawMotorAngle) > 15 )
-				{
+//				if(fabs(yawMotorAngle) <= 15)
+//				{
 						AngleTarget_temp   -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
-						if(fabs(AngleTarget_temp)<fabs(yawAngleTarget))
+//				}
+//					
+//				AngleTarget_temp = yawAngleTarget;
+//					
+//				if(fabs(yawMotorAngle) > 15 )
+//				{
+//						AngleTarget_temp   -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
+//						if(fabs(AngleTarget_temp)<fabs(yawAngleTarget))
+//						yawAngleTarget = AngleTarget_temp;
+//				}
+				//目前假设云台相对车身偏左gap为正，已知陀螺仪逆时针为正
+				//逆时针旋转
+				if(AngleTarget_temp >= yawRealAngle)
+				{
+					//gap_angle >= 0||<0
+					if((AngleTarget_temp - yawRealAngle)>(20-gap_angle))
+						yawAngleTarget = 20 - gap_angle + yawRealAngle;
+					else
+					{
 						yawAngleTarget = AngleTarget_temp;
+					}
+					AngleTarget_temp = yawAngleTarget;
 				}
+				//顺时针
+				else if(AngleTarget_temp < yawRealAngle)
+				{
+					//gap_angle <= 0||>0
+					if((yawRealAngle - AngleTarget_temp)>(gap_angle + 20))
+						yawAngleTarget = -20 - gap_angle + yawRealAngle;
+					else
+					{
+						yawAngleTarget = AngleTarget_temp;
+					}
+					AngleTarget_temp = yawAngleTarget;
+				}
+		//ChassisSpeedRef.rotate_ref   = -(rc->ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) *STICK_TO_CHASSIS_SPEED_REF_FACT*0.2 ;
+	 
+	
 			}
 		}
 		
