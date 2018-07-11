@@ -225,43 +225,52 @@ void ControlYaw(void)
 //				{
 //					yawRealAngle = yawMotorAngle;
 //				}
-				if(GMYAWGyroThisAngle <= GMYAWGyroLastAngle)
+					if(GMMode == LOCK)
 					{
-							if((GMYAWGyroLastAngle-GMYAWGyroThisAngle) > 180)
-								 yawRealAngle = yawRealAngle + (GMYAWGyroThisAngle+360-GMYAWGyroLastAngle);
-							else
-								 yawRealAngle = yawRealAngle + (GMYAWGyroThisAngle - GMYAWGyroLastAngle);
+						if(GMYAWGyroThisAngle <= GMYAWGyroLastAngle)
+							{
+									if((GMYAWGyroLastAngle-GMYAWGyroThisAngle) > 180)
+										 yawRealAngle = yawRealAngle + (GMYAWGyroThisAngle+360-GMYAWGyroLastAngle);
+									else
+										 yawRealAngle = yawRealAngle + (GMYAWGyroThisAngle - GMYAWGyroLastAngle);
+							}
+						else
+							{
+									if((GMYAWGyroThisAngle-GMYAWGyroLastAngle) > 180)
+										 yawRealAngle = yawRealAngle - (GMYAWGyroLastAngle+360-GMYAWGyroThisAngle);
+									else
+										 yawRealAngle = yawRealAngle + (GMYAWGyroThisAngle - GMYAWGyroLastAngle);
+							}
+						GMYAWGyroLastAngle = GMYAWGyroThisAngle ;
+				  
+						if(GetWorkState() == PREPARE_STATE)
+						{
+							yawRealAngle = yawMotorAngle;
+						}
+						
+						//限位
+						//MINMAX(yawAngleTarget, -30.0f, 30.0f);	
+						yawIntensity = ProcessYawPID(yawAngleTarget, yawRealAngle, -gyroZspeed);
+						//yawIntensity = 0;
+						yawIntensityForDebug = yawIntensity;
+
+						
+			//			if (isGMSet == 1)
+			//			{
+						setMotor(GMYAW, -yawIntensity);
+			//			}
+						ControlRotate();
 					}
-				else
-					{
-							if((GMYAWGyroThisAngle-GMYAWGyroLastAngle) > 180)
-								 yawRealAngle = yawRealAngle - (GMYAWGyroLastAngle+360-GMYAWGyroThisAngle);
-							else
-								 yawRealAngle = yawRealAngle + (GMYAWGyroThisAngle - GMYAWGyroLastAngle);
-					}
-				GMYAWGyroLastAngle = GMYAWGyroThisAngle ;
-				if(GetWorkState() == PREPARE_STATE)
-				{
-					yawRealAngle = yawMotorAngle;
-				}
-				}
-			//限位
-			//MINMAX(yawAngleTarget, -30.0f, 30.0f);	
-			yawIntensity = ProcessYawPID(yawAngleTarget, yawRealAngle, -gyroZspeed);
-			//yawIntensity = 0;
-			yawIntensityForDebug = yawIntensity;
-
-			
-//			if (isGMSet == 1)
-//			{
-			setMotor(GMYAW, -yawIntensity);
-//			}
-
-
-			s_yawCount = 0;
-			if(GMMode == LOCK)
-			{
-			  ControlRotate();
+					
+						else if(GMMode ==UNLOCK)
+						{
+							yawIntensity = ProcessYawPID(0, yawMotorAngle, -gyroZspeed);
+							yawIntensityForDebug = yawIntensity;
+							
+							setMotor(GMYAW, -yawIntensity);
+						}
+						
+					s_yawCount = 0;
 			}
 		}
 		else
