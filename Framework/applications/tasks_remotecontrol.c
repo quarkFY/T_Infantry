@@ -229,8 +229,8 @@ extern uint8_t littleRuneMSG[4];
 extern uint8_t bigRuneMSG[4];
 uint16_t fbss;
 //自瞄
-fw_PID_Regulator_t yawAutoSpeedPID = fw_PID_INIT(0.003, 0.0, 0.0, 30.0, 10.0, 10.0, 50); //6.5
-fw_PID_Regulator_t pitchAutoSpeedPID = fw_PID_INIT(0.003,0.0, 0.0, 30.0, 10.0, 10.0, 50.0); //4
+fw_PID_Regulator_t yawAutoSpeedPID = fw_PID_INIT(0.008, 0.0, 0.0, 30.0, 10.0, 10.0, 50); //6.5
+fw_PID_Regulator_t pitchAutoSpeedPID = fw_PID_INIT(0.01,0.0, 0.0, 30.0, 10.0, 10.0, 50.0); //4
 float auto_kpx = 0.007f;
 float auto_kpy = 0.007f;
 extern uint8_t auto_getting;
@@ -303,8 +303,7 @@ uint16_t lastKey;
 ///////////////////////////键鼠模式//////////////////////////
 //调整鼠标灵敏度
 #define MOUSE_TO_PITCH_ANGLE_INC_FACT 		0.025f * 2
-#define MOUSE_TO_YAW_ANGLE_INC_FACT 		0.025f * 2
-
+#define MOUSE_TO_YAW_ANGLE_INC_FACT 		0.025f * 2.4
 
 int keyDebug;
 uint8_t detect,going;
@@ -443,6 +442,70 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 				RotSpeedRamp.ResetCounter(&RotSpeedRamp);
 			}
 	  }
+		else if (GMMode == LOCK)
+		{
+			if(key->v & 0x80)	//key:e  检测第8位是不是1
+			{
+				AngleTarget_temp -=  3.2;
+				
+						if(AngleTarget_temp >= yawRealAngle)
+					{
+						//gap_angle >= 0||<0
+						if((AngleTarget_temp - yawRealAngle)>(20-gap_angle))
+							yawAngleTarget = 20 - gap_angle + yawRealAngle;
+						else
+						{
+							yawAngleTarget = AngleTarget_temp;
+						}
+						AngleTarget_temp = yawAngleTarget;
+					}
+					//顺时针
+					else if(AngleTarget_temp < yawRealAngle)
+					{
+						//gap_angle <= 0||>0
+						if((yawRealAngle - AngleTarget_temp)>(gap_angle + 20))
+							yawAngleTarget = -20 - gap_angle + yawRealAngle;
+						else
+						{
+							yawAngleTarget = AngleTarget_temp;
+						}
+						AngleTarget_temp = yawAngleTarget;
+					}
+			}
+			else if(key->v & 0x40)	//key:q  
+			{
+				AngleTarget_temp += 3.2;
+				
+						if(AngleTarget_temp >= yawRealAngle)
+					{
+						//gap_angle >= 0||<0
+						if((AngleTarget_temp - yawRealAngle)>(20-gap_angle))
+							yawAngleTarget = 20 - gap_angle + yawRealAngle;
+						else
+						{
+							yawAngleTarget = AngleTarget_temp;
+						}
+						AngleTarget_temp = yawAngleTarget;
+					}
+					//顺时针
+					else if(AngleTarget_temp < yawRealAngle)
+					{
+						//gap_angle <= 0||>0
+						if((yawRealAngle - AngleTarget_temp)>(gap_angle + 20))
+							yawAngleTarget = -20 - gap_angle + yawRealAngle;
+						else
+						{
+							yawAngleTarget = AngleTarget_temp;
+						}
+						AngleTarget_temp = yawAngleTarget;
+					}
+			}
+			//AngleTarget_temp   -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
+
+			//目前假设云台相对车身偏左gap为正，已知陀螺仪逆时针为正
+			//逆时针旋转
+			
+		}
 		if(lastKey == 0x0000 && key->v & 0x1000)//x 暂停
 		{
 			//HERO_Order = HERO_AUTO_GET3BOX;

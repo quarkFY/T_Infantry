@@ -327,7 +327,7 @@ void ControlPitch(void)
 			
 			NORMALIZE_ANGLE180(pitchRealAngle);
 			//限位
-			MINMAX(pitchAngleTarget, -.0f, 35.0f);	
+			MINMAX(pitchAngleTarget, -17.0f, 36.0f);	
 			
 //		  pitchMotorTarget = pitchAngleTarget - yawAngleTarget ;  //耦合
 			pitchIntensity = ProcessPitchPID(-pitchAngleTarget,pitchRealAngle,-gyroYspeed); 
@@ -348,6 +348,7 @@ void ControlPitch(void)
 }
 float raw_gap = 0.0;
 /*底盘转动控制：跟随云台/扭腰等*/
+extern uint16_t forward_back_speed;
 void ControlRotate(void)
 {
 //			if(GMYAWThisAngle <= GMYAWLastAngle)
@@ -405,7 +406,16 @@ void ControlRotate(void)
 //			if(gap_angle<10&&gap_angle>-10) CMRotatePID.fdb = 0;
 //			}
 			 CMRotatePID.Calc(&CMRotatePID);   
-			 ChassisSpeedRef.rotate_ref = -CMRotatePID.output;
+			if(forward_back_speed == NORMAL_FORWARD_BACK_SPEED)
+			{
+				float chassisSpeedReverse;
+				chassisSpeedReverse = ChassisSpeedRef.forward_back_ref;
+				 ChassisSpeedRef.rotate_ref = -CMRotatePID.output*(1+0.001*fabs(chassisSpeedReverse));
+			}
+			else
+			{
+				ChassisSpeedRef.rotate_ref = -CMRotatePID.output;
+			}
 		}
 	}
 }
