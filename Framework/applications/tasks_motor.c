@@ -327,7 +327,7 @@ void ControlPitch(void)
 			
 			NORMALIZE_ANGLE180(pitchRealAngle);
 			//限位
-			//MINMAX(pitchAngleTarget, 0.0f, 40.0f);	
+			MINMAX(pitchAngleTarget, -.0f, 35.0f);	
 			
 //		  pitchMotorTarget = pitchAngleTarget - yawAngleTarget ;  //耦合
 			pitchIntensity = ProcessPitchPID(-pitchAngleTarget,pitchRealAngle,-gyroYspeed); 

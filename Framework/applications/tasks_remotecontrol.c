@@ -309,6 +309,7 @@ uint16_t lastKey;
 int keyDebug;
 uint8_t detect,going;
 uint8_t detectCnt;
+uint8_t fixedPitch;
 //遥控器模式下机器人无级变速  键鼠模式下机器人速度为固定档位
 void MouseKeyControlProcess(Mouse *mouse, Key *key)
 {
@@ -319,15 +320,45 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 	{
 		VAL_LIMIT(mouse->x, -150, 150); 
 		VAL_LIMIT(mouse->y, -150, 150); 
-	
-		pitchAngleTarget -= mouse->y* MOUSE_TO_PITCH_ANGLE_INC_FACT; 
-		
-		if(key->v == 0x0400) {GMMode = LOCK;    yawRealAngle = yawRealAngleRES;} //锁定云台  G
-		if(key->v == 0x0420) {GMMode = UNLOCK;  yawRealAngleRES = yawRealAngle;}  //解锁云台  G + Ctrl		
-		if(key->v == 0x8000)//b
+	  if(fixedPitch)
 		{
-			HERO_Order = HERO_SHOOT_LOAD;
-		}				
+			pitchAngleTarget = 34;
+		}
+		else
+		{
+			pitchAngleTarget -= mouse->y* MOUSE_TO_PITCH_ANGLE_INC_FACT; 
+		}
+		
+		if(lastKey == 0x0000 && key->v == 0x0400)    //锁定云台  G  
+		{
+			switch(GMMode)
+			{
+				case LOCK:
+				{
+					GMMode = UNLOCK;
+					fixedPitch = 1;
+					//pitchAngleTarget = 34;					
+				}break;
+				case UNLOCK:
+				{
+					GMMode = LOCK;
+					pitchAngleTarget = 0
+					;	
+					fixedPitch = 0;
+				}break;
+			}
+		}
+		if(key->v == 0x0200) // F
+		{
+		}
+		
+//		if(key->v == 0x0420) {GMMode = UNLOCK;  yawRealAngleRES = yawRealAngle;}  //解锁云台  G + Ctrl		
+		
+//		if(key->v == 0x8000)//b
+//		{
+//			HERO_Order = HERO_SHOOT_LOAD; 自动上膛
+//		}				
+		
 //		if(GMMode == UNLOCK) 
 //		{
 //			yawAngleTarget    -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
@@ -338,12 +369,12 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		left_right_speed = NORMAL_LEFT_RIGHT_SPEED;
 		rotate_speed = NORMAL_ROTATE_SPEED;
 		//speed mode: normal speed/high speed 
-		if(key->v & 0x20)//Ctrl
+		if(key->v & 0x20)//Ctrl 自动取弹
 		{	
 			detectCnt++;
-			forward_back_speed =  LOW_FORWARD_BACK_SPEED;
-			left_right_speed = LOW_LEFT_RIGHT_SPEED;
-			rotate_speed = LOW_ROTATE_SPEED;
+			forward_back_speed =  GETBOX_FORWARD_BACK_SPEED;
+			left_right_speed = GETBOX_LEFT_RIGHT_SPEED;
+			rotate_speed = GETBOX_ROTATE_SPEED;
 			if(PIR_R_Ready && PIR_L_Ready && detectCnt>70)
 			{
 				left_right_speed = 0;				
@@ -358,12 +389,12 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		{
 			detectCnt=0;
 		}
-//		if(key->v & 0x10)//Shift
-//		{
-//			forward_back_speed =  LOW_FORWARD_BACK_SPEED;
-//			left_right_speed = LOW_LEFT_RIGHT_SPEED;
-//			rotate_speed = LOW_ROTATE_SPEED;
-//		}
+		if(key->v & 0x10)//Shift 慢速&上坡模式
+		{
+			forward_back_speed =  LOW_FORWARD_BACK_SPEED;
+			left_right_speed = LOW_LEFT_RIGHT_SPEED;
+			rotate_speed = LOW_ROTATE_SPEED;
+		}
 
 		//movement process
 		if(key->v & 0x01)  // key: w
@@ -412,9 +443,11 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 				RotSpeedRamp.ResetCounter(&RotSpeedRamp);
 			}
 	  }
-		if(lastKey == 0x0000 && key->v & 0x1000)//x
+		if(lastKey == 0x0000 && key->v & 0x1000)//x 暂停
 		{
-			HERO_Order = HERO_AUTO_GET3BOX;
+			//HERO_Order = HERO_AUTO_GET3BOX;
+			GRIP_SOV_OFF();
+			HERO_Order = HERO_MANUL_FETCH;
 		}
 		if(key->v == 0x2000)//c
 		{
@@ -424,25 +457,23 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		{
 
 		}
-		if(key->v == 0x0800)//z lastKey == 0x0000 && 
+		if(key->v == 0x0800)//z 复位
 		{
 			HERO_Order = HERO_MANUL_RECOVER;
 		}
-		if(key->v == 0x8000)//b 暂停
-		{
-			HERO_Order = HERO_MANUL_FETCH;
-			GRIP_SOV_OFF();
-		}
+//		if(key->v == 0x8000)//b 暂停
+//		{
 
-//		if(key->v == 256)  // key: r 扭腰
-//		{
-//			twist_state = 1;
 //		}
-		
-//		else
-//		{
-//			twist_state = 0;
-//		}
+
+		if(key->v == 256)  // key: r 扭腰
+		{
+			twist_state = 1;
+		}	
+		else
+		{
+			twist_state = 0;
+		}
 		
 		//mouse x y control
 		tmpx = (0x0000 | autoBuffer[2] | autoBuffer[1]<<8);
@@ -450,13 +481,13 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		
 		if(GMMode == UNLOCK)
 		{
-			ChassisSpeedRef.rotate_ref -= mouse->x/27.0*3000;
+			ChassisSpeedRef.rotate_ref -= mouse->x/45.0*3000;
 			//yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
 		}
 		else
 		{
 
-			if((autoBuffer[3] == 0xA6 || autoBuffer[3] == 0xA8) && (key->v& 0x10)) //shift
+			if((autoBuffer[3] == 0xA6 || autoBuffer[3] == 0xA8) && (key->v& 0x8000)) //b 自瞄
 			{
 				if(tmpy <700 && tmpx < 700)
 				{

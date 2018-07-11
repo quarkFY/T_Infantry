@@ -192,8 +192,15 @@ void HERO_init(void)
 		AM1LRealAngle = 190;
 		AM1RAngleTarget = -190;
 		AM1LAngleTarget = 190;
-		HERO_step(15,0,0,80);
+		HERO_step(100,0,0,38);
+		osDelay(500);	
+		GRIP_SOV_ON();
+		osDelay(500);	
+		GRIP_SOV_OFF();	
+		osDelay(370);		
+		HERO_step(15,0,0,43);
 		isAM1Init = 1;
+
 	}
 	else
 	{
@@ -268,6 +275,7 @@ void HERO_auto_getOneBox()
 		HERO_step(140,0,0,20);
 		HERO_step(-5,0,0,37);
 		osDelay(700);
+	  left_right_speed = 30;
 		PM2AngleTarget = PM2AngleTarget - 150;
 	  if(HERO_Order == HERO_MANUL_FETCH) return;
 		GRIP_SOV_OFF();
