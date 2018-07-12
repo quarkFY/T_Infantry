@@ -229,8 +229,8 @@ extern uint8_t littleRuneMSG[4];
 extern uint8_t bigRuneMSG[4];
 uint16_t fbss;
 //自瞄
-fw_PID_Regulator_t yawAutoSpeedPID = fw_PID_INIT(0.008, 0.0, 0.0, 30.0, 10.0, 10.0, 50); //6.5
-fw_PID_Regulator_t pitchAutoSpeedPID = fw_PID_INIT(0.01,0.0, 0.0, 30.0, 10.0, 10.0, 50.0); //4
+fw_PID_Regulator_t yawAutoSpeedPID = fw_PID_INIT(0.0055, 0.0, 0.0, 2.8, 10.0, 10.0, 50); //6.5
+fw_PID_Regulator_t pitchAutoSpeedPID = fw_PID_INIT(0.007,0.0, 0.0, 2.8, 10.0, 10.0, 50.0); //4
 float auto_kpx = 0.007f;
 float auto_kpy = 0.007f;
 extern uint8_t auto_getting;
@@ -341,8 +341,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 				case UNLOCK:
 				{
 					GMMode = LOCK;
-					pitchAngleTarget = 0
-					;	
+					pitchAngleTarget = 0;	
 					fixedPitch = 0;
 				}break;
 			}
@@ -426,86 +425,6 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 			ChassisSpeedRef.left_right_ref = 0;
 			LRSpeedRamp.ResetCounter(&LRSpeedRamp);
 		}
-		if(GMMode == UNLOCK)
-		{
-			if(key->v & 0x80)	//key:e  检测第8位是不是1
-			{
-				ChassisSpeedRef.rotate_ref=-rotate_speed*RotSpeedRamp.Calc(&RotSpeedRamp);
-			}
-			else if(key->v & 0x40)	//key:q  
-			{
-				ChassisSpeedRef.rotate_ref=rotate_speed*RotSpeedRamp.Calc(&RotSpeedRamp);
-			}
-			else 
-			{
-				ChassisSpeedRef.rotate_ref = 0;
-				RotSpeedRamp.ResetCounter(&RotSpeedRamp);
-			}
-	  }
-		else if (GMMode == LOCK)
-		{
-			if(key->v & 0x80)	//key:e  检测第8位是不是1
-			{
-				AngleTarget_temp -=  3.2;
-				
-						if(AngleTarget_temp >= yawRealAngle)
-					{
-						//gap_angle >= 0||<0
-						if((AngleTarget_temp - yawRealAngle)>(20-gap_angle))
-							yawAngleTarget = 20 - gap_angle + yawRealAngle;
-						else
-						{
-							yawAngleTarget = AngleTarget_temp;
-						}
-						AngleTarget_temp = yawAngleTarget;
-					}
-					//顺时针
-					else if(AngleTarget_temp < yawRealAngle)
-					{
-						//gap_angle <= 0||>0
-						if((yawRealAngle - AngleTarget_temp)>(gap_angle + 20))
-							yawAngleTarget = -20 - gap_angle + yawRealAngle;
-						else
-						{
-							yawAngleTarget = AngleTarget_temp;
-						}
-						AngleTarget_temp = yawAngleTarget;
-					}
-			}
-			else if(key->v & 0x40)	//key:q  
-			{
-				AngleTarget_temp += 3.2;
-				
-						if(AngleTarget_temp >= yawRealAngle)
-					{
-						//gap_angle >= 0||<0
-						if((AngleTarget_temp - yawRealAngle)>(20-gap_angle))
-							yawAngleTarget = 20 - gap_angle + yawRealAngle;
-						else
-						{
-							yawAngleTarget = AngleTarget_temp;
-						}
-						AngleTarget_temp = yawAngleTarget;
-					}
-					//顺时针
-					else if(AngleTarget_temp < yawRealAngle)
-					{
-						//gap_angle <= 0||>0
-						if((yawRealAngle - AngleTarget_temp)>(gap_angle + 20))
-							yawAngleTarget = -20 - gap_angle + yawRealAngle;
-						else
-						{
-							yawAngleTarget = AngleTarget_temp;
-						}
-						AngleTarget_temp = yawAngleTarget;
-					}
-			}
-			//AngleTarget_temp   -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
-
-			//目前假设云台相对车身偏左gap为正，已知陀螺仪逆时针为正
-			//逆时针旋转
-			
-		}
 		if(lastKey == 0x0000 && key->v & 0x1000)//x 暂停
 		{
 			//HERO_Order = HERO_AUTO_GET3BOX;
@@ -544,10 +463,24 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		
 		if(GMMode == UNLOCK)
 		{
+			if(key->v & 0x80)	//key:e  检测第8位是不是1
+			{
+				ChassisSpeedRef.rotate_ref=-rotate_speed*RotSpeedRamp.Calc(&RotSpeedRamp);
+			}
+			else if(key->v & 0x40)	//key:q  
+			{
+				ChassisSpeedRef.rotate_ref=rotate_speed*RotSpeedRamp.Calc(&RotSpeedRamp);
+			}
+			else 
+			{
+				ChassisSpeedRef.rotate_ref = 0;
+				RotSpeedRamp.ResetCounter(&RotSpeedRamp);
+			}
 			ChassisSpeedRef.rotate_ref -= mouse->x/45.0*3000;
 			//yawAngleTarget = -ChassisSpeedRef.rotate_ref * forward_kp / 2000;
+			
 		}
-		else
+		else if(GMMode == LOCK)
 		{
 
 			if((autoBuffer[3] == 0xA6 || autoBuffer[3] == 0xA8) && (key->v& 0x8000)) //b 自瞄
@@ -567,6 +500,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 					pitchAngleTarget -= pitchAutoSpeedPID.output;
 //					pitchAngleTarget -= (tmpy - auto_y_default) * auto_kpy;
 //					yawAngleTarget -= (tmpx - auto_x_default) * auto_kpx;
+					AngleTarget_temp = yawAngleTarget;
 				}
 			}
 			else
@@ -575,7 +509,16 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 //				{
 						AngleTarget_temp   -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
 //				}
-//					
+					if(key->v & 0x80)	//key:e  检测第8位是不是1
+					{
+						AngleTarget_temp -=  3.2;
+					}
+					else if(key->v & 0x40)	//key:q  
+					{
+						AngleTarget_temp += 3.2;
+			    }
+			//AngleTarget_temp   -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
+			
 //				AngleTarget_temp = yawAngleTarget;
 //					
 //				if(fabs(yawMotorAngle) > 15 )
@@ -738,8 +681,7 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 			if(AM1RAngleTarget>0) AM1RAngleTarget=0;
 			if(AM1RAngleTarget<-190) AM1RAngleTarget=-190;
 		
-			if(AM1LAngleTarget<0) AM1LAngleTarget=0;
-			if(AM1LAngleTarget>190) AM1LAngleTarget=190;
+		if(AM1LAngleTarget>190) AM1LAngleTarget=190;
 		}
 			//prepare
 			if(lastKey == 0x0000 && key->v == 0x0800)//z				
