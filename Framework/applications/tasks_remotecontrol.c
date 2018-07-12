@@ -229,8 +229,10 @@ extern uint8_t littleRuneMSG[4];
 extern uint8_t bigRuneMSG[4];
 uint16_t fbss;
 //自瞄
-fw_PID_Regulator_t yawAutoSpeedPID = fw_PID_INIT(0.0055, 0.0, 0.0, 2.8, 10.0, 10.0, 50); //6.5
-fw_PID_Regulator_t pitchAutoSpeedPID = fw_PID_INIT(0.007,0.0, 0.0, 2.8, 10.0, 10.0, 50.0); //4
+fw_PID_Regulator_t yawAutoSpeedPID_TrackMode = fw_PID_INIT(0.0125, 0.0, 0.00005,4.8, 10.0, 10.0, 50); //跟随参数 寻找参数 0.0007 0.0008
+fw_PID_Regulator_t pitchAutoSpeedPID_TrackMode = fw_PID_INIT(0.011,0.0, 0.0, 3.7, 10.0, 10.0, 50.0); //4
+fw_PID_Regulator_t yawAutoSpeedPID_AimMode = fw_PID_INIT(0.0075,0.0, 0.00001,4.5, 10.0, 10.0, 50);
+fw_PID_Regulator_t pitchAutoSpeedPID_AimMode = fw_PID_INIT(0.007, 0.0, 0.00005,3.2, 10.0, 10.0, 50);
 float auto_kpx = 0.007f;
 float auto_kpy = 0.007f;
 extern uint8_t auto_getting;
@@ -303,12 +305,13 @@ uint16_t lastKey;
 ///////////////////////////键鼠模式//////////////////////////
 //调整鼠标灵敏度
 #define MOUSE_TO_PITCH_ANGLE_INC_FACT 		0.025f * 2
-#define MOUSE_TO_YAW_ANGLE_INC_FACT 		0.025f * 2.4
+#define MOUSE_TO_YAW_ANGLE_INC_FACT 		0.025f * 3.4
 
 int keyDebug;
 uint8_t detect,going;
 uint8_t detectCnt;
 uint8_t fixedPitch;
+uint16_t autoAimCnt;
 //遥控器模式下机器人无级变速  键鼠模式下机器人速度为固定档位
 void MouseKeyControlProcess(Mouse *mouse, Key *key)
 {
@@ -482,29 +485,74 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		}
 		else if(GMMode == LOCK)
 		{
-
 			if((autoBuffer[3] == 0xA6 || autoBuffer[3] == 0xA8) && (key->v& 0x8000)) //b 自瞄
 			{
+				autoAimCnt++;
 				if(tmpy <700 && tmpx < 700)
 				{
-					yawAutoSpeedPID.target = tmpx;
-					yawAutoSpeedPID.feedback =  auto_x_default;
-					yawAutoSpeedPID.Calc(&yawAutoSpeedPID);
-					
-					yawAngleTarget -= yawAutoSpeedPID.output;
-					
-					pitchAutoSpeedPID.target = tmpy;
-					pitchAutoSpeedPID.feedback =  auto_y_default;
-					pitchAutoSpeedPID.Calc(&pitchAutoSpeedPID);
-					
-					pitchAngleTarget -= pitchAutoSpeedPID.output;
+					if(autoAimCnt>150) //TrackMode
+					{
+							yawAutoSpeedPID_TrackMode.target = tmpx;
+							yawAutoSpeedPID_TrackMode.feedback =  auto_x_default;
+							yawAutoSpeedPID_TrackMode.Calc(&yawAutoSpeedPID_TrackMode);
+							
+							yawAngleTarget -= yawAutoSpeedPID_TrackMode.output;
+							
+							pitchAutoSpeedPID_TrackMode.target = tmpy;
+							pitchAutoSpeedPID_TrackMode.feedback =  auto_y_default;
+							pitchAutoSpeedPID_TrackMode.Calc(&pitchAutoSpeedPID_TrackMode);
+							
+							pitchAngleTarget -= pitchAutoSpeedPID_TrackMode.output;
+					}
+					else //AimMode
+					{
+							yawAutoSpeedPID_AimMode.target = tmpx;
+							yawAutoSpeedPID_AimMode.feedback =  auto_x_default;
+							yawAutoSpeedPID_AimMode.Calc(&yawAutoSpeedPID_AimMode);
+							
+							yawAngleTarget -= yawAutoSpeedPID_AimMode.output;
+							
+							pitchAutoSpeedPID_AimMode.target = tmpy;
+							pitchAutoSpeedPID_AimMode.feedback =  auto_y_default;
+							pitchAutoSpeedPID_AimMode.Calc(&pitchAutoSpeedPID_AimMode);
+							
+							pitchAngleTarget -= pitchAutoSpeedPID_AimMode.output;				
+					}					
+
+//////////////调试 跟踪模式//////////////////////
+//					yawAutoSpeedPID_TrackMode.target = tmpx;
+//					yawAutoSpeedPID_TrackMode.feedback =  auto_x_default;
+//					yawAutoSpeedPID_TrackMode.Calc(&yawAutoSpeedPID_TrackMode);
+//					
+//					yawAngleTarget -= yawAutoSpeedPID_TrackMode.output;
+//					
+//					pitchAutoSpeedPID_TrackMode.target = tmpy;
+//					pitchAutoSpeedPID_TrackMode.feedback =  auto_y_default;
+//					pitchAutoSpeedPID_TrackMode.Calc(&pitchAutoSpeedPID_TrackMode);
+//					
+//					pitchAngleTarget -= pitchAutoSpeedPID_TrackMode.output;
+
+//////////////调试 瞄准模式//////////////////////					
+//					yawAutoSpeedPID_AimMode.target = tmpx;
+//					yawAutoSpeedPID_AimMode.feedback =  auto_x_default;
+//					yawAutoSpeedPID_AimMode.Calc(&yawAutoSpeedPID_AimMode);
+//					
+//					yawAngleTarget -= yawAutoSpeedPID_AimMode.output;
+//					
+//					pitchAutoSpeedPID_AimMode.target = tmpy;
+//					pitchAutoSpeedPID_AimMode.feedback =  auto_y_default;
+//					pitchAutoSpeedPID_AimMode.Calc(&pitchAutoSpeedPID_AimMode);
+//					
+//					pitchAngleTarget -= pitchAutoSpeedPID_AimMode.output;			
+///////////////////////////////////////////////////
+					AngleTarget_temp = yawAngleTarget;							
 //					pitchAngleTarget -= (tmpy - auto_y_default) * auto_kpy;
 //					yawAngleTarget -= (tmpx - auto_x_default) * auto_kpx;
-					AngleTarget_temp = yawAngleTarget;
 				}
 			}
 			else
 			{
+				autoAimCnt=0;
 //				if(fabs(yawMotorAngle) <= 15)
 //				{
 						AngleTarget_temp   -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
