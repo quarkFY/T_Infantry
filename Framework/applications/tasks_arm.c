@@ -518,7 +518,7 @@ void PMRotate()
 				case CLOCKWISE:
 				{
 					if(abs(PM2ThisTorque) < 7000)
-						PM2AngleTarget = PM2AngleTarget - 150;
+						PM2AngleTarget = PM2AngleTarget + 150;
 					else
 						PM2AngleTarget = PM2RealAngle;
 					PMRotateDirection = ANTICLOCKWISE;
@@ -526,7 +526,7 @@ void PMRotate()
 				case ANTICLOCKWISE:
 				{
 					if(abs(PM2ThisTorque) < 7000)
-						PM2AngleTarget = PM2AngleTarget + 30;
+						PM2AngleTarget = PM2AngleTarget - 30;
 					else
 						PM2AngleTarget = PM2RealAngle;
 					PMRotateDirection = CLOCKWISE;

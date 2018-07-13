@@ -118,15 +118,15 @@ void HeroTask(void const * argument)
 							if(PM2RotateCounter==2000)
 							{
 								PM2RotateCounter = 0;
-								PM2AngleTarget += 150;
+								PM2AngleTarget -= 150;
 								PM2RotateEnable = 0;
 							}
-							else PM2AngleTarget-=2;
+							else PM2AngleTarget+=2;
 						}
 						//堵转回90度
 						else if(PM2RotateEnable == 2)
 						{
-								PM2AngleTarget+=90;
+								PM2AngleTarget-=90;
 								PM2RotateEnable = 0;
 						}
 						//回转到位
@@ -198,7 +198,7 @@ void HERO_init(void)
 		osDelay(500);	
 		GRIP_SOV_OFF();	
 		osDelay(370);		
-		HERO_step(15,0,0,43);
+		HERO_step(7,0,0,46);
 		isAM1Init = 1;
 
 	}
@@ -211,7 +211,7 @@ void HERO_init(void)
 
 void HERO_prepare(void)
 {
-	HERO_step(162,0,0,40);
+	HERO_step(165,0,0,40);
 }
 
 void HERO_standby(void)
@@ -273,14 +273,14 @@ void HERO_auto_getOneBox()
 	  if(HERO_Order == HERO_MANUL_FETCH) return;
 		//HERO_load
 		HERO_step(140,0,0,20);
-		HERO_step(-5,0,0,37);
+		HERO_step(-10,0,0,37);
 		osDelay(700);
 	  left_right_speed = 30;
-		PM2AngleTarget = PM2AngleTarget - 150;
+		PM2AngleTarget = PM2AngleTarget + 150;
 	  if(HERO_Order == HERO_MANUL_FETCH) return;
 		GRIP_SOV_OFF();
 		osDelay(500);
-		PM2AngleTarget = PM2AngleTarget - 200;
+		PM2AngleTarget = PM2AngleTarget + 200;
 	  if(HERO_Order == HERO_MANUL_FETCH) return;
 		HERO_standby();
 }
