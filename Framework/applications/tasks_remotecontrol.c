@@ -36,7 +36,7 @@
 #include "peripheral_sov.h"
 #include "tasks_hero.h"
 #include <math.h>
-
+#include "drivers_cmpower.h"
 
 #define VAL_LIMIT(val, min, max)\
 if(val<=min)\
@@ -86,6 +86,8 @@ extern Get_Bullet_e GetBulletState;
 
 extern int twist_state ;//扭腰
 extern float gap_angle;
+
+extern float CM_current_max;
 
 void RControlTask(void const * argument){
 	uint8_t data[18];
@@ -331,6 +333,36 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 			pitchAngleTarget -= mouse->y* MOUSE_TO_PITCH_ANGLE_INC_FACT; 
 		}
 		
+		if(key->v == 0x0200) // F
+		{
+		}
+		
+//		if(key->v == 0x0420) {GMMode = UNLOCK;  yawRealAngleRES = yawRealAngle;}  //解锁云台  G + Ctrl		
+		
+//		if(key->v == 0x8000)//b
+//		{
+//			HERO_Order = HERO_SHOOT_LOAD; 自动上膛
+//		}				
+		
+//		if(GMMode == UNLOCK) 
+//		{
+//			yawAngleTarget    -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
+//		}
+
+		if(GMMode == UNLOCK)
+		{
+			forward_back_speed =  LOW_FORWARD_BACK_SPEED;
+			left_right_speed = LOW_LEFT_RIGHT_SPEED;
+			rotate_speed = LOW_ROTATE_SPEED;
+		}
+		else if(GMMode == LOCK)
+		{
+			forward_back_speed =  NORMAL_FORWARD_BACK_SPEED;
+			left_right_speed = NORMAL_LEFT_RIGHT_SPEED;
+			rotate_speed = NORMAL_ROTATE_SPEED;
+			CM_current_max = CM_current_MAX;
+		}
+		
 		if(lastKey == 0x0000 && key->v == 0x0400)    //锁定云台  G  
 		{
 			switch(GMMode)
@@ -351,26 +383,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 				}break;
 			}
 		}
-		if(key->v == 0x0200) // F
-		{
-		}
 		
-//		if(key->v == 0x0420) {GMMode = UNLOCK;  yawRealAngleRES = yawRealAngle;}  //解锁云台  G + Ctrl		
-		
-//		if(key->v == 0x8000)//b
-//		{
-//			HERO_Order = HERO_SHOOT_LOAD; 自动上膛
-//		}				
-		
-//		if(GMMode == UNLOCK) 
-//		{
-//			yawAngleTarget    -= mouse->x* MOUSE_TO_YAW_ANGLE_INC_FACT;
-//		}
-
-		
-		forward_back_speed =  NORMAL_FORWARD_BACK_SPEED;
-		left_right_speed = NORMAL_LEFT_RIGHT_SPEED;
-		rotate_speed = NORMAL_ROTATE_SPEED;
 		//speed mode: normal speed/high speed 
 		if(key->v & 0x20)//Ctrl 自动取弹
 		{	
@@ -395,9 +408,13 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		}
 		if(key->v & 0x10)//Shift 慢速&上坡模式
 		{
+//			forward_back_speed =  LOW_FORWARD_BACK_SPEED;
+//			left_right_speed = LOW_LEFT_RIGHT_SPEED;
+//			rotate_speed = LOW_ROTATE_SPEED;
 			forward_back_speed =  LOW_FORWARD_BACK_SPEED;
 			left_right_speed = LOW_LEFT_RIGHT_SPEED;
 			rotate_speed = LOW_ROTATE_SPEED;
+			CM_current_max = CM_current_MAX_LOW;
 		}
 
 		//movement process
@@ -469,6 +486,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		
 		if(GMMode == UNLOCK)
 		{
+			
 			if(key->v & 0x80)	//key:e  检测第8位是不是1
 			{
 				ChassisSpeedRef.rotate_ref=-rotate_speed*RotSpeedRamp.Calc(&RotSpeedRamp);

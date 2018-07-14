@@ -25,6 +25,7 @@
 #define  	 CMBLIntensity_lower   1024.f
 #define	   CMBRIntensity_lower   1024.f
 
+#define    CM_current_MAX_LOW      30000.0f
 #define    CM_current_MAX      24000.0f       //CM_current_MAX对应的电流值*24V*100ms<=60J
 #define    CMFLIntensity_MAX   6000.0f
 #define    CMFRIntensity_MAX   6000.0f

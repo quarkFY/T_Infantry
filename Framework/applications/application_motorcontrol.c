@@ -153,11 +153,25 @@ void setMotor(MotorId motorId, int16_t Intensity){
 	//离线模式
 	if (JUDGE_State == OFFLINE)
 	{
-		 CM_current_max = 13000;
-		 CMFLIntensity_max = 4500;
-		 CMFRIntensity_max = 4500;
-		 CMBLIntensity_max = 4500;
-		 CMBRIntensity_max = 4500;
+//		 CM_current_max = 4000;
+//		 CMFLIntensity_max = 4500;
+//		 CMFRIntensity_max = 4500;
+//		 CMBLIntensity_max = 4500;
+//		 CMBRIntensity_max = 4500;
+			CM_current_max = 4000;
+		 CMFLIntensity_max = 1000;
+		 CMFRIntensity_max = 1000;
+		 CMBLIntensity_max = 1000;
+		 CMBRIntensity_max = 1000;
+		sum = (abs(CMFLIntensity) + abs(CMFRIntensity) + abs(CMBLIntensity) + abs(CMBRIntensity));
+			if(sum > CM_current_max)
+			{
+				CMFLIntensity = (CMFLIntensity/(sum+1.0f))*CM_current_max;
+				CMFRIntensity = (CMFRIntensity/(sum+1.0f))*CM_current_max;
+				CMBLIntensity = (CMBLIntensity/(sum+1.0f))*CM_current_max;
+				CMBRIntensity = (CMBRIntensity/(sum+1.0f))*CM_current_max;
+			}
+			CM_current_max = CM_current_MAX;
 	}
 	
 	//林炳辉仿桂电功率控制策略
@@ -166,14 +180,14 @@ void setMotor(MotorId motorId, int16_t Intensity){
 			sum = (abs(CMFLIntensity) + abs(CMFRIntensity) + abs(CMBLIntensity) + abs(CMBRIntensity));
 			float realPowerBuffer = PowerHeatData.chassisPowerBuffer;
 			//float realPower = PowerHeatData.chassisPower;
-			CMFLIntensity = (CMFLIntensity/(sum+1.0f))*CM_current_full*(1.0f+realPowerBuffer*0.05f);
-			CMFRIntensity = (CMFRIntensity/(sum+1.0f))*CM_current_full*(1.0f+realPowerBuffer*0.05f);
-			CMBLIntensity = (CMBLIntensity/(sum+1.0f))*CM_current_full*(1.0f+realPowerBuffer*0.05f);
-			CMBRIntensity = (CMBRIntensity/(sum+1.0f))*CM_current_full*(1.0f+realPowerBuffer*0.05f);
+		CMFLIntensity = (CMFLIntensity/(sum+1.0f))*CM_current_full*(1.0f+realPowerBuffer*(0.05f+(CM_current_max==CM_current_MAX_LOW?1:0)*0.05f));
+			CMFRIntensity = (CMFRIntensity/(sum+1.0f))*CM_current_full*(1.0f+realPowerBuffer*(0.05f+(CM_current_max==CM_current_MAX_LOW?1:0)*0.05f));
+			CMBLIntensity = (CMBLIntensity/(sum+1.0f))*CM_current_full*(1.0f+realPowerBuffer*(0.05f+(CM_current_max==CM_current_MAX_LOW?1:0)*0.05f));
+			CMBRIntensity = (CMBRIntensity/(sum+1.0f))*CM_current_full*(1.0f+realPowerBuffer*(0.05f+(CM_current_max==CM_current_MAX_LOW?1:0)*0.05f));
 	}
 	else
 	{
-			sum = (abs(CMFLIntensity) + abs(CMFRIntensity) + abs(CMBLIntensity) + abs(CMBRIntensity));
+		sum = (abs(CMFLIntensity) + abs(CMFRIntensity) + abs(CMBLIntensity) + abs(CMBRIntensity));
 			if(sum > CM_current_max)
 			{
 				CMFLIntensity = (CMFLIntensity/(sum+1.0f))*CM_current_max;

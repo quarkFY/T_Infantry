@@ -46,7 +46,7 @@ void InitRemoteControl(void);
 #define HIGH_FORWARD_BACK_SPEED 			1000
 #define HIGH_LEFT_RIGHT_SPEED   			800
 #define HIGH_ROTATE_SPEED   			800
-#define LOW_FORWARD_BACK_SPEED 			140
+#define LOW_FORWARD_BACK_SPEED 			110
 #define LOW_LEFT_RIGHT_SPEED   			100
 #define LOW_ROTATE_SPEED   			70
 #define GETBOX_FORWARD_BACK_SPEED 			70
