@@ -44,6 +44,8 @@ void shootLoad(void);
 #define PIR_R_Ready  (HAL_GPIO_ReadPin(PIR_R_GPIO_Port,GPIO_PIN_5))
 					
 #define PIR_L_Ready  (HAL_GPIO_ReadPin(PIR_L_GPIO_Port,GPIO_PIN_6))
+
+#define PIR_C_Free  (!HAL_GPIO_ReadPin(PIR_C_GPIO_Port,GPIO_PIN_0))
 		
 
 #endif

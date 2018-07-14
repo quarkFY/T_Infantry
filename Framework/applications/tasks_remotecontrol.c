@@ -339,6 +339,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 				{
 					GMMode = UNLOCK;
 					fixedPitch = 1;
+					HERO_Order = HERO_MANUL_RECOVER;
 					//pitchAngleTarget = 34;					
 				}break;
 				case UNLOCK:
@@ -346,6 +347,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 					GMMode = LOCK;
 					pitchAngleTarget = 0;	
 					fixedPitch = 0;
+					HERO_Order = HERO_MANUL_RECOVER;					
 				}break;
 			}
 		}
@@ -376,6 +378,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 			forward_back_speed =  GETBOX_FORWARD_BACK_SPEED;
 			left_right_speed = GETBOX_LEFT_RIGHT_SPEED;
 			rotate_speed = GETBOX_ROTATE_SPEED;
+//			if(PIR_R_Ready && PIR_L_Ready && PIR_C_Free && detectCnt>70)
 			if(PIR_R_Ready && PIR_L_Ready && detectCnt>70)
 			{
 				left_right_speed = 0;				

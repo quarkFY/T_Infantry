@@ -73,8 +73,8 @@
 #define EncoderB_GPIO_Port GPIOH
 #define EncoderA_Pin GPIO_PIN_10
 #define EncoderA_GPIO_Port GPIOH
-#define BEHIND_SOV2_Pin GPIO_PIN_0
-#define BEHIND_SOV2_GPIO_Port GPIOC
+#define PIR_C_Pin GPIO_PIN_0
+#define PIR_C_GPIO_Port GPIOC
 #define BEHIND_SOV1_Pin GPIO_PIN_2
 #define BEHIND_SOV1_GPIO_Port GPIOC
 #define SDA_Pin GPIO_PIN_4
