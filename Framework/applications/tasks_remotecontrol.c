@@ -304,6 +304,7 @@ uint16_t forward_back_speed = 0;
 uint16_t left_right_speed = 0;
 uint16_t rotate_speed=0;
 uint16_t lastKey;
+uint8_t ARM_RECOVER = 0;
 ///////////////////////////键鼠模式//////////////////////////
 //调整鼠标灵敏度
 #define MOUSE_TO_PITCH_ANGLE_INC_FACT 		0.025f * 2
@@ -379,7 +380,8 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 					GMMode = LOCK;
 					pitchAngleTarget = 0;	
 					fixedPitch = 0;
-					HERO_Order = HERO_MANUL_RECOVER;					
+//					HERO_Order = HERO_MANUL_RECOVER;	
+          ARM_RECOVER = 1;					
 				}break;
 			}
 		}

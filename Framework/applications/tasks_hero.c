@@ -59,6 +59,7 @@ HERO_Order_t Last_HERO_Order=HERO_STANDBY;
 extern FrictionWheelState_e g_friction_wheel_state; 
  Chassis_Mode_e FrontWheel_Mode = CHASSIS_NORMAL, Last_FrontWheel_Mode = CHASSIS_NORMAL,BehindWheel_Mode = CHASSIS_NORMAL, Last_BehindWheel_Mode = CHASSIS_NORMAL;
 
+extern uint8_t ARM_RECOVER;
 void HeroTask(void const * argument)
 {
 	while(1)
@@ -76,7 +77,11 @@ void HeroTask(void const * argument)
 				}break;
 				case HERO_MANUL_FETCH:
 				{
-					
+					if(ARM_RECOVER == 1)
+					{
+						HERO_Order = HERO_MANUL_RECOVER;
+						ARM_RECOVER = 0;
+					}
 				}break;
 				case HERO_MANUL_LOAD:
 				{
@@ -261,6 +266,7 @@ void HERO_manul_recover()
 	HERO_recover();
 	HERO_Order = HERO_MANUL_FETCH;
 }
+
 
 void HERO_auto_getOneBox()
 {
