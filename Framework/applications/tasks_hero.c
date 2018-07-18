@@ -211,7 +211,7 @@ void HERO_init(void)
 
 void HERO_prepare(void)
 {
-	HERO_step(165,0,0,40);
+	HERO_step(165,0,0,10);
 }
 
 void HERO_standby(void)
@@ -272,14 +272,16 @@ void HERO_auto_getOneBox()
 		osDelay(500);
 	  if(HERO_Order == HERO_MANUL_FETCH) return;
 		//HERO_load
-		HERO_step(140,0,0,20);
-		HERO_step(-10,0,0,37);
-		osDelay(700);
+		HERO_step(140,0,0,20); 
+		HERO_step(-10,0,0,17); //≤‚ ‘∞Ê
+		osDelay(500);
+//		HERO_step(-10,0,0,37); //‘≠∞Ê
+//		osDelay(300);
 	  left_right_speed = 30;
 		PM2AngleTarget = PM2AngleTarget + 150;
 	  if(HERO_Order == HERO_MANUL_FETCH) return;
 		GRIP_SOV_OFF();
-		osDelay(500);
+		osDelay(200);
 		PM2AngleTarget = PM2AngleTarget + 200;
 	  if(HERO_Order == HERO_MANUL_FETCH) return;
 		HERO_standby();
