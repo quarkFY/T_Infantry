@@ -47,7 +47,7 @@ fw_PID_Regulator_t CMBRPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.
 //云台
 #define yaw_zero  617
 #define yaw_zero_revise 617
-#define pitch_zero  4300
+#define pitch_zero  5500
 float yawEncoder = 0;
 float GMYAWThisAngle, GMYAWLastAngle;
 float yawRealAngle = 0.0;
@@ -305,8 +305,8 @@ void ControlPitch(void)
 			if(isGMPITCHFirstEnter==1) 
 			{
 				GMPITCHLastAngle = GMPITCHThisAngle;
-				pitchRealAngle = (IOPool_pGetReadData(GMPITCHRxIOPool, 0)->angle- pitchZeroAngle) * 360  / 8192.0f ; //初始化复位
-				//pitchRealAngle = 0;
+				//pitchRealAngle = (IOPool_pGetReadData(GMPITCHRxIOPool, 0)->angle- pitchZeroAngle) * 360  / 8192.0f ; //初始化复位
+				pitchRealAngle = 0;
 				isGMPITCHFirstEnter = 0;
 			}	//初始化时，记录下当前编码器的值
 			
@@ -336,7 +336,6 @@ void ControlPitch(void)
 //		  if (isGMSet == 1)
 //			{
 			setMotor(GMPITCH, -pitchIntensity);
-			//setMotor(GMPITCH, 0);
 //			}
 
 			s_pitchCount = 0;

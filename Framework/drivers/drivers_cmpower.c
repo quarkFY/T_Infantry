@@ -21,7 +21,7 @@ extern float realPowerBuffer;
 extern uint8_t JUDGE_State;
 extern uint8_t going;
 
-static float CM_current_max = CM_current_MAX;
+float CM_current_max = CM_current_MAX;
 static float CMFLIntensity_max = CMFLIntensity_MAX;
 static float CMFRIntensity_max = CMFRIntensity_MAX;
 static float CMBLIntensity_max = CMBLIntensity_MAX;

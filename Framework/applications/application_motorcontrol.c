@@ -30,7 +30,6 @@
 
 extern extPowerHeatData_t PowerHeatData;
 extern uint8_t JUDGE_State;
-float CM_current_max = CM_current_MAX;
 //extern uint8_t going;
 
 float am1lfordebug,am1rfordebug;
@@ -115,7 +114,7 @@ void setMotor(MotorId motorId, int16_t Intensity){
 
 	//底盘功率限制，120W，能量槽满60，低于0掉血
 //    RestrictPower(&CMFLIntensity, &CMFRIntensity, &CMBLIntensity, &CMBRIntensity);
-	
+	float CM_current_max = CM_current_MAX;
 	float CMFLIntensity_max = CMFLIntensity_MAX;
 	float CMFRIntensity_max = CMFRIntensity_MAX;
 	float CMBLIntensity_max = CMBLIntensity_MAX;
