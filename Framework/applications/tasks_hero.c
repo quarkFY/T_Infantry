@@ -21,6 +21,7 @@
 //参考工程车，增加英雄取弹模块
 uint8_t HERO_task_on=0;
 extern Get_Bullet_e GetBulletState;
+extern uint8_t ARM_RECOVER;
 extern float AM1RAngleTarget ;
 
 extern float AM3RAngleTarget ;
@@ -76,7 +77,15 @@ void HeroTask(void const * argument)
 				}break;
 				case HERO_MANUL_FETCH:
 				{
-					
+					if(ARM_RECOVER == 1)
+					{
+						ARM_RECOVER = 0;
+						HERO_Order = HERO_MANUL_RECOVER;
+					}
+					else
+					{
+						
+					}
 				}break;
 				case HERO_MANUL_LOAD:
 				{
@@ -236,10 +245,7 @@ void HERO_recover()
 extern uint16_t left_right_speed;
 void HERO_manul_prepare(void)
 {
-	HERO_step(155,0,0,17);
-	//HERO_prepare();
-	left_right_speed = 0;
-	osDelay(50);
+	HERO_step(60,0,0,50);
 	HERO_Order = HERO_MANUL_FETCH;
 }
 
@@ -274,14 +280,14 @@ void HERO_auto_getOneBox()
 		//HERO_load
 		HERO_step(140,0,0,20); 
 		HERO_step(-10,0,0,17); //测试版
-		osDelay(500);
+		osDelay(229);
 //		HERO_step(-10,0,0,37); //原版
 //		osDelay(300);
 	  left_right_speed = 30;
 		PM2AngleTarget = PM2AngleTarget + 150;
 	  if(HERO_Order == HERO_MANUL_FETCH) return;
 		GRIP_SOV_OFF();
-		osDelay(200);
+		osDelay(150);
 		PM2AngleTarget = PM2AngleTarget + 200;
 	  if(HERO_Order == HERO_MANUL_FETCH) return;
 		HERO_standby();

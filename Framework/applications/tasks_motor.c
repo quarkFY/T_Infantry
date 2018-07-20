@@ -45,9 +45,9 @@ fw_PID_Regulator_t CMBRPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.
 
 //PID_INIT(Kp, Ki, Kd, KpMax, KiMax, KdMax, OutputMax)
 //云台
-#define yaw_zero  617
-#define yaw_zero_revise 617
-#define pitch_zero  4300
+#define yaw_zero  3790
+#define yaw_zero_revise 3790
+#define pitch_zero  3900
 float yawEncoder = 0;
 float GMYAWThisAngle, GMYAWLastAngle;
 float yawRealAngle = 0.0;
@@ -182,8 +182,8 @@ void ControlYaw(void)
 			if(isGMYAWFirstEnter==1) 
 			{
 				GMYAWLastAngle = GMYAWThisAngle;
-    		//yawMotorAngle = (IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle- yawZeroAngle) * 360 * 1 / (8192.0f * 5);//初始化复位
-				yawMotorAngle = 0;
+    		yawMotorAngle = (IOPool_pGetReadData(GMYAWRxIOPool, 0)->angle- yawZeroAngle) * 360 * 1 / (8192.0f * 5);//初始化复位
+				//yawMotorAngle = 0;
 				isGMYAWFirstEnter = 0;
 			}	//初始化时，记录下当前编码器的值
 			
@@ -259,7 +259,8 @@ void ControlYaw(void)
 			//			{
 						setMotor(GMYAW, -yawIntensity);
 			//			}
-						ControlRotate();
+					
+						ControlRotate(); //底盘跟随云台
 					}
 					
 						else if(GMMode ==UNLOCK)
