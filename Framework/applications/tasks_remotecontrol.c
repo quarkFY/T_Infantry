@@ -315,6 +315,7 @@ uint8_t detect,going;
 uint8_t detectCnt;
 uint8_t fixedPitch,releaseFixedPitch;
 uint16_t autoAimCnt;
+extern uint8_t auto_aim;
 //遥控器模式下机器人无级变速  键鼠模式下机器人速度为固定档位
 void MouseKeyControlProcess(Mouse *mouse, Key *key)
 {
@@ -456,9 +457,13 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		{
 			HERO_Order = HERO_AUTO_GETBOX;
 		}
-		if(key->v & 0x4000)//v
+		if(key->v & 0x4000)//v 关摩擦轮
 		{
-
+				LASER_OFF();//zy0802
+				g_friction_wheel_state = FRICTION_WHEEL_OFF;				  
+				SetFrictionWheelSpeed(800); 
+				frictionRamp.ResetCounter(&frictionRamp);
+				SetShootState(NO_SHOOT);
 		}
 		if(key->v == 0x0800)//z 复位
 		{
@@ -466,7 +471,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		}
 //		if(key->v == 0x8000)//b 暂停
 //		{
-
+//			g_workState = STOP_STATE;
 //		}
 
 		if(key->v == 256)  // key: r 扭腰
@@ -509,7 +514,8 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		}
 		else if(GMMode == LOCK)
 		{
-			if((autoBuffer[3] == 0xA6 || autoBuffer[3] == 0xA8) && (key->v& 0x8000)) //b 自瞄
+			//if((autoBuffer[3] == 0xA6 || autoBuffer[3] == 0xA8) && (key->v& 0x8000)) //b 自瞄
+			if((autoBuffer[3] == 0xA6 || autoBuffer[3] == 0xA8) && (auto_aim)) //右键 自瞄
 			{
 				autoAimCnt++;
 				if(tmpy <700 && tmpx < 700)

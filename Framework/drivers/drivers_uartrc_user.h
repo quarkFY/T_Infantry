@@ -92,6 +92,7 @@ typedef enum
 	REMOTE_INPUT = 1,
 	KEY_MOUSE_INPUT = 3,
 	GETBULLET_INPUT = 2,
+	STOP_INPUT = 4,
 }InputMode_e;
 
 typedef enum

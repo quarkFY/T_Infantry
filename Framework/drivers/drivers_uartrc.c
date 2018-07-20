@@ -343,7 +343,8 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 			}
 	}
 }
-	 
+
+uint8_t auto_aim = 0;
 void MouseShootControl(Mouse *mouse)
 {
 	static uint16_t CNT_PM1_500ms = 0;	//用于检测PM1堵转
@@ -401,11 +402,13 @@ void MouseShootControl(Mouse *mouse)
 			
 			if(mouse->press_r == 1)
 			{
-				closeDelayCount++;
+				//closeDelayCount++;
+				auto_aim = 1;
 			}
 			else
 			{
 				closeDelayCount = 0;
+				auto_aim = 0;
 			}
 			if(closeDelayCount>50)   //
 			{

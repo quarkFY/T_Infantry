@@ -281,6 +281,7 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		CMBRIntensity = (CM_current_max/sum)*CMBRIntensity;
 	}*/
 	
+	//紧急停止
 	if(GetWorkState() == STOP_STATE || g_bInited != 1)
 	{
 		CMFLIntensity = 0;
