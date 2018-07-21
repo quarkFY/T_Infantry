@@ -217,7 +217,7 @@ void WorkStateFSM(void)
 	{
 		case PREPARE_STATE:
 		{
-			if(emergency_Flag == EMERGENCY )
+			if(GetInputMode() == STOP_INPUT )
 			{
 				g_workState = STOP_STATE;
 			}
@@ -230,7 +230,7 @@ void WorkStateFSM(void)
 		
 		case NORMAL_STATE:     
 		{
-			if(emergency_Flag == EMERGENCY )
+			if(GetInputMode() == STOP_INPUT )
 			{
 				g_workState = STOP_STATE;
 			}
@@ -238,11 +238,11 @@ void WorkStateFSM(void)
 		
 		case STOP_STATE:   
 		{
-			if(emergency_Flag == NORMAL )
+			if(GetInputMode() != STOP_INPUT )
 			{
 				g_workState = PREPARE_STATE;   
 			}
-			g_workState = STOP_STATE;
+			else g_workState = STOP_STATE;
 		}break;
 
 		default:

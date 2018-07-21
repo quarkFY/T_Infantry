@@ -205,7 +205,7 @@ void SetInputMode(Remote *rc)
 	}
 	else if(rc->s2 == 2)
 	{
-		inputmode = GETBULLET_INPUT;
+		inputmode = STOP_INPUT;
 	}	
 }
 
@@ -519,43 +519,43 @@ void RemoteGetBulletControl(RemoteSwitch_t *sw, uint8_t val)
 	//新版取弹
 	if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_1TO3)   
 	{
-		SetGetBulletState(GEBULLET_PREPARE);
-		//取弹过程中底盘速度设置为LOW
-		forward_back_speed =  LOW_FORWARD_BACK_SPEED;
-		left_right_speed = LOW_LEFT_RIGHT_SPEED;
-		rotate_speed = LOW_ROTATE_SPEED;
-		//HERO_Order=HERO_MANUL_FETCH;
+//		SetGetBulletState(GEBULLET_PREPARE);
+//		//取弹过程中底盘速度设置为LOW
+//		forward_back_speed =  LOW_FORWARD_BACK_SPEED;
+//		left_right_speed = LOW_LEFT_RIGHT_SPEED;
+//		rotate_speed = LOW_ROTATE_SPEED;
+//		//HERO_Order=HERO_MANUL_FETCH;
 	}
 	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)
 	{
-		SetGetBulletState(NO_GETBULLET);
-		HERO_Order = HERO_MANUL_RECOVER;
-		GRIP_SOV_OFF();
-		//底盘速度恢复为NORMAL
-		forward_back_speed =  NORMAL_FORWARD_BACK_SPEED;
-		left_right_speed = NORMAL_LEFT_RIGHT_SPEED;
-		rotate_speed = NORMAL_ROTATE_SPEED;
+//		SetGetBulletState(NO_GETBULLET);
+//		HERO_Order = HERO_MANUL_RECOVER;
+//		GRIP_SOV_OFF();
+//		//底盘速度恢复为NORMAL
+//		forward_back_speed =  NORMAL_FORWARD_BACK_SPEED;
+//		left_right_speed = NORMAL_LEFT_RIGHT_SPEED;
+//		rotate_speed = NORMAL_ROTATE_SPEED;
 	}
 	//以下没改
 	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)
 	{
 		//SetGetBulletState(MANUAL_GETBULLET);
 		//GRIP_SOV_ON();
-		HERO_Order = HERO_MANUL_RECOVER;
+		//HERO_Order = HERO_MANUL_RECOVER;
 	}
 	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_2TO3)
 	{
 		//SetGetBulletState(MANUAL_GETBULLET);
 		//GRIP_SOV_OFF();
-		HERO_Order = HERO_AUTO_GET3BOX;
+		//HERO_Order = HERO_AUTO_GET3BOX;
 	}
 	else if(sw->switch_value_raw == 3)
 	{
-		SetGetBulletState(MANUAL_GETBULLET);
+		//SetGetBulletState(MANUAL_GETBULLET);
 	}
 	else if(sw->switch_value_raw == 1)
 	{
-		SetGetBulletState(NO_GETBULLET);
+		//SetGetBulletState(NO_GETBULLET);
 		//HERO_Order=HERO_STANDBY;
 	}
 	else if(sw->switch_value_raw == 2)

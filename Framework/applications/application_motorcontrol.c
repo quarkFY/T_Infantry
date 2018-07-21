@@ -293,11 +293,11 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		PM1Intensity = 0;
 		PM2Intensity = 0;
 	  PM3Intensity = 0;
-		AM1LIntensity = 0;
-		AM1RIntensity = 0;
-		
-		
-		AM3RIntensity = 0;
+//		AM1LIntensity = 0;
+//		AM1RIntensity = 0;
+//		
+//		
+//		AM3RIntensity = 0;
 	}
 
 	if(CMReady == 0xF)
