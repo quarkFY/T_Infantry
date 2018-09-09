@@ -39,6 +39,10 @@
 #include "tasks_hero.h"
 #include "peripheral_sov.h"
 
+extern int16_t PM1ThisTorque;
+extern uint8_t PM2RotateEnable;
+extern uint16_t PM2RotateCounter;
+
 NaiveIOPoolDefine(rcUartIOPool, {0});
 
 //遥控器串口初始化，操作系统初始化的时候调用
@@ -88,14 +92,16 @@ GMMode_e GMMode = LOCK;
  //取弹任务状态
  extern HERO_Order_t HERO_Order;
  //底盘状态
- Chassis_Mode_e FrontWheel_Mode = CHASSIS_NORMAL, Last_FrontWheel_Mode = CHASSIS_NORMAL,BehindWheel_Mode = CHASSIS_NORMAL, Last_BehindWheel_Mode = CHASSIS_NORMAL;
 
+
+extern float PM2AngleTarget,PM2RealAngle;
+extern uint8_t stack_flag;
 
 unsigned int zyLeftPostion; //大符用左拨杆位置
  
-static uint32_t RotateCNT = 0;	//长按连发计数
 static uint16_t CNT_1s = 75;	//用于避免四连发模式下两秒内连射8发过于密集的情况
 static uint16_t CNT_250ms = 18;	//用于点射模式下射频限制
+
 
 //左上拨杆用于调试云台，记得要注释掉
 extern float yaw_zero, pitch_zero;
@@ -103,12 +109,12 @@ extern float yawEncoder, pitchEncoder;
 extern float yawAngleTarget, pitchAngleTarget;
 extern int isGMSet;
 
+extern float  tmpPM1AngleTarget,PM1AngleTarget,PM1RealAngle;
+
 void SetGMZeroPoint(RemoteSwitch_t *sw, uint8_t val) 
 {
 	if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_1TO3)   //OFF->HL
 	{
-//		yaw_zero = yawEncoder;
-//		pitch_zero = pitchEncoder;
 		isGMSet = 1;
 	}
 	if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)	//CL->HL
@@ -156,8 +162,7 @@ void GetRemoteSwitchAction(RemoteSwitch_t *sw, uint8_t val)
 
 	//value1 value2的值其实是一样的
 	//value1高4位始终为0
-	sw->switch_value1 = (sw->switch_value_buf[sw->buf_last_index] << 2)|
-	(sw->switch_value_buf[sw->buf_index]);
+	sw->switch_value1 = (sw->switch_value_buf[sw->buf_last_index] << 2)|(sw->switch_value_buf[sw->buf_index]);
 
 	sw->buf_end_index = (sw->buf_index + 1)%REMOTE_SWITCH_VALUE_BUF_DEEP;
 
@@ -203,7 +208,7 @@ void SetInputMode(Remote *rc)
 	}
 	else if(rc->s2 == 2)
 	{
-		inputmode = GETBULLET_INPUT;
+		inputmode = STOP_INPUT;
 	}	
 }
 
@@ -219,9 +224,12 @@ input: RemoteSwitch_t *sw, include the switch info
 */
 extern PID_Regulator_t PM1PositionPID;
 extern PID_Regulator_t PM2PositionPID;
+extern uint8_t PM2RotateEnable;
 uint16_t remoteShootDelay = 500;
 void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val) 
 {
+	static uint16_t CNT_PM1_500ms = 0;	//用于检测PM1堵转
+	++CNT_PM1_500ms;
 	switch(g_friction_wheel_state)
 	{
 		case FRICTION_WHEEL_OFF:
@@ -231,20 +239,14 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 				SetShootState(NO_SHOOT);
 				frictionRamp.ResetCounter(&frictionRamp);
 				g_friction_wheel_state = FRICTION_WHEEL_START_TURNNING;	 
-				LASER_ON(); 
-				FRONT_SOV1_OFF();
-			}
-			PMRotate();
-//			else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)		//收回取弹机械臂
-//			{
-//				armReset();
-//				
-//			}
+				LASER_ON(); 		}
+				PMRotate();
 		}break;
 		case FRICTION_WHEEL_START_TURNNING:
 		{
 			if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)   
 			{
+				stack_flag = 0;
 				LASER_OFF();//zy0802
 				SetShootState(NO_SHOOT);
 				SetFrictionWheelSpeed(800);
@@ -252,15 +254,9 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 				frictionRamp.ResetCounter(&frictionRamp);
 			}
 			
-	//		else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)	
-	//		{
-//				LASER_OFF();
-//				SetShootState(NO_SHOOT);
-//				SetFrictionWheelSpeed(1000);
-//				g_friction_wheel_state = FRICTION_WHEEL_OFF;
-//				frictionRamp.ResetCounter(&frictionRamp);
-				
-	//		}
+//		else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)	
+//		{
+//		}
 			
 			else
 			{
@@ -268,13 +264,37 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 				SetFrictionWheelSpeed(800 + (FRICTION_WHEEL_MAX_DUTY-800)*frictionRamp.Calc(&frictionRamp)); 
 				if(frictionRamp.IsOverflow(&frictionRamp))
 				{
-					g_friction_wheel_state = FRICTION_WHEEL_ON; 	
+					g_friction_wheel_state = FRICTION_WHEEL_ON; 
+          HERO_Order = HERO_STEADY_ROTATE;					
 				}
 				
 			}
 		}break;
 		case FRICTION_WHEEL_ON:
 		{
+			
+//			//正常一直转
+//			if(PM2RotateEnale == 1)
+//			{
+//				PM2AngleTarget+=10;
+//			}
+//			//堵转回转90度
+//			else if(PM2RotateEnale == 2)
+//			{
+//					PM2AngleTarget-=90;
+//					PM2RotateEnale = 0;
+//			}
+//			//回转到位
+//			else if(fabs(PM2AngleTarget-PM2RealAngle)<10)
+//			{
+//					PM2RotateEnale = 1;
+//			}
+//			//堵转检测
+//			if((PM2AngleTarget-PM2RealAngle)>200)
+//			{
+//				PM2AngleTarget=PM2RealAngle;
+//				PM2RotateEnale = 2;
+//			}
 			if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)   
 			{
 				LASER_OFF();//zy0802
@@ -283,6 +303,15 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 				frictionRamp.ResetCounter(&frictionRamp);
 				SetShootState(NO_SHOOT);
 			}
+			else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_2TO3)   
+			{
+				
+			}
+			else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)   
+			{
+				
+			}
+
 			else if(sw->switch_value_raw == 2)	//左侧拨杆拨到中间便会开枪
 			{
 				SetShootState(MANUL_SHOOT_ONE);
@@ -290,25 +319,19 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 				if (remoteShootDelay == 0)
 				{
 					shootOneGolf();
+					CNT_PM1_500ms = 0;
 					remoteShootDelay = 50;
 				}
-				else if (remoteShootDelay == 25)
-				{
-					shootOneGolfConpensation();
-					--remoteShootDelay;
-				}
+//				else if (remoteShootDelay == 25)
+//				{
+//					shootOneGolfConpensation();
+//					--remoteShootDelay;
+//				}
 				else 
 				{
 					--remoteShootDelay;
 				}
 				
-//				if(remoteShootDelay!=0) 
-//					--remoteShootDelay;
-//				else
-//				{
-//					shootOneGolf();
-//					remoteShootDelay = 50;
-//				}
 			}
 			else
 			{
@@ -316,17 +339,31 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 			}					 
 		} break;				
 	}
+	if(CNT_PM1_500ms > 30)
+	{
+			if(fabs(PM1AngleTarget-PM1RealAngle)>4 && PM1ThisTorque>7000) //pm1堵转归位
+			{
+				//PM2AngleTarget -= 450;
+	//			PM2RotateEnable = 3;
+				PM1AngleTarget = tmpPM1AngleTarget;
+			}
+	}
 }
-	 
+
+uint8_t auto_aim = 0;
 void MouseShootControl(Mouse *mouse)
 {
+	static uint16_t CNT_PM1_500ms = 0;	//用于检测PM1堵转
 	++CNT_1s;
 	++CNT_250ms;
-	static int16_t closeDelayCount = 0;   
+	++CNT_PM1_500ms;
+	static int16_t closeDelayCount = 0;
+	
 	switch(g_friction_wheel_state)
 	{
 		case FRICTION_WHEEL_OFF:
 		{
+			PMRotate();
 			if(mouse->last_press_r == 0 && mouse->press_r == 1)   
 			{
 				SetShootState(NO_SHOOT);
@@ -361,19 +398,23 @@ void MouseShootControl(Mouse *mouse)
 				if(frictionRamp.IsOverflow(&frictionRamp))
 				{
 					g_friction_wheel_state = FRICTION_WHEEL_ON; 	
+					HERO_Order = HERO_STEADY_ROTATE;
 				}
 				
 			}
 		}break;
 		case FRICTION_WHEEL_ON:
 		{
+			
 			if(mouse->press_r == 1)
 			{
-				closeDelayCount++;
+				//closeDelayCount++;
+				auto_aim = 1;
 			}
 			else
 			{
 				closeDelayCount = 0;
+				auto_aim = 0;
 			}
 			if(closeDelayCount>50)   //
 			{
@@ -386,50 +427,53 @@ void MouseShootControl(Mouse *mouse)
 			else if(mouse->last_press_l == 0 && mouse->press_l== 1)  //检测鼠标左键单击动作
 			{
 				SetShootState(MANUL_SHOOT_ONE);
-//				if(getLaunchMode() == SINGLE_MULTI && GetFrictionState()==FRICTION_WHEEL_ON)		//单发模式下，点一下打一发
 				if(GetFrictionState()==FRICTION_WHEEL_ON)
 				{
+					if(CNT_250ms == 8)
+					{
+						shootOneGolfConpensation();
+					}
 					if(CNT_250ms>17)
 					{
 						CNT_250ms = 0;
 						shootOneGolf();
-						
+						CNT_PM1_500ms = 0;
 					}
 				}
-//				else if(getLaunchMode() == CONSTENT_4 && GetFrictionState()==FRICTION_WHEEL_ON)	//四连发模式下，点一下打四发
-//				{
-//					
-//					if(CNT_1s>75)
-//					{
-//						CNT_1s = 0;
-//						shootOneGolf();
-//						shootOneGolf();
-//						shootOneGolf();
-//						shootOneGolf();
-//					}
-//				}
 			}
 			else if(mouse->last_press_l == 0 && mouse->press_l== 0)	//松开鼠标左键的状态
 			{
-				SetShootState(NO_SHOOT);	
-				RotateCNT = 0;			
+				SetShootState(NO_SHOOT);		
 			}			
-//			else if(mouse->last_press_l == 1 && mouse->press_l== 1 && getLaunchMode() == SINGLE_MULTI)//单发模式下长按，便持续连发
-		  else if(mouse->last_press_l == 1 && mouse->press_l== 1 )
-			{
-				RotateCNT+=50;
-				if(RotateCNT>=OneShoot)
-				{
-					shootOneGolf();
-					RotateCNT = 0;
-				}
-					
-			}
+
+//			if(fabs(PM1AngleTarget-PM1RealAngle)>40) //pm1堵转归位
+//			{
+//				PM1AngleTarget = tmpPM1AngleTarget;
+//			}
 				
 		} break;				
 	}	
 	mouse->last_press_r = mouse->press_r;
 	mouse->last_press_l = mouse->press_l;
+//	if(CNT_PM1_500ms > 30)
+//	{
+			if(fabs(PM1AngleTarget-PM1RealAngle)>1 && PM1ThisTorque>7000) //pm1堵转归位
+			{
+				//PM2AngleTarget -= 450;
+	//			PM2RotateEnable = 3;
+				PM2AngleTarget=PM2RealAngle;
+							PM2RotateEnable = 2;
+							PM2RotateCounter = 0;
+				PM1AngleTarget = tmpPM1AngleTarget;
+			}
+//	}
+//	if(CNT_PM1_500ms == 50)
+//	{
+//			if(fabs(PM1AngleTarget-PM1RealAngle)>20) //pm1堵转归位
+//			{
+//				PM1AngleTarget = tmpPM1AngleTarget;
+//			}
+//	}
 }
 
 
@@ -486,47 +530,57 @@ void SetMoveSpeed(Move_Speed_e v)
 }
 
 
-/*
-Slab_Mode_e slabmode = CLOSE;
-Slab_Mode_e GetSlabState()
-{
-	return slabmode;
-}
 
-void SetSlabState(Slab_Mode_e v)
-{
-	slabmode = v;
-}*/
-
+extern uint16_t forward_back_speed, left_right_speed , rotate_speed;
 void RemoteGetBulletControl(RemoteSwitch_t *sw, uint8_t val)
 {
+	//新版取弹
 	if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_1TO3)   
 	{
-		ARM_INIT();
-		SetGetBulletState(MANUL_GETBULLET);
-		HERO_Order=HERO_MANUL_FETCH;
+//		SetGetBulletState(GEBULLET_PREPARE);
+//		//取弹过程中底盘速度设置为LOW
+//		forward_back_speed =  LOW_FORWARD_BACK_SPEED;
+//		left_right_speed = LOW_LEFT_RIGHT_SPEED;
+//		rotate_speed = LOW_ROTATE_SPEED;
+//		//HERO_Order=HERO_MANUL_FETCH;
 	}
 	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO1)
 	{
-		SetGetBulletState(NO_GETBULLET);
-		HERO_Order=HERO_STANDBY;
+//		SetGetBulletState(NO_GETBULLET);
+//		HERO_Order = HERO_MANUL_RECOVER;
+//		GRIP_SOV_OFF();
+//		//底盘速度恢复为NORMAL
+//		forward_back_speed =  NORMAL_FORWARD_BACK_SPEED;
+//		left_right_speed = NORMAL_LEFT_RIGHT_SPEED;
+//		rotate_speed = NORMAL_ROTATE_SPEED;
 	}
-	else if(sw->switch_value_raw == 1)
-	{
-		SetGetBulletState(NO_GETBULLET);
-		HERO_Order=HERO_STANDBY;
-	}
+	//以下没改
 	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_3TO2)
 	{
-		SetGetBulletState(AUTO_GETBULLET);
-	//	HERO_Order=HERO_MANUL_LOAD;使用遥控器调试用
+		//SetGetBulletState(MANUAL_GETBULLET);
+		//GRIP_SOV_ON();
+		//HERO_Order = HERO_MANUL_RECOVER;
 	}
 	else if(sw->switch_value1 == REMOTE_SWITCH_CHANGE_2TO3)
 	{
-		SetGetBulletState(MANUL_GETBULLET);
-	//	HERO_Order=HERO_MANUL_DISCARD;
+		//SetGetBulletState(MANUAL_GETBULLET);
+		//GRIP_SOV_OFF();
+		//HERO_Order = HERO_AUTO_GET3BOX;
 	}
-	
+	else if(sw->switch_value_raw == 3)
+	{
+		//SetGetBulletState(MANUAL_GETBULLET);
+	}
+	else if(sw->switch_value_raw == 1)
+	{
+		//SetGetBulletState(NO_GETBULLET);
+		//HERO_Order=HERO_STANDBY;
+	}
+	else if(sw->switch_value_raw == 2)
+	{
+
+	}
+
 
 }
 
@@ -540,65 +594,3 @@ void SetGetBulletState(Get_Bullet_e v)
 {
 	GetBulletState = v;
 }
-
-//底盘升降控制
-void RaiseControlProcess()
-{
-	//HIGH TO LOW|LOW TO HIGH可能需要一定延时
-	if(Last_FrontWheel_Mode == CHASSIS_NORMAL && FrontWheel_Mode == CHASSIS_HIGH)
-	{
-		FRONT_SOV1_ON();
-	}
-	else if(Last_FrontWheel_Mode == CHASSIS_NORMAL && FrontWheel_Mode == CHASSIS_LOW)
-	{
-		FRONT_SOV2_ON();
-	}
-	else if(Last_FrontWheel_Mode == CHASSIS_HIGH && FrontWheel_Mode == CHASSIS_NORMAL)
-	{
-		FRONT_SOV1_OFF();
-	}
-	else if(Last_FrontWheel_Mode == CHASSIS_HIGH && FrontWheel_Mode == CHASSIS_LOW)
-	{
-		FRONT_SOV1_OFF();
-		FRONT_SOV2_ON();
-	}
-	else if(Last_FrontWheel_Mode == CHASSIS_LOW && FrontWheel_Mode == CHASSIS_NORMAL)
-	{
-		FRONT_SOV2_OFF();
-	}
-	else if(Last_FrontWheel_Mode == CHASSIS_LOW && FrontWheel_Mode == CHASSIS_HIGH)
-	{
-		FRONT_SOV2_OFF();
-		FRONT_SOV1_ON();
-	}
-	Last_FrontWheel_Mode = FrontWheel_Mode;
-	
-	if(Last_BehindWheel_Mode == CHASSIS_NORMAL && BehindWheel_Mode == CHASSIS_HIGH)
-	{
-		BEHIND_SOV1_ON();
-	}
-	else if(Last_BehindWheel_Mode == CHASSIS_NORMAL && BehindWheel_Mode == CHASSIS_LOW)
-	{
-		BEHIND_SOV2_ON();
-	}
-	else if(Last_BehindWheel_Mode == CHASSIS_HIGH && BehindWheel_Mode == CHASSIS_NORMAL)
-	{
-		BEHIND_SOV1_OFF();
-	}
-	else if(Last_BehindWheel_Mode == CHASSIS_HIGH && BehindWheel_Mode == CHASSIS_LOW)
-	{
-		BEHIND_SOV1_OFF();
-		BEHIND_SOV2_ON();
-	}
-	else if(Last_BehindWheel_Mode == CHASSIS_LOW && BehindWheel_Mode == CHASSIS_NORMAL)
-	{
-		BEHIND_SOV2_OFF();
-	}
-	else if(Last_BehindWheel_Mode == CHASSIS_LOW && BehindWheel_Mode == CHASSIS_HIGH)
-	{
-		BEHIND_SOV2_OFF();
-		BEHIND_SOV1_ON();
-	}
-	Last_BehindWheel_Mode = BehindWheel_Mode;
-}
-

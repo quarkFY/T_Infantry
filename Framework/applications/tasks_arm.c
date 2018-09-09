@@ -34,35 +34,33 @@
 //PID_INIT(Kp, Ki, Kd, KpMax, KiMax, KdMax, OutputMax)
 //机械臂电机PID
 
-fw_PID_Regulator_t AM1LPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
-fw_PID_Regulator_t AM1RPositionPID = fw_PID_INIT(100.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 16384.0);
-fw_PID_Regulator_t AM2LPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
-fw_PID_Regulator_t AM2RPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
-fw_PID_Regulator_t AM3RPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
-fw_PID_Regulator_t AM1LSpeedPID = fw_PID_INIT(2.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 16384.0);
-fw_PID_Regulator_t AM1RSpeedPID = fw_PID_INIT(5.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 16384.0);
-fw_PID_Regulator_t AM2LSpeedPID = fw_PID_INIT(2.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 6000.0);
-fw_PID_Regulator_t AM2RSpeedPID = fw_PID_INIT(2.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 6000.0);
-fw_PID_Regulator_t AM3RSpeedPID = fw_PID_INIT(2.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 6000.0);
+fw_PID_Regulator_t AM1LPositionPID = fw_PID_INIT(160.0, 0.0, 0.0, 20000.0, 10000.0, 10000.0, 16384.0);
+fw_PID_Regulator_t AM1RPositionPID = fw_PID_INIT(160.0, 0.0, 0.0, 20000.0, 10000.0, 10000.0, 16384.0);
 
-////待标定
-//#define AM1L_zero 0
-//#define AM1R_zero 0
-//#define AM2L_zero 0
-//#define AM2R_zero 0
-//#define AM3R_zero 0
+
+fw_PID_Regulator_t AM3RPositionPID = fw_PID_INIT(80.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 10000.0);
+
+fw_PID_Regulator_t AM1LSpeedPID = fw_PID_INIT(12.0, 0.0, 0.0, 20000.0, 10000.0, 10000.0, 16384.0);
+fw_PID_Regulator_t AM1RSpeedPID = fw_PID_INIT(12.0, 0.0, 0.0, 20000.0, 10000.0, 10000.0, 16384.0);
+
+
+fw_PID_Regulator_t AM3RSpeedPID = fw_PID_INIT(8.0, 0.0, 0.0, 10000.0, 10000.0, 10000.0, 8000.0);
+
 extern float PM1AngleTarget;
 extern Emergency_Flag emergency_Flag;
+extern int16_t PM2ThisTorque;
 
 #define LengthOfArm1 500
 #define LengthOfArm2 250
 #define PI 3.141592653589
 
+
+float am1rreal,am1lreal;
 //机械臂电机目标物理角度值
 float AM1LAngleTarget = 0.0;
 float AM1RAngleTarget = 0.0;
-float AM2LAngleTarget = 0.0;
-float AM2RAngleTarget = 0.0;
+
+
 float AM3RAngleTarget = 0.0;
 
 double Last_Arm_Horizontal_Position;
@@ -70,45 +68,59 @@ double Last_Arm_Vertical_Position;
 
 float LastAM1LAngleTarget;
 float LastAM1RAngleTarget;
-float LastAM2LAngleTarget;
-float LastAM2RAngleTarget;
+
+
 float LastAM3RAngleTarget;
 
 //机械臂电机实际物理角度值
 float AM1LRealAngle = 0.0;
 float AM1RRealAngle = 0.0;
-float AM2LRealAngle = 0.0;
-float AM2RRealAngle = 0.0;
+
+
 float AM3RRealAngle = 0.0;
-
-//末端水平垂直位置
-double Arm_Horizontal_Position = LengthOfArm1 - LengthOfArm2;
-double Arm_Vertical_Position = 0.0;
-double SquareOfRadius = 250.0*250.0;
-double AngleOfTarget = 0.0;
-
-//水平垂直运动目标解算值
-//double AM1R_AddUpAngle = 0;
-//double AM1L_AddUpAngle = 0;
-//double AM2R_AddUpAngle = 0;
-//double AM2L_AddUpAngle = 0;
-//double AM3R_AddUpAngle = 0;
-	
-extern ArmSpeed_Ref_t ArmSpeedRef;
-
-//uint16_t AM1LRawAngle = 0;
-//uint16_t AM1RRawAngle = 0;
-//uint16_t AM2LRawAngle = 0;
-//uint16_t AM2RRawAngle = 0;
-//uint16_t AM3RRawAngle = 0;
 
 
 //用于减小系统开销
 static uint8_t s_AM1LCount = 0;
 static uint8_t s_AM1RCount = 0;
-static uint8_t s_AM2LCount = 0;
-static uint8_t s_AM2RCount = 0;
+
+
 static uint8_t s_AM3RCount = 0;
+
+//推弹电机
+#define PM1ZeroAngle 0
+#define PM2ZeroAngle 0
+#define PM3ZeroAngle 0
+float PM1RealAngle = 0.0;
+float PM2RealAngle = 0.0;
+float PM3RealAngle = 0.0;
+float PM1AngleTarget = 0.0;
+float PM2AngleTarget = 0.0;
+float PM3AngleTarget = 0.0;
+uint16_t PM1ThisAngle = 0;
+uint16_t PM1LastAngle = 0;
+int16_t PM1ThisTorque = 0;
+uint8_t isPM1FirstEnter = 1;
+uint16_t PM2ThisAngle = 0;
+uint16_t PM2LastAngle = 0;
+int16_t PM2ThisTorque = 0;
+uint16_t PM3ThisAngle = 0;
+uint16_t PM3LastAngle = 0;
+uint8_t isPM2FirstEnter = 1;
+uint8_t isPM3FirstEnter = 1;
+complete_PID_Regulator_t PM1PositionPID = complete_PID_INIT(150.0, 1, 200.0, 10000.0, 10000.0, 10000.0, 8000.0);
+fw_PID_Regulator_t PM2PositionPID = fw_PID_INIT(100.0, 0.0, 200.0, 10000.0, 10000.0, 10000.0, 10000.0);
+complete_PID_Regulator_t PM1SpeedPID = complete_PID_INIT(100.0, 0, 100.0, 10000.0, 10000.0, 10000.0, 8000.0);
+fw_PID_Regulator_t PM2SpeedPID = fw_PID_INIT(15, 0.0, 40.0, 10000.0, 10000.0, 10000.0, 8000.0);
+fw_PID_Regulator_t PM3PositionPID = fw_PID_INIT(250.0, 0.0, 200.0, 10000.0, 10000.0, 10000.0, 10000.0);
+fw_PID_Regulator_t PM3SpeedPID = fw_PID_INIT(150, 0.0, 40.0, 10000.0, 10000.0, 10000.0, 8000.0);
+
+uint16_t PM1RotateCount = 0;
+uint8_t PM1RotateFlag = 0;
+
+static uint8_t s_PM1Count = 0;
+static uint8_t s_PM2Count = 0;
+static uint8_t s_PM3Count = 0;
 
 void Can2ControlTask(void const * argument)
 {
@@ -118,9 +130,10 @@ void Can2ControlTask(void const * argument)
 		
 		ControlAM1L();
 		ControlAM1R();
-		ControlAM2L();
-		ControlAM2R();
-		ControlAM3R();
+		
+		ControlPM1();
+		ControlPM2();
+		ControlPM3();		
 	}
 }
 
@@ -136,6 +149,7 @@ void ControlAM1L()
 		{		
 			IOPool_getNextRead(AM1LRxIOPool, 0);
 			AM1LThisAngle = IOPool_pGetReadData(AM1LRxIOPool, 0)->angle;
+			am1lreal = IOPool_pGetReadData(AM1LRxIOPool, 0)->realIntensity;
 			
 			if(isAM1LFirstEnter==1) {AM1LLastAngle = AM1LThisAngle;isAM1LFirstEnter = 0;return;}	//初始化时，记录下当前编码器的值
 			
@@ -185,6 +199,7 @@ void ControlAM1R()
 		{
 			IOPool_getNextRead(AM1RRxIOPool, 0);
 			AM1RThisAngle = IOPool_pGetReadData(AM1RRxIOPool, 0)->angle;
+			am1rreal = IOPool_pGetReadData(AM1RRxIOPool, 0)->realIntensity;
 			
 			if(isAM1RFirstEnter==1) {AM1RLastAngle = AM1RThisAngle;isAM1RFirstEnter = 0;return;}	//初始化时，记录下当前编码器的值
 			
@@ -223,104 +238,7 @@ void ControlAM1R()
 	}
 }
 
-uint8_t isAM2LFirstEnter = 1;
-uint16_t AM2LThisAngle = 0;
-uint16_t AM2LLastAngle = 0;
-void ControlAM2L()
-{
-	if(IOPool_hasNextRead(AM2LRxIOPool, 0))
-	{
-		if(s_AM2LCount == 1)
-		{
-			IOPool_getNextRead(AM2LRxIOPool, 0);
-			AM2LThisAngle = IOPool_pGetReadData(AM2LRxIOPool, 0)->angle;
-			
-			if(isAM2LFirstEnter==1) {AM2LLastAngle = AM2LThisAngle;isAM2LFirstEnter = 0;return;}	//初始化时，记录下当前编码器的值
-			
-			if(AM2LThisAngle<=AM2LLastAngle)
-			{
-				if((AM2LLastAngle-AM2LThisAngle)>3000)//编码器上溢
-					AM2LRealAngle = AM2LRealAngle + (AM2LThisAngle+8192-AM2LLastAngle) * 360 / 8192.0 / AM23Reduction;
-				else//反转
-					AM2LRealAngle = AM2LRealAngle - (AM2LLastAngle - AM2LThisAngle) * 360 / 8192.0 / AM23Reduction;
-			}
-			else
-			{
-				if((AM2LThisAngle-AM2LLastAngle)>3000)//编码器下溢
-					AM2LRealAngle = AM2LRealAngle - (AM2LLastAngle+8192-AM2LThisAngle) *360 / 8192.0 / AM23Reduction;
-				else//正转
-					AM2LRealAngle = AM2LRealAngle + (AM2LThisAngle - AM2LLastAngle) * 360 / 8192.0 / AM23Reduction;
-			}
-			
-			
-			AM2LPositionPID.target = AM2LAngleTarget;
-			AM2LPositionPID.feedback = AM2LRealAngle;
-			AM2LPositionPID.Calc(&AM2LPositionPID);
-			
-			AM2LSpeedPID.target = AM2LPositionPID.output;
-			AM2LSpeedPID.feedback = IOPool_pGetReadData(AM2LRxIOPool, 0)->RotateSpeed;
-			AM2LSpeedPID.Calc(&AM2LSpeedPID);
-			
-			setMotor(AM2L, AM2LSpeedPID.output);
-			s_AM2LCount = 0;
-			AM2LLastAngle = AM2LThisAngle;
-		}
-		else
-		{
-			s_AM2LCount++;
-		}
-	}
-}
-
-uint8_t isAM2RFirstEnter = 1;
-uint16_t AM2RThisAngle = 0;
-uint16_t AM2RLastAngle = 0;
-void ControlAM2R()
-{
-	if(IOPool_hasNextRead(AM2RRxIOPool, 0))
-	{
-		if(s_AM2RCount == 1)
-		{
-			IOPool_getNextRead(AM2RRxIOPool, 0);
-			AM2RThisAngle = IOPool_pGetReadData(AM2RRxIOPool, 0)->angle;
-			
-			if(isAM2RFirstEnter==1) {AM2RLastAngle = AM2RThisAngle;isAM2RFirstEnter = 0;return;}	//初始化时，记录下当前编码器的值
-			
-			if(AM2RThisAngle<=AM2RLastAngle)
-			{
-				if((AM2RLastAngle-AM2RThisAngle)>3000)//编码器上溢
-					AM2RRealAngle = AM2RRealAngle + (AM2RThisAngle+8192-AM2RLastAngle) * 360 / 8192.0 / AM23Reduction;
-				else//反转
-					AM2RRealAngle = AM2RRealAngle - (AM2RLastAngle - AM2RThisAngle) * 360 / 8192.0 / AM23Reduction;
-			}
-			else
-			{
-				if((AM2RThisAngle-AM2RLastAngle)>3000)//编码器下溢
-					AM2RRealAngle = AM2RRealAngle - (AM2RLastAngle+8192-AM2RThisAngle) *360 / 8192.0 / AM23Reduction;
-				else//正转
-					AM2RRealAngle = AM2RRealAngle + (AM2RThisAngle - AM2RLastAngle) * 360 / 8192.0 / AM23Reduction;
-			}
-			
-			
-			AM2RPositionPID.target = AM2RAngleTarget;
-			AM2RPositionPID.feedback = AM2RRealAngle;
-			AM2RPositionPID.Calc(&AM2RPositionPID);
-			
-			AM2RSpeedPID.target = AM2RPositionPID.output;
-			AM2RSpeedPID.feedback = IOPool_pGetReadData(AM2RRxIOPool, 0)->RotateSpeed;
-			AM2RSpeedPID.Calc(&AM2RSpeedPID);
-			
-			setMotor(AM2R, AM2RSpeedPID.output);
-			s_AM1RCount = 0;
-			AM2RLastAngle = AM2RThisAngle;
-		}
-		else
-		{
-			s_AM2RCount++;
-		}
-	}
-}
-
+float AM3intensity;
 uint8_t isAM3RFirstEnter = 1;
 uint16_t AM3RThisAngle = 0;
 uint16_t AM3RLastAngle = 0;
@@ -337,14 +255,14 @@ void ControlAM3R()
 			
 			if(AM3RThisAngle<=AM3RLastAngle)
 			{
-				if((AM3RLastAngle-AM3RThisAngle)>3000)//编码器上溢
+				if((AM3RLastAngle-AM3RThisAngle)>4000)//编码器上溢
 					AM3RRealAngle = AM3RRealAngle + (AM3RThisAngle+8192-AM3RLastAngle) * 360 / 8192.0 / AM23Reduction;
 				else//反转
 					AM3RRealAngle = AM3RRealAngle - (AM3RLastAngle - AM3RThisAngle) * 360 / 8192.0 / AM23Reduction;
 			}
 			else
 			{
-				if((AM3RThisAngle-AM3RLastAngle)>3000)//编码器下溢
+				if((AM3RThisAngle-AM3RLastAngle)>4000)//编码器下溢
 					AM3RRealAngle = AM3RRealAngle - (AM3RLastAngle+8192-AM3RThisAngle) *360 / 8192.0 / AM23Reduction;
 				else//正转
 					AM3RRealAngle = AM3RRealAngle + (AM3RThisAngle - AM3RLastAngle) * 360 / 8192.0 / AM23Reduction;
@@ -359,6 +277,7 @@ void ControlAM3R()
 			AM3RSpeedPID.feedback = IOPool_pGetReadData(AM3RRxIOPool, 0)->RotateSpeed;
 			AM3RSpeedPID.Calc(&AM3RSpeedPID);
 			
+			AM3intensity = AM3RSpeedPID.output;
 			setMotor(AM3R, AM3RSpeedPID.output);
 			s_AM3RCount = 0;
 			AM3RLastAngle = AM3RThisAngle;
@@ -370,164 +289,251 @@ void ControlAM3R()
 	}
 }
 
-
-//void setAMAngle(MotorId id, float angle)
-//{
-//	switch(id){
-//		case AM1L:
-//			AM1LAngleTarget = angle;break;
-//		case AM1R:
-//			AM1RAngleTarget = angle;break;
-//		case AM2L:
-//			AM2LAngleTarget = angle;break;
-//		case AM2R:
-//			AM2RAngleTarget = angle;break;
-//		case AM3R:
-//			AM3RAngleTarget = angle;break;
-//		default:
-//			fw_Error_Handler();
-//	}
-//}
-
-//一整套动作为下达取弹指令后，展开机械臂，进行取弹，取弹完毕后下达收回指令，机械臂收回
-//void getGolf()
-//{
-	//待完善
-	//思路：
-	//目前两个电机的task都是用于跟踪的，即令反馈值跟踪上目标值
-	//在遥控器任务和2ms定时任务中对目标值进行修改，从而做出指定的动作
-	//取弹flag置位，当2ms任务检测到置位后，计数器开始计数，根据计数器的值来进行相应的取弹动作
-//}
-
-void armReset()
+void ControlPM1()
 {
-	//待完善
-	//思路：
-	//取弹flag清零，回收flag置位，具体动作由2ms定时器任务完成，完成后flag清零
-//	AM1RAngleTarget = 0;
-//	AM2RAngleTarget = 0;
-//	LastAM1RAngleTarget = 0;
-//	LastAM2RAngleTarget = 0;
-//	AM1LAngleTarget = 0;
-//	AM2LAngleTarget = 0;
-//	LastAM1LAngleTarget = 0;
-//	LastAM2LAngleTarget = 0;
-//	AM3RAngleTarget = 0;
-//	LastAM3RAngleTarget = 0;
-//	Arm_Horizontal_Position = 250;
-//	Arm_Vertical_Position = 0;
-	
-}
-
-void ARM_INIT()
-{
-	
-	Arm_Horizontal_Position = 500;
-	Arm_Vertical_Position = 250;
-//	AM2RAngleTarget = 10;
-}
-
-void armStretch()
-{
-	Arm_Horizontal_Position -= ArmSpeedRef.forward_back_ref;
-	Arm_Vertical_Position += ArmSpeedRef.up_down_ref;
-	SquareOfRadius = Arm_Horizontal_Position*Arm_Horizontal_Position + Arm_Vertical_Position*Arm_Vertical_Position;
-	if(SquareOfRadius <= 250*250 ||  Arm_Vertical_Position< 0 || SquareOfRadius >= 750*750)
+	if(IOPool_hasNextRead(PM1RxIOPool, 0))
 	{
-		Arm_Horizontal_Position = Last_Arm_Horizontal_Position;
-	  Arm_Vertical_Position = Last_Arm_Vertical_Position;
-	}
-	
-		else
+		if(s_PM1Count == 1)
 		{
-			//AM1R_AddUpAngle = asin((SquareOfRadius+LengthOfArm1*LengthOfArm1-LengthOfArm2*LengthOfArm2)/(2*LengthOfArm1*sqrt(SquareOfRadius)))-acos(Arm_Vertical_Position/sqrt(SquareOfRadius))
-			//AM2R_AddUpAngle = asin((SquareOfRadius+LengthOfArm2*LengthOfArm2-LengthOfArm1*LengthOfArm1)/(2*LengthOfArm2*sqrt(SquareOfRadius)))+acos(Arm_Vertical_Position/sqrt(SquareOfRadius))+AM1R_AddUpAngle
-			//AM1RAngleTarget 0-180 ; AM2RAngleTarget 0-180 ;
-
+			IOPool_getNextRead(PM1RxIOPool, 0);
+			Motor820RRxMsg_t *pData = IOPool_pGetReadData(PM1RxIOPool, 0);
+			PM1ThisAngle = pData->angle;
+			PM1ThisTorque = pData->realIntensity;
 			
-			if(Arm_Horizontal_Position > 0 )
+			if(isPM1FirstEnter) {PM1LastAngle = PM1ThisAngle;isPM1FirstEnter = 0;}
+			
+			if(PM1ThisAngle<=PM1LastAngle)
 			{
-				AngleOfTarget = 180*atan(Arm_Vertical_Position/Arm_Horizontal_Position)/PI;
-				AM1RAngleTarget = AngleOfTarget - 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
-				AM2RAngleTarget = -(180*acos((312500-SquareOfRadius)/250000)/PI-90);
-				AM1LAngleTarget = -AngleOfTarget + 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
-				AM2LAngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI-90;
-			}
-			else if(Arm_Horizontal_Position == 0)
-			{
-				AngleOfTarget = 90.0;
-				AM1RAngleTarget = AngleOfTarget - 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
-				AM2RAngleTarget = -(180*acos((312500-SquareOfRadius)/250000)/PI-90);
-				AM1LAngleTarget = -AngleOfTarget + 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
-				AM2LAngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI-90;
+				if((PM1LastAngle-PM1ThisAngle)>4000)//编码器上溢
+					PM1RealAngle = PM1RealAngle + (PM1ThisAngle+8192-PM1LastAngle) * 360 / 8192.0 / PM1Reduction;
+				else//反转
+					PM1RealAngle = PM1RealAngle - (PM1LastAngle - PM1ThisAngle) * 360 / 8192.0 / PM1Reduction;
 			}
 			else
 			{
-				AngleOfTarget = 180*atan(Arm_Vertical_Position/Arm_Horizontal_Position)/PI + 180.0;
-				AM1RAngleTarget = AngleOfTarget - 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
-				AM2RAngleTarget = -(180*acos((312500-SquareOfRadius)/250000)/PI-90);
-				AM1LAngleTarget = -AngleOfTarget + 180*acos((SquareOfRadius+187500)/(1000*sqrt(SquareOfRadius)))/PI;
-				AM2LAngleTarget = 180*acos((312500-SquareOfRadius)/250000)/PI-90;
+				if((PM1ThisAngle-PM1LastAngle)>4000)//编码器下溢
+					PM1RealAngle = PM1RealAngle - (PM1LastAngle+8192-PM1ThisAngle) *360 / 8192.0 / PM1Reduction;
+				else//正转
+					PM1RealAngle = PM1RealAngle + (PM1ThisAngle - PM1LastAngle) * 360 / 8192.0 / PM1Reduction;
 			}
 			
+			PM1PositionPID.feedback = PM1RealAngle;
+			PM1PositionPID.target = PM1AngleTarget;
+			PM1PositionPID.Calc(&PM1PositionPID);
+			
+			PM1SpeedPID.target = PM1PositionPID.output;
+			PM1SpeedPID.feedback = pData->RotateSpeed;
+			PM1SpeedPID.Calc(&PM1SpeedPID);
+
+			PM1LastAngle = PM1ThisAngle;
+	
+			setMotor(PM1, PM1SpeedPID.output);
+			//setMotor(PM1, 800);
+			
+			s_PM1Count = 0;
 		}
-		
-		
-			Last_Arm_Horizontal_Position = Arm_Horizontal_Position;
-			Last_Arm_Vertical_Position = Arm_Vertical_Position;
-		
-	    LastAM1LAngleTarget = AM1LAngleTarget;
-      LastAM1RAngleTarget = AM1RAngleTarget;
-      LastAM2LAngleTarget = AM2LAngleTarget;
-      LastAM2RAngleTarget = AM2RAngleTarget;
-      LastAM3RAngleTarget = AM3RAngleTarget;
+		else
+		{
+			s_PM1Count++;
+		}
+	}
 }
 
-//void GripLoadProcess()
-//{
-//  float final;
-//	final = AM2RAngleTarget - AM1RAngleTarget + 180;
-//	Hero_Angle_Track( final,AM3RRealAngle,&AM3RAngleTarget,&AM3Rtime_milis);
-//	if(Hero_Angle_Track( final,AM3RRealAngle,&AM3RAngleTarget,&AM3Rtime_milis))
-//	{
-//		GRIP_SOV_ON();
-//	}
+
+void ControlPM2()
+{
+	if(IOPool_hasNextRead(PM2RxIOPool, 0))
+	{
+		if(s_PM2Count == 1)
+		{
+			IOPool_getNextRead(PM2RxIOPool, 0);
+			Motor820RRxMsg_t *pData = IOPool_pGetReadData(PM2RxIOPool, 0);
+			
+			PM2ThisAngle = pData->angle;
+			PM2ThisTorque = pData->realIntensity;
+			if(isPM2FirstEnter) {PM2LastAngle = PM2ThisAngle;isPM2FirstEnter = 0;}
+			
+			if(PM2ThisAngle<=PM2LastAngle)
+			{
+				if((PM2LastAngle-PM2ThisAngle)>3000)//编码器上溢
+					PM2RealAngle = PM2RealAngle + (PM2ThisAngle+8192-PM2LastAngle) * 360 / 8192.0 / PM2Reduction;
+				else//反转
+					PM2RealAngle = PM2RealAngle - (PM2LastAngle - PM2ThisAngle) * 360 / 8192.0 / PM2Reduction;
+			}
+			else
+			{
+				if((PM2ThisAngle-PM2LastAngle)>3000)//编码器下溢
+					PM2RealAngle = PM2RealAngle - (PM2LastAngle+8192-PM2ThisAngle) *360 / 8192.0 / PM2Reduction;
+				else//正转
+					PM2RealAngle = PM2RealAngle + (PM2ThisAngle - PM2LastAngle) * 360 / 8192.0 / PM2Reduction;
+			}
+			
+			PM2PositionPID.feedback = PM2RealAngle;
+			PM2PositionPID.target = PM2AngleTarget;
+			PM2PositionPID.Calc(&PM2PositionPID);
+			
+			PM2SpeedPID.target = PM2PositionPID.output;
+			PM2SpeedPID.feedback = pData->RotateSpeed;
+			PM2SpeedPID.Calc(&PM2SpeedPID);
+
+			PM2LastAngle = PM2ThisAngle;
 	
-//}
+			setMotor(PM2, PM2SpeedPID.output);
+			
+			s_PM2Count = 0;
+		}
+		else
+		{
+			s_PM2Count++;
+		}
+	}
+}
 
-//角度跟踪精确控制，分段，精确到1°
-//uint8_t Hero_Angle_Track(float final,float currentAngle,float *angleTarget,uint8_t *time_milis)
-//{
-//	uint8_t motorReady = 1;
-//	float tmp = (final - currentAngle)/(*time_milis);
-//	while(time_milis>0 && motorReady)
+void ControlPM3()
+{
+	if(IOPool_hasNextRead(PM3RxIOPool, 0))
+	{
+		if(s_PM3Count == 1)
+		{
+			IOPool_getNextRead(PM3RxIOPool, 0);
+			Motor820RRxMsg_t *pData = IOPool_pGetReadData(PM3RxIOPool, 0);
+			
+			PM3ThisAngle = pData->angle;
+			if(isPM3FirstEnter) {PM3LastAngle = PM3ThisAngle;isPM3FirstEnter = 0;}
+			
+			if(PM3ThisAngle<=PM3LastAngle)
+			{
+				if((PM3LastAngle-PM3ThisAngle)>3000)//编码器上溢
+					PM3RealAngle = PM3RealAngle + (PM3ThisAngle+8192-PM3LastAngle) * 360 / 8192.0 / PM3Reduction;
+				else//反转
+					PM3RealAngle = PM3RealAngle - (PM3LastAngle - PM3ThisAngle) * 360 / 8192.0 / PM3Reduction;
+			}
+			else
+			{
+				if((PM3ThisAngle-PM3LastAngle)>3000)//编码器下溢
+					PM3RealAngle = PM3RealAngle - (PM3LastAngle+8192-PM3ThisAngle) *360 / 8192.0 / PM3Reduction;
+				else//正转
+					PM3RealAngle = PM3RealAngle + (PM3ThisAngle - PM3LastAngle) * 360 / 8192.0 / PM3Reduction;
+			}
+			
+			PM3PositionPID.feedback = PM3RealAngle;
+			PM3PositionPID.target = PM3AngleTarget;
+			PM3PositionPID.Calc(&PM3PositionPID);
+			
+			PM3SpeedPID.target = PM3PositionPID.output;
+			PM3SpeedPID.feedback = pData->RotateSpeed;
+			PM3SpeedPID.Calc(&PM3SpeedPID);
+
+			PM3LastAngle = PM3ThisAngle;
+	
+			setMotor(PM3, PM3SpeedPID.output);
+			
+			s_PM3Count = 0;
+		}
+		else
+		{
+			s_PM3Count++;
+		}
+	}
+}
+uint8_t heatFlag = 0;
+float heatUpperLimit = 80;
+extern uint8_t realLevel;
+extern float realHeat42;
+void heatJudge()
+{
+	heatUpperLimit = 80*(pow(2,realLevel -1));
+	if ((heatUpperLimit - realHeat42) >= 40)
+	{
+		heatFlag = 1;
+	}
+	else
+	{
+		heatFlag = 0;
+	}
+}
+	
+uint8_t DirOfRotate = 1;
+float tmpPM1AngleTarget;
+void shootOneGolf()
+{
+	heatJudge();
+	if(heatFlag == 1 && fabs(PM1RealAngle-PM1AngleTarget)<180)
+	{
+		tmpPM1AngleTarget = PM1AngleTarget;
+		PM1AngleTarget = PM1AngleTarget + 72;
+	}
+				//PM2AngleTarget = PM2AngleTarget + 240;
+}
+
+
+void shootOneGolfConpensation()
+{
+	if((PM1RealAngle-PM1AngleTarget)>300 || (PM2AngleTarget-PM2RealAngle)>300)
+		{
+			
+		}
+		else
+		{
+	//PM2AngleTarget = PM2AngleTarget - 30;
+		}
+}
+
+uint8_t bulletNum = 8;
+uint8_t PM1RotateFlag2 =1;
+void shootLoad()
+{
+	PM1RotateFlag2 = 0;
+	uint16_t PM2tmp = PM2AngleTarget;
+//	for(uint8_t i=0;i<100;i++)
 //	{
-//		if(emergency_Flag==EMERGENCY)
-//		{	
-//			return 0;
-//		}
-//		if(-1<( *angleTarget - currentAngle ) < 1)
+//		if(fabs(PM2AngleTarget-PM2RealAngle)< 180 )
 //		{
-//		  *angleTarget += tmp;
-//		  time_milis--;
-//			motorReady = 1;
+//			PM2AngleTarget += 20;
+//			osDelay(20);
 //		}
-//		else motorReady = 0;
-//		osDelay(1);
+////		PM2AngleTarget += 20;
+////		osDelay(10);
 //	}
-//	if(-1< (final - currentAngle ) < 1) return 1;
-//	else return 0;
-//}
+	osDelay(100);
+	for(uint8_t i=0;i<bulletNum;i++)
+	{
+		shootOneGolf();
+		//PM2AngleTarget += 240;
+		osDelay(300);
+	}
+	PM1RotateFlag2 = 1;
+}
 
-//uint8_t taskDelay(uint32_t time_milis)
-//{
-//	for(int i=0;i<time_milis;i++)
-//	{
-//		if(emergency_Flag==EMERGENCY)
-//		{	
-//			return 0;
-//		}
-//		osDelay(1);
-//	}
-//	return 1;
-//}
+RotateDirection_e PMRotateDirection = CLOCKWISE;
+
+void PMRotate()
+{
+	if(PM1RotateFlag2)
+	{
+		if(PM1RotateFlag == 1)
+		{
+			switch(PMRotateDirection)
+			{
+				case CLOCKWISE:
+				{
+					if(abs(PM2ThisTorque) < 7000)
+						PM2AngleTarget = PM2AngleTarget + 150;
+					else
+						PM2AngleTarget = PM2RealAngle;
+					PMRotateDirection = ANTICLOCKWISE;
+				}break;
+				case ANTICLOCKWISE:
+				{
+					if(abs(PM2ThisTorque) < 7000)
+						PM2AngleTarget = PM2AngleTarget - 30;
+					else
+						PM2AngleTarget = PM2RealAngle;
+					PMRotateDirection = CLOCKWISE;
+				}break;
+			}
+			
+			PM1RotateFlag = 0;
+		}
+	}	
+}

@@ -92,21 +92,21 @@ void rtos_AddThreads()
   RControlTaskHandle = osThreadCreate(osThread(RControlTask), NULL);
 
 //妙算通信任务：大神符，自动瞄准
-//	osThreadDef(ManifoldUartTask, ManifoldUartTask, osPriorityAboveNormal, 0, 128);
-//  getCtrlUartTaskHandle = osThreadCreate(osThread(ManifoldUartTask), NULL);
+	osThreadDef(ManifoldUartTask, ManifoldUartTask, osPriorityAboveNormal, 0, 256);
+  getCtrlUartTaskHandle = osThreadCreate(osThread(ManifoldUartTask), NULL);
 
-  osThreadDef(getCtrlUartTask, getCtrlUartTask, osPriorityAboveNormal, 0, 256);
-  getCtrlUartTaskHandle = osThreadCreate(osThread(getCtrlUartTask), NULL);
-	
+//  osThreadDef(getCtrlUartTask, getCtrlUartTask, osPriorityAboveNormal, 0, 256);
+//  getCtrlUartTaskHandle = osThreadCreate(osThread(getCtrlUartTask), NULL);
+//	
 	//osThreadDef(Wave_Task, wave_task, osPriorityNormal, 0, 128);
   //WaveTaskHandle = osThreadCreate(osThread(Wave_Task), NULL);
 	
 //CAN1电机控制任务
-	osThreadDef(Can1_Task, Can1ControlTask, osPriorityAboveNormal, 0, 800);
+	osThreadDef(Can1_Task, Can1ControlTask, osPriorityHigh, 0, 800);
   Can1ControlTaskHandle = osThreadCreate(osThread(Can1_Task), NULL);
 
 //CAN2电机控制任务
-	osThreadDef(Can2_Task, Can2ControlTask, osPriorityAboveNormal, 0, 400);
+	osThreadDef(Can2_Task, Can2ControlTask, osPriorityHigh, 0, 400);
   Can2ControlTaskHandle = osThreadCreate(osThread(Can2_Task), NULL);
 	
 //拨盘电机任务 

@@ -18,24 +18,34 @@
 #include "application_motorcontrol.h"
 #include "rtos_semaphore.h"
 
-#define AM1Reduction 189.0
-#define AM23Reduction 96.0
+#define AM1Reduction 19.0
+#define AM23Reduction 19.0
+
+#define PM1Reduction 36.0
+#define PM2Reduction 36.0
+#define PM3Reduction 36.0
 
 void Can2ControlTask(void const * argument);
 void ControlAM1L(void);
 void ControlAM1R(void);
 void ControlAM2L(void);
-void ControlAM2R(void);
-void ControlAM3R(void);
 
-//void setAMAngle(MotorId id, float angle);
-void getGolf(void);
-void armReset(void);
-void armStretch(void);
-void ARM_INIT(void);
 
-//void GripLoadProcess(void);
 
-uint8_t Hero_Angle_Track(float final,float realAngle,float *angleTarget,uint8_t *time_milis);
-uint8_t taskDelay(uint32_t time_milis);
+void ControlPM1(void);
+void ControlPM2(void);
+void ControlPM3(void);
+		
+void shootOneGolf(void);
+void shootOneGolfConpensation(void);
+void PMRotate(void);
+void shootLoad(void);
+
+#define PIR_R_Ready  (HAL_GPIO_ReadPin(PIR_R_GPIO_Port,GPIO_PIN_5))
+					
+#define PIR_L_Ready  (HAL_GPIO_ReadPin(PIR_L_GPIO_Port,GPIO_PIN_6))
+
+#define PIR_C_Free  (!HAL_GPIO_ReadPin(PIR_C_GPIO_Port,GPIO_PIN_0))
+		
+
 #endif

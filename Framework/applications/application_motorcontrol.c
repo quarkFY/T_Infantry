@@ -25,12 +25,23 @@
 #include "tasks_motor.h"
 #include "drivers_uartjudge_low.h"
 #include "drivers_cmpower.h"
+#include "pid_regulator.h"
 #include <stdbool.h>
 
-extern tGameInfo mytGameInfo;
+extern extPowerHeatData_t PowerHeatData;
 extern uint8_t JUDGE_State;
+float CM_current_max = CM_current_MAX;
+//extern uint8_t going;
 
+float am1lfordebug,am1rfordebug;
 extern bool g_bInited;
+
+//fw_PID_Regulator_t CMFLIntensityPID = fw_PID_INIT(0.08, 0.002, 0.2, 16384.0, 1000.0, 16384.0, 16384.0);
+//fw_PID_Regulator_t CMFRIntensityPID = fw_PID_INIT(0.08, 0.002, 0.2, 16384.0, 1000.0, 16384.0, 16384.0);
+//fw_PID_Regulator_t CMBLIntensityPID = fw_PID_INIT(0.0, 0.0, 0.0, 16384.0, 1000.0, 16384.0, 16384.0);
+//fw_PID_Regulator_t CMBRIntensityPID = fw_PID_INIT(0.0, 0.0, 0.0, 16384.0, 1000.0, 16384.0, 16384.0);
+
+//float CMFLCompensate = 0,CMFRCompensate = 0,CMBLCompensate = 0,CMBRCompensate = 0;
 
 void setMotor(MotorId motorId, int16_t Intensity){
 	static int16_t CMFLIntensity = 0, CMFRIntensity = 0, CMBLIntensity = 0, CMBRIntensity = 0;
@@ -39,15 +50,17 @@ void setMotor(MotorId motorId, int16_t Intensity){
 	static int16_t GMYAWIntensity = 0, GMPITCHIntensity = 0;
 	static int8_t GMReady = 0;
 	
-	static int16_t PM1Intensity = 0, PM2Intensity = 0;
+	static int16_t PM1Intensity = 0, PM2Intensity = 0, PM3Intensity = 0;
 	static int8_t PMReady = 0;
 	
 	static int16_t AM1LIntensity = 0;
 	static int16_t AM1RIntensity = 0;
-	static int16_t AM2LIntensity = 0;
-	static int16_t AM2RIntensity = 0;
+	
+	
 	static int16_t AM3RIntensity = 0;
 	static int8_t AMReady = 0;
+	
+
 	
 	switch(motorId)
 	{
@@ -72,41 +85,47 @@ void setMotor(MotorId motorId, int16_t Intensity){
 			GMPITCHIntensity = Intensity;break;
 		
 		case PM1:
-			if(PMReady & 0x1){PMReady = 0x3;}else{PMReady |= 0x1;}
-			PM1Intensity = Intensity;break;
+			if(PMReady & 0x1){PMReady = 0x7;}else{PMReady |= 0x1;}
+			PM1Intensity = Intensity;break;   			
 		case PM2:
-			if(PMReady & 0x2){PMReady = 0x3;}else{PMReady |= 0x12;}
+			if(PMReady & 0x2){PMReady = 0x7;}else{PMReady |= 0x2;}
 			PM2Intensity = Intensity;break;
+		case PM3:
+			if(PMReady & 0x4){PMReady = 0x7;}else{PMReady |= 0x4;}
+			PM3Intensity = Intensity;break;
 		
 		case AM1L:
-			if(AMReady & 0x01){AMReady = 0x1F;}else{AMReady |= 0x01;}
+			if(AMReady & 0x01){AMReady = 0x3;}else{AMReady |= 0x01;}
 			AM1LIntensity = Intensity;break;
+//			am1lfordebug = AM1LIntensity;break;
 		case AM1R:
-			if(AMReady & 0x02){AMReady = 0x1F;}else{AMReady |= 0x02;}
+			if(AMReady & 0x02){AMReady = 0x3;}else{AMReady |= 0x02;}
 			AM1RIntensity = Intensity;break;
-		case AM2L:
-			if(AMReady & 0x04){AMReady = 0x1F;}else{AMReady |= 0x04;}
-			AM2LIntensity = Intensity;break;
-		case AM2R:
-			if(AMReady & 0x08){AMReady = 0x1F;}else{AMReady |= 0x08;}
-			AM2RIntensity = Intensity;break;
-		case AM3R:
-			if(AMReady & 0x10){AMReady = 0x1F;}else{AMReady |= 0x10;}
-			AM3RIntensity = Intensity;break;
+//			am1rfordebug = AM1RIntensity;break;
+//		case AM2L:
+//			if(AMReady & 0x04){AMReady = 0x1F;}else{AMReady |= 0x04;}
+//			AM2LIntensity = Intensity;break;
+//		case AM2R:
+//			if(AMReady & 0x08){AMReady = 0x1F;}else{AMReady |= 0x08;}
+//			AM2RIntensity = Intensity;break;
 			
 		default:
 			fw_Error_Handler();
 	}
 
-	//底盘功率限制，80W，能量槽满60，低于0掉血
+	//底盘功率限制，120W，能量槽满60，低于0掉血
 //    RestrictPower(&CMFLIntensity, &CMFRIntensity, &CMBLIntensity, &CMBRIntensity);
-	float CM_current_max = CM_current_MAX;
+	
 	float CMFLIntensity_max = CMFLIntensity_MAX;
 	float CMFRIntensity_max = CMFRIntensity_MAX;
 	float CMBLIntensity_max = CMBLIntensity_MAX;
 	float CMBRIntensity_max = CMBRIntensity_MAX;
+	float sum = 0;
 
-	if (mytGameInfo.remainPower > 10 & mytGameInfo.remainPower < 40){
+	
+	//原版功率限制算法
+	/*
+	if (PowerHeatData.chassisPowerBuffer > 10 & PowerHeatData.chassisPowerBuffer < 40){
 			
 		 CM_current_max = CM_current_lower;
 		 CMFLIntensity_max = CMFLIntensity_lower;
@@ -115,16 +134,7 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		 CMBRIntensity_max = CMBRIntensity_lower;
 	}
 	
-	if (mytGameInfo.remainPower < 10 ){
-			
-		 CM_current_max = CM_current_bottom;
-		 CMFLIntensity_max = CMFLIntensity_bottom;
-		 CMFRIntensity_max = CMFRIntensity_bottom;
-		 CMBLIntensity_max = CMBLIntensity_bottom;
-		 CMBRIntensity_max = CMBRIntensity_bottom;
-	}
-
-	if (mytGameInfo.remainPower < 10 ){
+	if (PowerHeatData.chassisPowerBuffer < 10 ){
 			
 		 CM_current_max = 0;
 		 CMFLIntensity_max = 0;
@@ -133,15 +143,103 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		 CMBRIntensity_max = 0;
 	}
 
+	if (PowerHeatData.chassisPowerBuffer < 10 ){
+			
+		 CM_current_max = CM_current_bottom;
+		 CMFLIntensity_max = CMFLIntensity_bottom;
+		 CMFRIntensity_max = CMFRIntensity_bottom;
+		 CMBLIntensity_max = CMBLIntensity_bottom;
+		 CMBRIntensity_max = CMBRIntensity_bottom;
+	}*/
+	//离线模式
 	if (JUDGE_State == OFFLINE)
 	{
-		 CM_current_max = 13000;
-		 CMFLIntensity_max = 4500;
-		 CMFRIntensity_max = 4500;
-		 CMBLIntensity_max = 4500;
-		 CMBRIntensity_max = 4500;
+//		 CM_current_max = 4000;
+//		 CMFLIntensity_max = 4500;
+//		 CMFRIntensity_max = 4500;
+//		 CMBLIntensity_max = 4500;
+//		 CMBRIntensity_max = 4500;
+			CM_current_max = 4000;
+		 CMFLIntensity_max = 1000;
+		 CMFRIntensity_max = 1000;
+		 CMBLIntensity_max = 1000;
+		 CMBRIntensity_max = 1000;
+		sum = (abs(CMFLIntensity) + abs(CMFRIntensity) + abs(CMBLIntensity) + abs(CMBRIntensity));
+			if(sum > CM_current_max)
+			{
+				CMFLIntensity = (CMFLIntensity/(sum+1.0f))*CM_current_max;
+				CMFRIntensity = (CMFRIntensity/(sum+1.0f))*CM_current_max;
+				CMBLIntensity = (CMBLIntensity/(sum+1.0f))*CM_current_max;
+				CMBRIntensity = (CMBRIntensity/(sum+1.0f))*CM_current_max;
+			}
+			CM_current_max = CM_current_MAX;
 	}
-
+	
+	//林炳辉仿桂电功率控制策略
+	else if(PowerHeatData.chassisPowerBuffer-PowerHeatData.chassisPower*0.3 < 7.0f)
+	{
+			sum = (abs(CMFLIntensity) + abs(CMFRIntensity) + abs(CMBLIntensity) + abs(CMBRIntensity));
+			float realPowerBuffer = PowerHeatData.chassisPowerBuffer;
+			//float realPower = PowerHeatData.chassisPower;
+		CMFLIntensity = (CMFLIntensity/(sum+1.0f))*CM_current_full*(1.0f+realPowerBuffer*(0.05f+(CM_current_max==CM_current_MAX_LOW?1:0)*0.05f));
+			CMFRIntensity = (CMFRIntensity/(sum+1.0f))*CM_current_full*(1.0f+realPowerBuffer*(0.05f+(CM_current_max==CM_current_MAX_LOW?1:0)*0.05f));
+			CMBLIntensity = (CMBLIntensity/(sum+1.0f))*CM_current_full*(1.0f+realPowerBuffer*(0.05f+(CM_current_max==CM_current_MAX_LOW?1:0)*0.05f));
+			CMBRIntensity = (CMBRIntensity/(sum+1.0f))*CM_current_full*(1.0f+realPowerBuffer*(0.05f+(CM_current_max==CM_current_MAX_LOW?1:0)*0.05f));
+	}
+	else
+	{
+		sum = (abs(CMFLIntensity) + abs(CMFRIntensity) + abs(CMBLIntensity) + abs(CMBRIntensity));
+			if(sum > CM_current_max)
+			{
+				CMFLIntensity = (CMFLIntensity/(sum+1.0f))*CM_current_max;
+				CMFRIntensity = (CMFRIntensity/(sum+1.0f))*CM_current_max;
+				CMBLIntensity = (CMBLIntensity/(sum+1.0f))*CM_current_max;
+				CMBRIntensity = (CMBRIntensity/(sum+1.0f))*CM_current_max;
+			}
+	}
+	
+	
+//	    MotorC620RxMsg_t *pData = IOPool_pGetReadData(CMFLRxIOPool, 0);
+//	
+//		  CMFLIntensityPID.target = CMFLIntensity;
+//			CMFLIntensityPID.feedback = pData->realIntensity;
+//			CMFLIntensityPID.Calc(&CMFLIntensityPID);
+//	    CMFLCompensate = CMFLIntensityPID.output;
+//	
+//	    CMFLIntensity += CMFLCompensate;
+//	
+//	    pData = IOPool_pGetReadData(CMFRRxIOPool, 0);
+//	
+//		  CMFRIntensityPID.target = CMFRIntensity;
+//			CMFRIntensityPID.feedback = pData->realIntensity;
+//			CMFRIntensityPID.Calc(&CMFRIntensityPID);
+//	    CMFRCompensate = CMFRIntensityPID.output;
+//	
+//	    CMFRIntensity += CMFRCompensate;
+//	
+//	    pData = IOPool_pGetReadData(CMBLRxIOPool, 0);
+//	
+//		  CMBLIntensityPID.target = CMBLIntensity;
+//			CMBLIntensityPID.feedback = pData->realIntensity;
+//			CMBLIntensityPID.Calc(&CMBLIntensityPID);
+//	    CMBLCompensate = CMBLIntensityPID.output;
+//	
+//	    CMBLIntensity += CMBLCompensate;
+//			
+//			pData = IOPool_pGetReadData(CMBRRxIOPool, 0);
+//	
+//		  CMBRIntensityPID.target = CMBRIntensity;
+//			CMBRIntensityPID.feedback = pData->realIntensity;
+//			CMBRIntensityPID.Calc(&CMBRIntensityPID);
+//	    CMBRCompensate = CMBRIntensityPID.output;
+//	
+//	    CMBRIntensity += CMBRCompensate;
+			
+			
+			
+			
+	//续原版功率限制算法
+	/*
 	float sum = (abs(CMFLIntensity) + abs(CMFRIntensity) + abs(CMBLIntensity) + abs(CMBRIntensity));
 	
 	if ((CMFLIntensity > CMFLIntensity_max))
@@ -181,8 +279,9 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		CMFRIntensity = (CM_current_max/sum)*CMFRIntensity;
 		CMBLIntensity = (CM_current_max/sum)*CMBLIntensity;
 		CMBRIntensity = (CM_current_max/sum)*CMBRIntensity;
-	}
+	}*/
 	
+	//紧急停止
 	if(GetWorkState() == STOP_STATE || g_bInited != 1)
 	{
 		CMFLIntensity = 0;
@@ -193,11 +292,12 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		GMPITCHIntensity = 0;
 		PM1Intensity = 0;
 		PM2Intensity = 0;
-		AM1LIntensity = 0;
-		AM1RIntensity = 0;
-		AM2LIntensity = 0;
-		AM2RIntensity = 0;
-		AM3RIntensity = 0;
+	  PM3Intensity = 0;
+//		AM1LIntensity = 0;
+//		AM1RIntensity = 0;
+//		
+//		
+//		AM3RIntensity = 0;
 	}
 
 	if(CMReady == 0xF)
@@ -224,21 +324,25 @@ void setMotor(MotorId motorId, int16_t Intensity){
 	{
 		CanTxMsgTypeDef *pData = IOPool_pGetWriteData(GMTxIOPool);
 		pData->StdId = GM_TXID;
-		pData->Data[0] = (uint8_t)(GMYAWIntensity >> 8);
-		pData->Data[1] = (uint8_t)GMYAWIntensity;
-		pData->Data[2] = (uint8_t)(GMPITCHIntensity >> 8);
-		pData->Data[3] = (uint8_t)GMPITCHIntensity;
+//		pData->Data[0] = (uint8_t)(GMYAWIntensity >> 8);
+//		pData->Data[1] = (uint8_t)GMYAWIntensity;
+//		pData->Data[2] = (uint8_t)(GMPITCHIntensity >> 8);
+//		pData->Data[3] = (uint8_t)GMPITCHIntensity;
+		pData->Data[0] = (uint8_t)(GMPITCHIntensity >> 8);
+		pData->Data[1] = (uint8_t)GMPITCHIntensity;
+		pData->Data[2] = (uint8_t)(GMYAWIntensity >> 8);
+		pData->Data[3] = (uint8_t)GMYAWIntensity;
 		pData->Data[4] = 0;
 		pData->Data[5] = 0;
 		pData->Data[6] = 0;
 		pData->Data[7] = 0;
-		IOPool_getNextWrite(GMTxIOPool);
+		IOPool_getNextWrite(GMTxIOPool);	
 		GMReady = 0;
 
     TransmitCAN1();
 	}
 	
-	if(PMReady == 0x3)
+	if(PMReady == 0x7)
 	{
 		CanTxMsgTypeDef *pData = IOPool_pGetWriteData(PMTxIOPool);
 		pData->StdId = PM_TXID;
@@ -246,17 +350,17 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		pData->Data[1] = (uint8_t)PM1Intensity;
 		pData->Data[2] = (uint8_t)(PM2Intensity >> 8);
 		pData->Data[3] = (uint8_t)PM2Intensity;
-		pData->Data[4] = 0;
-		pData->Data[5] = 0;
+		pData->Data[4] = (uint8_t)(PM3Intensity >> 8);
+		pData->Data[5] = (uint8_t)PM3Intensity;
 		pData->Data[6] = 0;
 		pData->Data[7] = 0;
 		IOPool_getNextWrite(PMTxIOPool);
 		PMReady = 0;
 		
-		TransmitCAN1();
+		TransmitCAN2();
 	}
 	
-	if(AMReady == 0x1F)
+	if(AMReady == 0x3)
 	{
 		CanTxMsgTypeDef *pData = IOPool_pGetWriteData(AM1TxIOPool);
 		pData->StdId = AM1_TXID;
@@ -270,17 +374,6 @@ void setMotor(MotorId motorId, int16_t Intensity){
 		pData->Data[7] = 0;
 		IOPool_getNextWrite(AM1TxIOPool);
 		
-		pData = IOPool_pGetWriteData(AM23TxIOPool);
-		pData->StdId = AM23_TXID;
-		pData->Data[0] = (uint8_t)(AM2LIntensity >> 8);
-		pData->Data[1] = (uint8_t)AM2LIntensity;
-		pData->Data[2] = (uint8_t)(AM2RIntensity >> 8);
-		pData->Data[3] = (uint8_t)AM2RIntensity;
-		pData->Data[4] = (uint8_t)(AM3RIntensity >> 8);
-		pData->Data[5] = (uint8_t)AM3RIntensity;
-		pData->Data[6] = 0;
-		pData->Data[7] = 0;
-		IOPool_getNextWrite(AM23TxIOPool);
 		
 		TransmitCAN2();
 		AMReady = 0;

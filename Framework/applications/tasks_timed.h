@@ -39,24 +39,25 @@ WorkState_e GetWorkState(void);
 
 
 #define PID_SHOOT_MOTOR_SPEED      (30)
-#define CHASSIS_SPEED_ATTENUATION   (1.30f)
+//#define CHASSIS_SPEED_ATTENUATION   (1.30f)
+#define CHASSIS_SPEED_ATTENUATION   (1.0f)
 #define PREPARE_TIME_TICK_MS 5000      //prapare time in ms*2
 #define CHASSIS_MOTOR_ROTATE_PID_DEFAULT \
 {\
 	0,\
 	0,\
 	{0,0},\
-	1.4f,\
+	23.0f,\
 	0.0f,\
-	0.0f,\
+	60.0f,\
 	0,\
 	0,\
 	0,\
-	4900,\
+	8000,\
 	1000,\
-	1500,\
+	5500,\
 	0,\
-	5000,\
+	15000,\
 	0,\
 	0,\
 	0,\
@@ -91,17 +92,17 @@ WorkState_e GetWorkState(void);
 	0,\
 	0,\
 	{0,0},\
-	6.5f,\
-	0.0f,\
-	1.0f,\
+	1.8f,\
+	0.3f,\
+	10.0f,\
 	0,\
 	0,\
 	0,\
-	4900,\
-	3500,\
-	1500,\
+	10000,\
+	10000,\
+	10000,\
 	0,\
-	4950,\
+	16000,\
 	0,\
 	0,\
 	0,\

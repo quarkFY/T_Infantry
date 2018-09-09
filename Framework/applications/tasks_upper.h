@@ -16,7 +16,7 @@
 #include "utilities_minmax.h"
 //#include "application_gimbalcontrol.h"
 IOPoolDeclare(upperIOPool, struct{float yawAdd; float pitchAdd;});
-
+void ManifoldUartTask(void const * argument);
 void getCtrlUartTask(void const * argument);
 
 void zykProcessData(void);

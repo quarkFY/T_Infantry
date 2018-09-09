@@ -45,6 +45,10 @@
 #include <stdbool.h>
 #include "visualscope.h"
 #include "tasks_hero.h"
+#include "peripheral_sov.h"
+
+#include <stdlib.h>
+#include <math.h>
 
 extern PID_Regulator_t CMRotatePID ; 
 extern PID_Regulator_t CM1SpeedPID;
@@ -85,6 +89,7 @@ WorkState_e GetWorkState()
 /*2ms定时任务*/
 extern float yawAngleTarget;
 extern float pitchAngleTarget;
+extern float PM3AngleTarget;
 extern RampGen_t frictionRamp ;
 
 extern uint16_t PM1RotateCount;
@@ -96,6 +101,13 @@ uint16_t checkKeyTime=500;
 
  int ad1,ad2,ad3,ad4,ad5;
 extern uint32_t ADC_Value[100];
+uint8_t stack_flag=0;
+extern float PM3RealAngle;
+float PM3lastAngle;
+
+////////////陀螺仪////////////
+float zeroGyro;
+extern float gyroZAngle;
 
 void Timer_2ms_lTask(void const * argument)
 {
@@ -114,6 +126,13 @@ void Timer_2ms_lTask(void const * argument)
 		WorkStateFSM();//状态机
 	  WorkStateSwitchProcess();//状态机动作
 		
+		//陀螺仪复位计时
+    if(s_time_tick_2ms == 2000)
+		{
+			//GYRO_RST();//给单轴陀螺仪将当前位置写零，注意需要一定的稳定时间
+			zeroGyro = gyroZAngle;
+		}            //在从STOP切换到其他状态时，s_time_tick_2ms清零重加，会重新复位陀螺仪
+
 		getJudgeState();
 		
 		if(checkRecTime<65534)
@@ -124,16 +143,26 @@ void Timer_2ms_lTask(void const * argument)
 		{
 			checkKeyTime++;
 		}
-
-
-//			VisualScope(&huart3, (int)PM1RealAngle, 0, 0, 0); 
+			
 		
+		if(fabs(PM3AngleTarget-PM3RealAngle)>50)
+		{
+			PM3AngleTarget=PM3RealAngle;
+			stack_flag = 1;
+		}
+		else if(stack_flag == 0 )
+		{
+			PM3AngleTarget+=1.2;
+		}
+
 		
 //定时1s,发送调试信息		
 		if(s_countWhile >= 2000)//150 1000
 		{
 			s_countWhile = 0;
-
+        
+			
+		
 			/*
 			*****查看任务栈空间剩余示例*******
 			//		StackResidue = uxTaskGetStackHighWaterMark( GMControlTaskHandle );
@@ -149,7 +178,7 @@ void Timer_2ms_lTask(void const * argument)
 			s_countWhile++;
 		}
 		
-		if(PM1RotateCount <= 350)
+		if(PM1RotateCount <= 300)
 		{
 			PM1RotateCount++;
 		}
@@ -159,11 +188,11 @@ void Timer_2ms_lTask(void const * argument)
 			PM1RotateFlag = 1;
 		}
 		
-		ad1=ADC_Value[1];
-		ad2=ADC_Value[2];
-		ad3=ADC_Value[3];
-		ad4=ADC_Value[4];
-		ad5=ADC_Value[5];
+		ad1=ADC_Value[0];
+		ad2=ADC_Value[1];
+		ad3=ADC_Value[2];
+		ad4=ADC_Value[3];
+		ad5=ADC_Value[4];
 		vTaskDelayUntil( &xLastWakeTime, ( 2 / portTICK_RATE_MS ) );//这里进入阻塞态等待2ms
 	}
 }
@@ -188,7 +217,7 @@ void WorkStateFSM(void)
 	{
 		case PREPARE_STATE:
 		{
-			if(emergency_Flag == EMERGENCY )
+			if(GetInputMode() == STOP_INPUT )
 			{
 				g_workState = STOP_STATE;
 			}
@@ -201,7 +230,7 @@ void WorkStateFSM(void)
 		
 		case NORMAL_STATE:     
 		{
-			if(emergency_Flag == EMERGENCY )
+			if(GetInputMode() == STOP_INPUT )
 			{
 				g_workState = STOP_STATE;
 			}
@@ -209,11 +238,11 @@ void WorkStateFSM(void)
 		
 		case STOP_STATE:   
 		{
-			if(emergency_Flag == NORMAL )
+			if(GetInputMode() != STOP_INPUT )
 			{
 				g_workState = PREPARE_STATE;   
 			}
-			g_workState = STOP_STATE;
+			else g_workState = STOP_STATE;
 		}break;
 
 		default:
@@ -237,6 +266,7 @@ void WorkStateSwitchProcess(void)
 		SetFrictionWheelSpeed(800);
 		SetFrictionState(FRICTION_WHEEL_OFF);
 		frictionRamp.ResetCounter(&frictionRamp);
+		GRIP_SOV_OFF();
 	}
 	//如果从其他模式切换到prapare模式，要将一系列参数初始化
 	if((lastWorkState != g_workState) && (g_workState == PREPARE_STATE))  

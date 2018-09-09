@@ -1,7 +1,8 @@
 /**
   ******************************************************************************
-  * File Name          : main.hpp
-  * Description        : This file contains the common defines of the application
+  * @file           : main.h
+  * @brief          : Header for main.c file.
+  *                   This file contains the common defines of the application.
   ******************************************************************************
   * This notice applies to any and all portions of this file
   * that are not between comment pairs USER CODE BEGIN and
@@ -45,12 +46,13 @@
   *
   ******************************************************************************
   */
+
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __MAIN_H
-#define __MAIN_H
-  /* Includes ------------------------------------------------------------------*/
+#ifndef __MAIN_H__
+#define __MAIN_H__
 
 /* Includes ------------------------------------------------------------------*/
+
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
@@ -59,10 +61,10 @@
 
 #define LASER_Pin GPIO_PIN_13
 #define LASER_GPIO_Port GPIOG
-#define FRONT_SOV1_Pin GPIO_PIN_5
-#define FRONT_SOV1_GPIO_Port GPIOE
-#define FRONT_SOV2_Pin GPIO_PIN_6
-#define FRONT_SOV2_GPIO_Port GPIOE
+#define PIR_R_Pin GPIO_PIN_5
+#define PIR_R_GPIO_Port GPIOE
+#define PIR_L_Pin GPIO_PIN_6
+#define PIR_L_GPIO_Port GPIOE
 #define LASER2_Pin GPIO_PIN_0
 #define LASER2_GPIO_Port GPIOI
 #define GRIP_SOV_Pin GPIO_PIN_1
@@ -71,14 +73,16 @@
 #define EncoderB_GPIO_Port GPIOH
 #define EncoderA_Pin GPIO_PIN_10
 #define EncoderA_GPIO_Port GPIOH
-#define BEHIND_SOV2_Pin GPIO_PIN_0
-#define BEHIND_SOV2_GPIO_Port GPIOC
+#define PIR_C_Pin GPIO_PIN_0
+#define PIR_C_GPIO_Port GPIOC
 #define BEHIND_SOV1_Pin GPIO_PIN_2
 #define BEHIND_SOV1_GPIO_Port GPIOC
-#define GM_RST_Pin GPIO_PIN_4
-#define GM_RST_GPIO_Port GPIOC
+#define SDA_Pin GPIO_PIN_4
+#define SDA_GPIO_Port GPIOA
 #define PM_Ctrl_Pin GPIO_PIN_12
 #define PM_Ctrl_GPIO_Port GPIOD
+#define SCL_Pin GPIO_PIN_5
+#define SCL_GPIO_Port GPIOA
 
 /* ########################## Assert Selection ############################## */
 /**
@@ -101,13 +105,6 @@ void _Error_Handler(char *, int);
 }
 #endif
 
-/**
-  * @}
-  */ 
+#endif /* __MAIN_H__ */
 
-/**
-  * @}
-*/ 
-
-#endif /* __MAIN_H */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

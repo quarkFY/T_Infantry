@@ -19,18 +19,21 @@
 #define  	 CMBLIntensity_bottom   1000.f
 #define	   CMBRIntensity_bottom   1000.f
 
-#define    CM_current_lower      14000.f
-#define 	 CMFLIntensity_lower   4500.f
-#define    CMFRIntensity_lower   4500.f
-#define  	 CMBLIntensity_lower   4500.f
-#define	   CMBRIntensity_lower   4500.f
+#define    CM_current_lower      4096.f
+#define 	 CMFLIntensity_lower   1024.f
+#define    CMFRIntensity_lower   1024.f
+#define  	 CMBLIntensity_lower   1024.f
+#define	   CMBRIntensity_lower   1024.f
 
-#define    CM_current_MAX      18000.f
-#define    CMFLIntensity_MAX   5900.f
-#define    CMFRIntensity_MAX   5900.f
-#define    CMBLIntensity_MAX   5900.f
-#define    CMBRIntensity_MAX   5900.f
-/*
+#define    CM_current_MAX_LOW      34000.0f
+#define    CM_current_MAX      28000.0f       //CM_current_MAX对应的电流值*24V*100ms<=60J
+#define    CMFLIntensity_MAX   6000.0f
+#define    CMFRIntensity_MAX   6000.0f
+#define    CMBLIntensity_MAX   6000.0f
+#define    CMBRIntensity_MAX   6000.0f
+
+#define			CM_current_full			4096.0f
+
 void RestrictPower(int16_t *intensity1, int16_t *intensity2, int16_t *intensity3, int16_t *intensity4);
-void dynamicUpperBound(void);*/
+void dynamicUpperBound(void);
 #endif

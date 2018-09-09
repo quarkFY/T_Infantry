@@ -19,6 +19,9 @@
 #include "drivers_uartjudge_low.h"
 #include "peripheral_define.h"
 #include "utilities_debug.h"
+#include "drivers_uartupper_low.h"
+#include "drivers_uartjudge_low.h"
+#include "drivers_uartgyro_low.h"
 
 /********************所有串口接收中断****************************/
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
@@ -31,7 +34,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 		//妙算通信串口
 		//自定义协议
 //		fw_printfln("manifold get!!!");
-		ctrlUartRxCpltCallback();
+//		ctrlUartRxCpltCallback();
+		
+		manifoldUartRxCpltCallback();
 	}
 	else if(UartHandle == &JUDGE_UART){
 		//裁判系统读取采用单字节阻塞接收方式
@@ -39,6 +44,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 		//血量
 		//底盘电压、电流
 		//能量槽*****重要，超功率掉血
-		//judgeUartRxCpltCallback();
+		judgeUartRxCpltCallback();
+	}
+	else if(UartHandle == &GYRO_UART){
+		gyroUartRxCpltCallback();
 	}
 }   

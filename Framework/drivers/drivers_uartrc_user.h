@@ -69,7 +69,8 @@ typedef enum
 {
 	NO_GETBULLET = 1,
 	AUTO_GETBULLET = 2,
-	MANUL_GETBULLET = 3,
+	MANUAL_GETBULLET = 3,
+	GEBULLET_PREPARE =4,
 }Get_Bullet_e;
 
 typedef enum
@@ -90,7 +91,8 @@ typedef enum
 {
 	REMOTE_INPUT = 1,
 	KEY_MOUSE_INPUT = 3,
-	GETBULLET_INPUT = 2,
+	STOP_INPUT = 2,
+//	STOP_INPUT = 4,
 }InputMode_e;
 
 typedef enum
