@@ -241,6 +241,7 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan){
 			case PM1_RXID:
 				IOPool_pGetWriteData(PM1RxIOPool)->angle = CanRxGetU16(Can2RxMsg, 0);
 				IOPool_pGetWriteData(PM1RxIOPool)->RotateSpeed = CanRxGetU16(Can2RxMsg, 1);
+				IOPool_pGetWriteData(PM1RxIOPool)->realIntensity = CanRxGetU16(Can2RxMsg, 2);
 				IOPool_getNextWrite(PM1RxIOPool);
 				break;
 //			case ZGYRO_RXID:

@@ -22,6 +22,14 @@
 	OutputMax, \
 	&fw_PID_Calc, &fw_PID_Reset \
 };
+#define complete_PID_INIT(Kp, Ki, Kd, KpMax, KiMax, KdMax, OutputMax) { \
+	0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ,\
+	Kp, Ki, Kd, 0.0, 0.0, 0.0, \
+	KpMax, KiMax, KdMax, 0.0, \
+	OutputMax, \
+	{0,0},0,\
+	&complete_PID_Calc, &complete_PID_Reset \
+};
 typedef struct fw_PID_Regulator_t
 {
 	float target;
@@ -73,9 +81,40 @@ typedef struct PID_Regulator_t
 }PID_Regulator_t;
 void PID_Reset(PID_Regulator_t *pid);
 void PID_Calc(PID_Regulator_t *pid);
+
+typedef struct complete_PID_Regulator_t
+{
+	float target;
+	float feedback;
+	float errorCurr;
+	float errorSum;
+	uint16_t SumCount;
+	float errorLast;
+	float kp;
+	float ki;
+	float kd;
+	float componentKp;
+	float componentKi;
+	float componentKd;
+	float componentKpMax;
+	float componentKiMax;
+	float componentKdMax;
+	float output;
+	float outputMax;
+	float error[80];
+	uint16_t addr_error;
+	void (*Calc)(struct complete_PID_Regulator_t *pid);
+	void (*Reset)(struct complete_PID_Regulator_t *pid);
+}complete_PID_Regulator_t;
+
+void complete_PID_Reset(complete_PID_Regulator_t *pid);
+void complete_PID_Calc(complete_PID_Regulator_t *pid);
+
 int16_t ProcessYawPID(float target, float position_feedback, float velocity_feedback);
 int16_t ProcessPitchPID(float target, float position_feedback, float velocity_feedback);
-int16_t PID_PROCESS_Double(fw_PID_Regulator_t pid_position,fw_PID_Regulator_t pid_speed,
+int16_t PID_PROCESS_Double(complete_PID_Regulator_t *pid_position,complete_PID_Regulator_t *pid_speed,
                             float target, float position_feedback, float velocity_feedback);
+
+
 #endif
 

@@ -39,6 +39,9 @@
 #include "tasks_hero.h"
 #include "peripheral_sov.h"
 
+extern int16_t PM1ThisTorque;
+extern uint8_t PM2RotateEnable;
+extern uint16_t PM2RotateCounter;
 
 NaiveIOPoolDefine(rcUartIOPool, {0});
 
@@ -221,6 +224,7 @@ input: RemoteSwitch_t *sw, include the switch info
 */
 extern PID_Regulator_t PM1PositionPID;
 extern PID_Regulator_t PM2PositionPID;
+extern uint8_t PM2RotateEnable;
 uint16_t remoteShootDelay = 500;
 void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val) 
 {
@@ -337,8 +341,10 @@ void RemoteShootControl(RemoteSwitch_t *sw, uint8_t val)
 	}
 	if(CNT_PM1_500ms > 30)
 	{
-			if(fabs(PM1AngleTarget-PM1RealAngle)>4) //pm1堵转归位
+			if(fabs(PM1AngleTarget-PM1RealAngle)>4 && PM1ThisTorque>7000) //pm1堵转归位
 			{
+				//PM2AngleTarget -= 450;
+	//			PM2RotateEnable = 3;
 				PM1AngleTarget = tmpPM1AngleTarget;
 			}
 	}
@@ -449,6 +455,18 @@ void MouseShootControl(Mouse *mouse)
 	}	
 	mouse->last_press_r = mouse->press_r;
 	mouse->last_press_l = mouse->press_l;
+//	if(CNT_PM1_500ms > 30)
+//	{
+			if(fabs(PM1AngleTarget-PM1RealAngle)>1 && PM1ThisTorque>7000) //pm1堵转归位
+			{
+				//PM2AngleTarget -= 450;
+	//			PM2RotateEnable = 3;
+				PM2AngleTarget=PM2RealAngle;
+							PM2RotateEnable = 2;
+							PM2RotateCounter = 0;
+				PM1AngleTarget = tmpPM1AngleTarget;
+			}
+//	}
 //	if(CNT_PM1_500ms == 50)
 //	{
 //			if(fabs(PM1AngleTarget-PM1RealAngle)>20) //pm1堵转归位

@@ -75,10 +75,15 @@ int isGMPITCHFirstEnter = 1;
 int isGMSet;
 extern GMMode_e GMMode;
 
-fw_PID_Regulator_t pitchPositionPID = fw_PID_INIT(70, 0.0, 0.4, 4000.0, 10000.0, 10000.0, 10000.0);
-fw_PID_Regulator_t yawPositionPID = fw_PID_INIT(60.0, 0.0, 0.1, 4000.0, 10000.0, 10000.0, 10000.0);//等幅振荡P37.3 I11.9 D3.75  原26.1 8.0 1.1
-fw_PID_Regulator_t pitchSpeedPID = fw_PID_INIT(6, 0.0, 0.5, 3000.0, 10000.0, 10000.0, 5000); //6.5
-fw_PID_Regulator_t yawSpeedPID = fw_PID_INIT(2.8, 0, 0.6, 3000.0, 10000.0, 10000.0, 5000.0); //4
+//complete_PID_Regulator_t pitchPositionPID = complete_PID_INIT(70, 0.2, 10.0, 4000.0, 10000.0, 10000.0, 10000.0);
+//complete_PID_Regulator_t yawPositionPID = complete_PID_INIT(60.0, 0.1, 10, 4000.0, 10000.0, 10000.0, 10000.0);//等幅振荡P37.3 I11.9 D3.75  原26.1 8.0 1.1
+//complete_PID_Regulator_t pitchSpeedPID = complete_PID_INIT(6.25, 0.0, 10.0, 3000.0, 10000.0, 10000.0, 5000.0); //6.5
+//complete_PID_Regulator_t yawSpeedPID = complete_PID_INIT(2.7, 0.001, 2, 3000.0, 10000.0, 10000.0, 5000.0); //4
+
+complete_PID_Regulator_t pitchPositionPID = complete_PID_INIT(20, 0.2, 10.0, 4000.0, 10000.0, 10000.0, 10000.0);
+complete_PID_Regulator_t yawPositionPID = complete_PID_INIT(23.0, 0.1, 10, 4000.0, 10000.0, 10000.0, 10000.0);//等幅振荡P37.3 I11.9 D3.75  原26.1 8.0 1.1
+complete_PID_Regulator_t pitchSpeedPID = complete_PID_INIT(20, 0.0, 10.0, 3000.0, 10000.0, 10000.0, 5000.0); //20 0 10
+complete_PID_Regulator_t yawSpeedPID = complete_PID_INIT(4.5, 0.0,4, 3000.0, 10000.0, 10000.0, 5000.0); //4
 
 //底盘
 PID_Regulator_t CMRotatePID = CHASSIS_MOTOR_ROTATE_PID_DEFAULT; 
@@ -157,7 +162,7 @@ void Can1ControlTask(void const * argument)
 int16_t yawIntensity = 0;
 int16_t yawIntensityForDebug = 0;
 float yawMotorAngle = 0.0;
-int isGMYawFirstEnter = 1;
+//int isGMYawFirstEnter = 1;
 int isGMYawGyroFirstEnter = 1;
 float GMYAWGyroThisAngle, GMYAWGyroLastAngle;
 /*Yaw电机*/
@@ -328,7 +333,7 @@ void ControlPitch(void)
 			
 			NORMALIZE_ANGLE180(pitchRealAngle);
 			//限位
-			MINMAX(pitchAngleTarget, -17.0f, 36.0f);	
+			MINMAX(pitchAngleTarget, -20.0f, 49.0f);	
 			
 //		  pitchMotorTarget = pitchAngleTarget - yawAngleTarget ;  //耦合
 			pitchIntensity = ProcessPitchPID(-pitchAngleTarget,pitchRealAngle,-gyroYspeed); 
@@ -512,7 +517,7 @@ void ControlCMBL(void)
 			
 			CM3SpeedPID.ref = -ChassisSpeedRef.forward_back_ref*0.075 
 											 + ChassisSpeedRef.left_right_ref*0.075 
-											 - ChassisSpeedRef.rotate_ref*0.075*0.55
+											 - ChassisSpeedRef.rotate_ref*0.075*0.58
 			                 ;
 			CM3SpeedPID.ref = 160 * CM3SpeedPID.ref;
 			CM3SpeedPID.fdb = pData->RotateSpeed;
@@ -544,7 +549,7 @@ void ControlCMBR()
 			
 			CM4SpeedPID.ref = ChassisSpeedRef.forward_back_ref*0.075 
 											 + ChassisSpeedRef.left_right_ref*0.075 
-											 - ChassisSpeedRef.rotate_ref*0.075*0.55
+											 - ChassisSpeedRef.rotate_ref*0.075*0.58
 			                 ;
 			CM4SpeedPID.ref = 160 * CM4SpeedPID.ref;
 			CM4SpeedPID.fdb = pData->RotateSpeed;

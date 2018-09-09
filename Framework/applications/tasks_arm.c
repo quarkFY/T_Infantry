@@ -108,9 +108,9 @@ uint16_t PM3ThisAngle = 0;
 uint16_t PM3LastAngle = 0;
 uint8_t isPM2FirstEnter = 1;
 uint8_t isPM3FirstEnter = 1;
-fw_PID_Regulator_t PM1PositionPID = fw_PID_INIT(200.0, 0.0, 200.0, 10000.0, 10000.0, 10000.0, 8000.0);
+complete_PID_Regulator_t PM1PositionPID = complete_PID_INIT(150.0, 1, 200.0, 10000.0, 10000.0, 10000.0, 8000.0);
 fw_PID_Regulator_t PM2PositionPID = fw_PID_INIT(100.0, 0.0, 200.0, 10000.0, 10000.0, 10000.0, 10000.0);
-fw_PID_Regulator_t PM1SpeedPID = fw_PID_INIT(150.0, 0.0, 40.0, 10000.0, 10000.0, 10000.0, 8000.0);
+complete_PID_Regulator_t PM1SpeedPID = complete_PID_INIT(100.0, 0, 100.0, 10000.0, 10000.0, 10000.0, 8000.0);
 fw_PID_Regulator_t PM2SpeedPID = fw_PID_INIT(15, 0.0, 40.0, 10000.0, 10000.0, 10000.0, 8000.0);
 fw_PID_Regulator_t PM3PositionPID = fw_PID_INIT(250.0, 0.0, 200.0, 10000.0, 10000.0, 10000.0, 10000.0);
 fw_PID_Regulator_t PM3SpeedPID = fw_PID_INIT(150, 0.0, 40.0, 10000.0, 10000.0, 10000.0, 8000.0);
@@ -304,14 +304,14 @@ void ControlPM1()
 			
 			if(PM1ThisAngle<=PM1LastAngle)
 			{
-				if((PM1LastAngle-PM1ThisAngle)>3000)//编码器上溢
+				if((PM1LastAngle-PM1ThisAngle)>4000)//编码器上溢
 					PM1RealAngle = PM1RealAngle + (PM1ThisAngle+8192-PM1LastAngle) * 360 / 8192.0 / PM1Reduction;
 				else//反转
 					PM1RealAngle = PM1RealAngle - (PM1LastAngle - PM1ThisAngle) * 360 / 8192.0 / PM1Reduction;
 			}
 			else
 			{
-				if((PM1ThisAngle-PM1LastAngle)>3000)//编码器下溢
+				if((PM1ThisAngle-PM1LastAngle)>4000)//编码器下溢
 					PM1RealAngle = PM1RealAngle - (PM1LastAngle+8192-PM1ThisAngle) *360 / 8192.0 / PM1Reduction;
 				else//正转
 					PM1RealAngle = PM1RealAngle + (PM1ThisAngle - PM1LastAngle) * 360 / 8192.0 / PM1Reduction;
@@ -458,7 +458,7 @@ float tmpPM1AngleTarget;
 void shootOneGolf()
 {
 	heatJudge();
-	if(heatFlag == 1)
+	if(heatFlag == 1 && fabs(PM1RealAngle-PM1AngleTarget)<180)
 	{
 		tmpPM1AngleTarget = PM1AngleTarget;
 		PM1AngleTarget = PM1AngleTarget + 72;

@@ -80,12 +80,21 @@ void HeroTask(void const * argument)
 					if(ARM_RECOVER == 1)
 					{
 						ARM_RECOVER = 0;
-						HERO_Order = HERO_MANUL_RECOVER;
+						HERO_Order = HERO_AUTO_GET3BOX;
 					}
 					else
 					{
 						
 					}
+//					if(ARM_RECOVER == 1)
+//					{
+//						ARM_RECOVER = 0;
+//						HERO_Order = HERO_MANUL_RECOVER;
+//					}
+//					else
+//					{
+//						
+//					}
 				}break;
 				case HERO_MANUL_LOAD:
 				{
@@ -101,9 +110,8 @@ void HeroTask(void const * argument)
 				}break;
 				case HERO_AUTO_GET3BOX:
 				{
-					HERO_auto_getThreeBox();
-					//HERO_auto_getOneBox();
-					HERO_Order = HERO_MANUL_FETCH;
+					HERO_recover();
+					HERO_Order = HERO_STEADY_ROTATE;
 				}break;
 				case HERO_AUTO_GETBOX:
 				{
@@ -147,6 +155,11 @@ void HeroTask(void const * argument)
 						else if(PM2ThisTorque>7000 && PM2RotateEnable == 0)
 						{
 								PM2RotateEnable = 1;
+						}
+						else if(PM2RotateEnable == 3)
+						{
+								PM2AngleTarget-=300;
+								PM2RotateEnable = 0;
 						}
 						//¶Â×ª¼ì²â
 						if((fabs(PM2AngleTarget-PM2RealAngle)>200 || 1) && PM2RotateEnable == 1 && PM2ThisTorque<-7000)

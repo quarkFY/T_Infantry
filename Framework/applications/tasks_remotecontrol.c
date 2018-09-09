@@ -232,9 +232,9 @@ extern uint8_t littleRuneMSG[4];
 extern uint8_t bigRuneMSG[4];
 uint16_t fbss;
 //自瞄
-fw_PID_Regulator_t yawAutoSpeedPID_TrackMode = fw_PID_INIT(0.018, 0.0, 0.00005,4.8, 10.0, 10.0, 50); //跟随参数 寻找参数 0.0007 0.0008
+fw_PID_Regulator_t yawAutoSpeedPID_TrackMode = fw_PID_INIT(0.02, 0.0, 0.0,4.8, 10.0, 10.0, 50); //跟随参数 0.035 0 0.00005 0.07 0.0005 0.02
 fw_PID_Regulator_t pitchAutoSpeedPID_TrackMode = fw_PID_INIT(0.011,0.0, 0.0, 3.7, 10.0, 10.0, 50.0); //4
-fw_PID_Regulator_t yawAutoSpeedPID_AimMode = fw_PID_INIT(0.0075,0.0, 0.00001,4.5, 10.0, 10.0, 50);
+fw_PID_Regulator_t yawAutoSpeedPID_AimMode = fw_PID_INIT(0.0057,0.0001, 0.004,4.5, 10.0, 10.0, 50);//瞄准 0.009 0.0 0.000001
 fw_PID_Regulator_t pitchAutoSpeedPID_AimMode = fw_PID_INIT(0.007, 0.0, 0.00005,3.2, 10.0, 10.0, 50);
 float auto_kpx = 0.007f;
 float auto_kpy = 0.007f;
@@ -242,7 +242,7 @@ extern uint8_t auto_getting;
 extern uint16_t autoBuffer[10];
 uint16_t tmpx,tmpy;
 uint16_t auto_x_default = 320;
-uint16_t auto_y_default = 260;
+uint16_t auto_y_default = 300;
 extern float friction_speed;
 extern float now_friction_speed;
 extern float realBulletSpeed;
@@ -308,7 +308,7 @@ uint16_t lastKey;
 ///////////////////////////键鼠模式//////////////////////////
 //调整鼠标灵敏度
 #define MOUSE_TO_PITCH_ANGLE_INC_FACT 		0.025f * 2
-#define MOUSE_TO_YAW_ANGLE_INC_FACT 		0.025f * 3.4
+#define MOUSE_TO_YAW_ANGLE_INC_FACT 		0.025f * 2.9
 
 int keyDebug;
 uint8_t detect,going;
@@ -316,6 +316,8 @@ uint8_t detectCnt;
 uint8_t fixedPitch,releaseFixedPitch;
 uint16_t autoAimCnt;
 extern uint8_t auto_aim;
+uint8_t emergencyMode = 0,emergencyPitch = 0;
+
 //遥控器模式下机器人无级变速  键鼠模式下机器人速度为固定档位
 void MouseKeyControlProcess(Mouse *mouse, Key *key)
 {
@@ -328,7 +330,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		VAL_LIMIT(mouse->y, -150, 150); 
 	  if(fixedPitch)
 		{
-			pitchAngleTarget = 34;
+			pitchAngleTarget = 49;
 		}
 		else
 		{
@@ -341,16 +343,19 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 
 		if(GMMode == UNLOCK)
 		{
-			forward_back_speed =  LOW_FORWARD_BACK_SPEED;
-			left_right_speed = LOW_LEFT_RIGHT_SPEED;
-			rotate_speed = LOW_ROTATE_SPEED;
-			if(releaseFixedPitch)
+			if(emergencyMode)
 			{
 				forward_back_speed =  NORMAL_FORWARD_BACK_SPEED;
 				left_right_speed = NORMAL_LEFT_RIGHT_SPEED;
 				rotate_speed = NORMAL_ROTATE_SPEED;
+				CM_current_max = CM_current_MAX;
 			}
-				
+			else
+			{
+				forward_back_speed =  LOW_FORWARD_BACK_SPEED;
+				left_right_speed = LOW_LEFT_RIGHT_SPEED;
+				rotate_speed = LOW_ROTATE_SPEED;
+			}
 		}
 		else if(GMMode == LOCK)
 		{
@@ -360,26 +365,50 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 			CM_current_max = CM_current_MAX;
 		}
 		
-		if(lastKey == 0x0000 && key->v == 0x0400)    //锁定云台  G  
+		//if(lastKey == 0x0000 && key->v == 0x0400)    //锁定云台  G  
+		if(!(lastKey & 0x0400) && (key->v & 0x0400))    //锁定云台  G  
 		{
-			switch(GMMode)
+			if(emergencyMode)
 			{
-				case LOCK:
+				switch(emergencyPitch)
 				{
-					GMMode = UNLOCK;
-					fixedPitch = 1;
-					//HERO_Order = HERO_MANUL_RECOVER;
-					HERO_Order = HERO_MANUL_PREPARE;
-					//pitchAngleTarget = 34;					
-				}break;
-				case UNLOCK:
+					case 0:
+					{
+						emergencyPitch = 1;
+						fixedPitch = 1;
+						HERO_Order = HERO_MANUL_PREPARE;
+						//pitchAngleTarget = 34;					
+					}break;
+					case 1 :
+					{
+						emergencyPitch = 0;
+						pitchAngleTarget = 0;	
+						fixedPitch = 0;
+						ARM_RECOVER = 1;					
+					}break;
+				}
+			}
+			else
+			{
+				switch(GMMode)
 				{
-					GMMode = LOCK;
-					pitchAngleTarget = 0;	
-					fixedPitch = 0;
-					//HERO_Order = HERO_MANUL_RECOVER;
-					ARM_RECOVER = 1;					
-				}break;
+					case LOCK:
+					{
+						GMMode = UNLOCK;
+						fixedPitch = 1;
+						//HERO_Order = HERO_MANUL_RECOVER;
+						HERO_Order = HERO_MANUL_PREPARE;
+						//pitchAngleTarget = 34;					
+					}break;
+					case UNLOCK:
+					{
+						GMMode = LOCK;
+						pitchAngleTarget = 0;	
+						fixedPitch = 0;
+						//HERO_Order = HERO_MANUL_RECOVER;
+						ARM_RECOVER = 1;					
+					}break;
+				}
 			}
 		}
 		
@@ -489,11 +518,6 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		
 		if(GMMode == UNLOCK)
 		{
-			if(key->v & 0x4000)//v
-			{
-				releaseFixedPitch = 1;
-				fixedPitch = 0;
-			}
 			
 			if(key->v & 0x80)	//key:e  检测第8位是不是1
 			{
@@ -520,19 +544,19 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 				autoAimCnt++;
 				if(tmpy <700 && tmpx < 700)
 				{
-					if(autoAimCnt>150) //TrackMode
+					if(autoAimCnt>25) //TrackMode
 					{
 							yawAutoSpeedPID_TrackMode.target = tmpx;
 							yawAutoSpeedPID_TrackMode.feedback =  auto_x_default;
 							yawAutoSpeedPID_TrackMode.Calc(&yawAutoSpeedPID_TrackMode);
 							
-							yawAngleTarget -= yawAutoSpeedPID_TrackMode.output;
+							yawAngleTarget = yawAngleTarget - yawAutoSpeedPID_TrackMode.output - mouse->x*0.008;
 							
 							pitchAutoSpeedPID_TrackMode.target = tmpy;
 							pitchAutoSpeedPID_TrackMode.feedback =  auto_y_default;
 							pitchAutoSpeedPID_TrackMode.Calc(&pitchAutoSpeedPID_TrackMode);
 							
-							pitchAngleTarget -= pitchAutoSpeedPID_TrackMode.output;
+							pitchAngleTarget = pitchAngleTarget - pitchAutoSpeedPID_TrackMode.output - mouse->y*0.005;
 					}
 					else //AimMode
 					{
@@ -689,6 +713,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 /////////////////////////STOP模式：紧急切换&检录模式/////////////////////////////
 uint8_t MaybePrepare =0;
 uint8_t isAM1Init = 0;
+
 void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 {
 	if(GetWorkState() == STOP_STATE)
@@ -751,6 +776,7 @@ void GetBulletControlprocess(Remote *rc,Mouse *mouse, Key *key)
 //		}
 		
 		GMMode = UNLOCK;
+		emergencyMode = 1;
 		
 		AM1RAngleTarget +=(rc->ch0 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_ARM_SPEED_REF_FACT; //右侧电机 
 
